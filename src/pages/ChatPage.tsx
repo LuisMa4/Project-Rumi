@@ -10,15 +10,13 @@ import { useAuth } from '../context/useAuth'
 import { getConversation, getMessages, send, subscribe } from '../services/chatService'
 import { ValidationError } from '../services/errors'
 import type { Message, PublicUser } from '../types'
+import { formatMessageTime } from '../utils/format'
 import styles from './ChatPage.module.css'
 
 type State =
   | { status: 'loading' }
   | { status: 'notfound'; id: string }
   | { status: 'ok'; id: string; otro: PublicUser; messages: Message[] }
-
-const hora = (iso: string) =>
-  new Date(iso).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })
 
 export function ChatPage() {
   const { id = '' } = useParams()
@@ -102,7 +100,7 @@ export function ChatPage() {
           <li key={m.id} className={m.autorId === userId ? styles.mine : styles.theirs}>
             <p className={styles.bubble}>{m.texto}</p>
             <time dateTime={m.enviadoEn} className={styles.time}>
-              {hora(m.enviadoEn)}
+              {formatMessageTime(m.enviadoEn)}
             </time>
           </li>
         ))}

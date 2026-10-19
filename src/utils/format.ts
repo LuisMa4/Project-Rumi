@@ -21,6 +21,19 @@ export function formatRelative(iso: string, now: Date = new Date()): string {
   return date.getFullYear() === now.getFullYear() ? dia : `${dia} ${date.getFullYear()}`
 }
 
+const sameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString()
+
+/** Hora del mensaje; si no es de hoy, también el día: "ayer, 14:05", "12 oct, 14:05". */
+export function formatMessageTime(iso: string, now: Date = new Date()): string {
+  const date = new Date(iso)
+  const hora = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+  if (sameDay(date, now)) return hora
+  const ayer = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
+  if (sameDay(date, ayer)) return `ayer, ${hora}`
+  const dia = `${date.getDate()} ${MESES[date.getMonth()]}`
+  return date.getFullYear() === now.getFullYear() ? `${dia}, ${hora}` : `${dia} ${date.getFullYear()}, ${hora}`
+}
+
 export function formatDate(iso: string): string {
   const d = parseDay(iso)
   return `${d.getDate()} ${MESES[d.getMonth()]} ${d.getFullYear()}`

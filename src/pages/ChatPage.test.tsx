@@ -23,6 +23,12 @@ it('un error inesperado al enviar se muestra arriba de la caja de texto', async 
   expect(screen.getByLabelText('Mensaje')).toHaveValue('Hola')
 })
 
+it('los mensajes de días anteriores muestran el día además de la hora', async () => {
+  await renderApp('/mensajes/c-02', { session: 'demo' })
+  const list = await screen.findByRole('list', { name: 'Mensajes' })
+  await waitFor(() => expect(within(list).getAllByText(/^(ayer|\d{1,2} [a-z]{3}), \d{2}:\d{2}$/)).toHaveLength(2))
+})
+
 it('id inválido muestra no encontrado', async () => {
   await renderApp('/mensajes/nope', { session: 'demo' })
   expect(await screen.findByText('No encontramos este perfil o conversación')).toBeInTheDocument()
