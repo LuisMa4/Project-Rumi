@@ -1,0 +1,51 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.control {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  background: var(--blanco);
+  transition: border-color 0.15s;
+}
+
+.control:hover {
+  border-color: var(--celeste);
+}
+
+.control:focus-visible {
+  outline: none;
+  border-color: var(--naranja);
+  box-shadow: 0 0 0 3px var(--naranja-suave);
+}
+
+.control[aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+.area {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.error {
+  color: var(--error);
+  font-size: 0.85rem;
+}
+
+.hint {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+}

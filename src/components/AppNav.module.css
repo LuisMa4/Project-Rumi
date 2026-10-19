@@ -1,0 +1,115 @@
+.nav {
+  position: fixed;
+  z-index: 10;
+  display: flex;
+  background: var(--blanco);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  color: var(--tinta-suave);
+  text-decoration: none;
+}
+
+.item[aria-current='page'] {
+  color: var(--naranja-oscuro);
+  font-weight: 700;
+}
+
+.publish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--naranja);
+  color: var(--blanco);
+  text-decoration: none;
+}
+
+.publish:hover {
+  background: var(--naranja-oscuro);
+}
+
+/* Celular: barra inferior con el botón de publicar al centro. */
+@media (max-width: 767px) {
+  .nav {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom));
+    padding: 0 8px env(safe-area-inset-bottom);
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid var(--borde);
+  }
+
+  .brand {
+    display: none;
+  }
+
+  .item {
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.7rem;
+  }
+
+  .publish {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    margin-top: -28px;
+    border: 4px solid var(--blanco);
+    border-radius: 50%;
+    box-shadow: var(--sombra-suave);
+  }
+
+  .publishText {
+    display: none;
+  }
+}
+
+/* Laptop: menú lateral con el logo arriba y el botón de publicar al final. */
+@media (min-width: 768px) {
+  .nav {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--ancho-menu-lateral);
+    flex-direction: column;
+    gap: 4px;
+    padding: 28px 16px;
+    border-right: 1px solid var(--borde);
+  }
+
+  .brand {
+    padding: 0 14px 28px;
+    text-decoration: none;
+  }
+
+  .item {
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radio-pildora);
+    font-size: 1rem;
+  }
+
+  .item:hover {
+    background: var(--celeste-suave);
+    color: var(--tinta);
+  }
+
+  .item[aria-current='page'] {
+    background: var(--naranja-suave);
+    color: var(--naranja-oscuro);
+  }
+
+  .publish {
+    order: 10;
+    gap: 8px;
+    margin-top: 20px;
+    min-height: 48px;
+    border-radius: var(--radio-pildora);
+    font-weight: 700;
+  }
+}

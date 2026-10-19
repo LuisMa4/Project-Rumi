@@ -1,0 +1,37 @@
+.logo {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--naranja);
+  user-select: none;
+}
+
+.sm {
+  font-size: 1.5rem;
+}
+
+.md {
+  font-size: 2rem;
+}
+
+.lg {
+  font-size: 3.25rem;
+}
+
+.i {
+  position: relative;
+}
+
+.dot {
+  position: absolute;
+  left: 50%;
+  top: -0.2em;
+  width: 0.24em;
+  height: 0.24em;
+  border-radius: 50%;
+  background: var(--celeste);
+  transform: translateX(-50%);
+}

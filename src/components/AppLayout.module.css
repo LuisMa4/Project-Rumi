@@ -1,0 +1,39 @@
+.shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 16px;
+  background: var(--blanco);
+  border-bottom: 1px solid var(--borde);
+}
+
+.topbar a {
+  text-decoration: none;
+}
+
+.main {
+  padding: 20px 16px calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 32px);
+}
+
+.column {
+  max-width: var(--ancho-contenido);
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .topbar {
+    display: none;
+  }
+
+  .main {
+    margin-left: var(--ancho-menu-lateral);
+    padding: 40px 32px 64px;
+  }
+}
