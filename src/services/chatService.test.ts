@@ -8,6 +8,7 @@ import {
   send,
   subscribe,
 } from './chatService'
+import { getConversations } from './db'
 import { NotFoundError, ValidationError } from './errors'
 import { AUTO_REPLIES, resetDemo } from './seed'
 import { MSG } from './validation'
@@ -32,8 +33,15 @@ describe('conversaciones', () => {
     expect((await getOrCreateConversation('u-01', 'u-demo')).id).toBe('c-01')
     const n = await getOrCreateConversation('u-demo', 'u-05')
     expect((await getOrCreateConversation('u-05', 'u-demo')).id).toBe(n.id)
-    expect(await listConversations('u-demo')).toHaveLength(3)
+    expect(getConversations()).toHaveLength(3)
     await expect(getOrCreateConversation('u-demo', 'u-demo')).rejects.toBeInstanceOf(ValidationError)
+  })
+
+  it('oculta las conversaciones sin mensajes', async () => {
+    const vacia = await getOrCreateConversation('u-demo', 'u-05')
+    expect((await listConversations('u-demo')).map((c) => c.otro.id)).toEqual(['u-01', 'u-04'])
+    await send(vacia.id, 'u-demo', 'hola')
+    expect((await listConversations('u-demo')).map((c) => c.otro.id)).toEqual(['u-05', 'u-01', 'u-04'])
   })
 
   it('getConversation exige ser participante', async () => {

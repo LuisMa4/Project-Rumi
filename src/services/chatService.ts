@@ -28,6 +28,8 @@ export async function listConversations(userId: string): Promise<ConversationSum
       .filter((m) => m.conversacionId === conversation.id)
       .sort(byDate)
       .at(-1)
+    // Abrir un chat y no escribir no debe dejar una conversación vacía en la bandeja.
+    if (!ultimoMensaje) continue
     summaries.push({ conversation, otro, ultimoMensaje })
   }
   return summaries.sort((a, b) => b.conversation.actualizadoEn.localeCompare(a.conversation.actualizadoEn))

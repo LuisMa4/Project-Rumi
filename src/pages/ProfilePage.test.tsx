@@ -17,6 +17,30 @@ it('edita la biografía e instagram', async () => {
   expect(screen.getByRole('link', { name: '@alex' })).toHaveAttribute('href', 'https://instagram.com/alex')
 })
 
+it('codifica el usuario de Instagram en el enlace', async () => {
+  const { user } = await renderApp('/perfil', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Editar perfil' }))
+  await user.type(screen.getByLabelText('Instagram'), '@alex?ref=1')
+  await user.click(screen.getByRole('button', { name: 'Guardar' }))
+  expect(await screen.findByRole('link', { name: '@alex?ref=1' })).toHaveAttribute(
+    'href',
+    'https://instagram.com/alex%3Fref%3D1',
+  )
+})
+
+it('muestra intereses repetidos sin claves de React duplicadas', async () => {
+  const consoleError = vi.spyOn(console, 'error')
+  const { user } = await renderApp('/perfil', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Editar perfil' }))
+  await user.clear(screen.getByLabelText('Intereses'))
+  await user.type(screen.getByLabelText('Intereses'), 'Cocina, Cocina')
+  await user.click(screen.getByRole('button', { name: 'Guardar' }))
+  const tags = await screen.findByRole('list', { name: 'Intereses' })
+  expect(within(tags).getAllByRole('listitem')).toHaveLength(2)
+  expect(consoleError.mock.calls.flat().join(' ')).not.toContain('same key')
+  consoleError.mockRestore()
+})
+
 it('muestra error de biografía larga', async () => {
   const { user } = await renderApp('/perfil', { session: 'demo' })
   await user.click(await screen.findByRole('button', { name: 'Editar perfil' }))

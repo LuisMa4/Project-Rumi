@@ -104,7 +104,11 @@ export function ProfilePage() {
               {profile.instagram && (
                 <li>
                   <AtSign size={16} aria-hidden="true" />
-                  <a href={`https://instagram.com/${profile.instagram}`} target="_blank" rel="noreferrer">
+                  <a
+                    href={`https://instagram.com/${encodeURIComponent(profile.instagram)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     @{profile.instagram}
                   </a>
                 </li>
@@ -119,8 +123,9 @@ export function ProfilePage() {
 
             {profile.intereses.length > 0 && (
               <ul className={styles.tags} aria-label="Intereses">
-                {profile.intereses.map((i) => (
-                  <li key={i}>{i}</li>
+                {/* El índice en la clave: los intereses pueden repetirse. */}
+                {profile.intereses.map((interes, i) => (
+                  <li key={`${i}-${interes}`}>{interes}</li>
                 ))}
               </ul>
             )}

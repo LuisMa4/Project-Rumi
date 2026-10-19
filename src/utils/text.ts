@@ -1,6 +1,7 @@
 /** Minúsculas, sin espacios en los extremos y sin tildes: "Ríos" → "rios". */
 export function normalizeText(s: string): string {
-  return s.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+  // NFD separa la tilde de la letra; luego se quitan las marcas diacríticas combinables.
+  return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
 }
 
 /** Una búsqueda vacía coincide con todo. */

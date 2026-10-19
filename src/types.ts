@@ -110,5 +110,5 @@ export interface UserSearchFilters {
 export interface ConversationSummary {
   conversation: Conversation
   otro: PublicUser
-  ultimoMensaje?: Message
+  ultimoMensaje: Message
 }

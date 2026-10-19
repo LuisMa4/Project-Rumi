@@ -44,9 +44,8 @@ export function MessagesPage() {
                 <span className={styles.body}>
                   <span className={styles.name}>{otro.nombre}</span>
                   <span className={styles.preview}>
-                    {ultimoMensaje
-                      ? `${ultimoMensaje.autorId === userId ? 'Tú: ' : ''}${ultimoMensaje.texto}`
-                      : 'Escribe el primer mensaje'}
+                    {ultimoMensaje.autorId === userId ? 'Tú: ' : ''}
+                    {ultimoMensaje.texto}
                   </span>
                 </span>
                 <time dateTime={conversation.actualizadoEn} className={styles.time}>
