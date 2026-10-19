@@ -5,12 +5,26 @@ const PREFIX = 'rumi:'
 let useMemory = false
 const memory = new Map<string, string>()
 
+/** Pasa a memoria llevándose las claves de Rumi que todavía se puedan leer. */
+function switchToMemory(): void {
+  useMemory = true
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      const value = key?.startsWith(PREFIX) ? localStorage.getItem(key) : null
+      if (key && value !== null) memory.set(key.slice(PREFIX.length), value)
+    }
+  } catch {
+    // Si tampoco se puede leer, seguimos con lo que se haya copiado.
+  }
+}
+
 function getRaw(key: string): string | null {
   if (!useMemory) {
     try {
       return localStorage.getItem(PREFIX + key)
     } catch {
-      useMemory = true
+      switchToMemory()
     }
   }
   return memory.get(key) ?? null
@@ -22,7 +36,7 @@ function setRaw(key: string, value: string): void {
       localStorage.setItem(PREFIX + key, value)
       return
     } catch {
-      useMemory = true
+      switchToMemory()
     }
   }
   memory.set(key, value)
@@ -43,28 +57,32 @@ export function write<T>(key: string, value: T): void {
 }
 
 export function remove(key: string): void {
-  memory.delete(key)
-  if (useMemory) return
-  try {
-    localStorage.removeItem(PREFIX + key)
-  } catch {
-    useMemory = true
+  if (!useMemory) {
+    try {
+      localStorage.removeItem(PREFIX + key)
+      return
+    } catch {
+      switchToMemory()
+    }
   }
+  memory.delete(key)
 }
 
 export function clearAll(): void {
-  memory.clear()
-  if (useMemory) return
-  try {
-    const keys: string[] = []
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
-      if (key?.startsWith(PREFIX)) keys.push(key)
+  if (!useMemory) {
+    try {
+      const keys: string[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key?.startsWith(PREFIX)) keys.push(key)
+      }
+      keys.forEach((key) => localStorage.removeItem(key))
+      return
+    } catch {
+      switchToMemory()
     }
-    keys.forEach((key) => localStorage.removeItem(key))
-  } catch {
-    useMemory = true
   }
+  memory.clear()
 }
 
 export function newId(): string {
