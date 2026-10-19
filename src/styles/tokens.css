@@ -1,0 +1,29 @@
+/*
+ * Identidad visual de Rumi.
+ * Colores de origen: Pantone 16-1448 TCX Burnt Orange y 14-4514 TCX Atomizer
+ * (Documentos/Colores.jpeg). Ningún componente debe usar un hex fuera de este archivo.
+ */
+:root {
+  --naranja: #c86734;
+  --naranja-oscuro: #a9532a;
+  --naranja-suave: #fbede4;
+  --celeste: #9ad4e8;
+  --celeste-suave: #eaf6fa;
+  --celeste-tinta: #174559;
+  --blanco: #ffffff;
+  --tinta: #1f2a33;
+  --tinta-suave: #5b6b76;
+  --borde: #e3ecf0;
+  --error: #b42318;
+
+  --radio-tarjeta: 16px;
+  --radio-pildora: 999px;
+  --sombra-suave: 0 1px 2px rgb(31 42 51 / 0.06), 0 4px 16px rgb(31 42 51 / 0.05);
+
+  --fuente-titulos: 'Bricolage Grotesque', system-ui, sans-serif;
+  --fuente-texto: 'DM Sans', system-ui, sans-serif;
+
+  --ancho-contenido: 640px;
+  --alto-barra-inferior: 68px;
+  --ancho-menu-lateral: 240px;
+}
