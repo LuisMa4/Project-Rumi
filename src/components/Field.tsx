@@ -3,6 +3,8 @@ import styles from './Field.module.css'
 
 interface FieldProps {
   label: string
+  /** La etiqueta queda solo para lectores de pantalla. */
+  hideLabel?: boolean
   error?: string
   hint?: string
 }
@@ -15,6 +17,7 @@ function useFieldIds(id?: string) {
 
 function Shell({
   label,
+  hideLabel,
   error,
   hint,
   ids,
@@ -22,7 +25,7 @@ function Shell({
 }: FieldProps & { ids: ReturnType<typeof useFieldIds>; children: ReactNode }) {
   return (
     <div className={styles.field}>
-      <label htmlFor={ids.fieldId} className={styles.label}>
+      <label htmlFor={ids.fieldId} className={hideLabel ? 'sr-only' : styles.label}>
         {label}
       </label>
       {children}
@@ -50,10 +53,18 @@ function a11y(ids: ReturnType<typeof useFieldIds>, error?: string, hint?: string
   }
 }
 
-export function TextField({ label, error, hint, id, className, ...rest }: FieldProps & ComponentPropsWithRef<'input'>) {
+export function TextField({
+  label,
+  hideLabel,
+  error,
+  hint,
+  id,
+  className,
+  ...rest
+}: FieldProps & ComponentPropsWithRef<'input'>) {
   const ids = useFieldIds(id)
   return (
-    <Shell label={label} error={error} hint={hint} ids={ids}>
+    <Shell label={label} hideLabel={hideLabel} error={error} hint={hint} ids={ids}>
       <input className={`${styles.control} ${className ?? ''}`} {...a11y(ids, error, hint)} {...rest} />
     </Shell>
   )
@@ -61,6 +72,7 @@ export function TextField({ label, error, hint, id, className, ...rest }: FieldP
 
 export function TextAreaField({
   label,
+  hideLabel,
   error,
   hint,
   id,
@@ -69,7 +81,7 @@ export function TextAreaField({
 }: FieldProps & ComponentPropsWithRef<'textarea'>) {
   const ids = useFieldIds(id)
   return (
-    <Shell label={label} error={error} hint={hint} ids={ids}>
+    <Shell label={label} hideLabel={hideLabel} error={error} hint={hint} ids={ids}>
       <textarea
         className={`${styles.control} ${styles.area} ${className ?? ''}`}
         {...a11y(ids, error, hint)}
@@ -81,6 +93,7 @@ export function TextAreaField({
 
 export function SelectField({
   label,
+  hideLabel,
   error,
   hint,
   id,
@@ -89,7 +102,7 @@ export function SelectField({
 }: FieldProps & ComponentPropsWithRef<'select'>) {
   const ids = useFieldIds(id)
   return (
-    <Shell label={label} error={error} hint={hint} ids={ids}>
+    <Shell label={label} hideLabel={hideLabel} error={error} hint={hint} ids={ids}>
       <select className={`${styles.control} ${className ?? ''}`} {...a11y(ids, error, hint)} {...rest} />
     </Shell>
   )
