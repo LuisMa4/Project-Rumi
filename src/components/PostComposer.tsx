@@ -3,6 +3,7 @@ import { useFocusFirstInvalid } from '../hooks/useFocusFirstInvalid'
 import { ValidationError } from '../services/errors'
 import { create } from '../services/postsService'
 import { POST_TYPE_LABELS, type PostType, type PostWithAuthor } from '../types'
+import { Alert } from './Alert'
 import { Button } from './Button'
 import { SelectField, TextAreaField, TextField } from './Field'
 import styles from './PostComposer.module.css'
@@ -21,6 +22,7 @@ export function PostComposer({
   const [tipo, setTipo] = useState<PostType>('busco-roomie')
   const [form, setForm] = useState(EMPTY)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   // Plegado hasta que la persona empieza a escribir: así el feed se ve primero.
   const [expanded, setExpanded] = useState(false)
@@ -34,6 +36,7 @@ export function PostComposer({
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     setBusy(true)
+    setError(null)
     try {
       const post = await create(autorId, {
         tipo,
@@ -48,9 +51,12 @@ export function PostComposer({
       setForm((f) => ({ ...EMPTY, ciudad: f.ciudad }))
       setErrors({})
     } catch (err) {
-      if (!(err instanceof ValidationError)) throw err
-      setErrors(err.fieldErrors)
-      setExpanded(true)
+      if (err instanceof ValidationError) {
+        setErrors(err.fieldErrors)
+        setExpanded(true)
+      } else {
+        setError('No pudimos publicar. Intenta de nuevo.')
+      }
     } finally {
       setBusy(false)
     }
@@ -58,6 +64,7 @@ export function PostComposer({
 
   return (
     <form ref={formRef} className={styles.composer} onSubmit={onSubmit} noValidate aria-label="Nueva publicación">
+      {error && <Alert>{error}</Alert>}
       <TextAreaField
         ref={textareaRef}
         label="Publicación"

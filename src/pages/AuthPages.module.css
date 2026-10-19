@@ -15,14 +15,6 @@
   }
 }
 
-.alert {
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: var(--naranja-suave);
-  color: var(--error);
-  font-weight: 500;
-}
-
 .demo {
   display: flex;
   flex-direction: column;

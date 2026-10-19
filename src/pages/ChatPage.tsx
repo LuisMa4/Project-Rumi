@@ -1,6 +1,7 @@
 import { ArrowLeft, SendHorizontal } from 'lucide-react'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { Alert } from '../components/Alert'
 import { Avatar } from '../components/Avatar'
 import { Button } from '../components/Button'
 import { TextField } from '../components/Field'
@@ -28,6 +29,7 @@ export function ChatPage() {
   const state: State = loaded.status !== 'loading' && loaded.id === id ? loaded : { status: 'loading' }
   const [texto, setTexto] = useState('')
   const [error, setError] = useState<string>()
+  const [sendError, setSendError] = useState<string | null>(null)
   const endRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -65,13 +67,14 @@ export function ChatPage() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
+    setSendError(null)
     try {
       await send(id, userId!, texto)
       setTexto('')
       setError(undefined)
     } catch (err) {
       if (err instanceof ValidationError) setError(err.fieldErrors.texto)
-      else throw err
+      else setSendError('No pudimos enviar el mensaje. Intenta de nuevo.')
     }
   }
 
@@ -107,20 +110,23 @@ export function ChatPage() {
       <div ref={endRef} className={styles.end} />
 
       <form className={styles.composer} onSubmit={onSubmit} noValidate>
-        <TextField
-          label="Mensaje"
-          hideLabel
-          placeholder={`Escribe a ${otro.nombre.split(' ')[0]}`}
-          autoComplete="off"
-          maxLength={1000}
-          value={texto}
-          onChange={(e) => setTexto(e.target.value)}
-          error={error}
-        />
-        <Button type="submit" className={styles.send}>
-          <SendHorizontal size={18} aria-hidden="true" />
-          Enviar
-        </Button>
+        {sendError && <Alert>{sendError}</Alert>}
+        <div className={styles.composerRow}>
+          <TextField
+            label="Mensaje"
+            hideLabel
+            placeholder={`Escribe a ${otro.nombre.split(' ')[0]}`}
+            autoComplete="off"
+            maxLength={1000}
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            error={error}
+          />
+          <Button type="submit" className={styles.send}>
+            <SendHorizontal size={18} aria-hidden="true" />
+            Enviar
+          </Button>
+        </div>
       </form>
     </div>
   )

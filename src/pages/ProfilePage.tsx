@@ -1,6 +1,7 @@
 import { AtSign, CalendarDays, MapPin, Wallet } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Alert } from '../components/Alert'
 import { Avatar } from '../components/Avatar'
 import { Button } from '../components/Button'
 import { EmptyState } from '../components/EmptyState'
@@ -24,7 +25,7 @@ export function ProfilePage() {
   const { id } = useParams()
   const { user, refreshUser, logout, loginDemo } = useAuth()
   const navigate = useNavigate()
-  const startChat = useStartChat()
+  const { startChat, error: chatError } = useStartChat()
   const [editing, setEditing] = useState(false)
   const [version, setVersion] = useState(0)
   const [loaded, setLoaded] = useState<Loaded | null>(null)
@@ -123,6 +124,8 @@ export function ProfilePage() {
                 ))}
               </ul>
             )}
+
+            {chatError && <Alert>{chatError}</Alert>}
 
             <div className={styles.actions}>
               {propio ? (

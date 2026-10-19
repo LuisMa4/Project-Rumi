@@ -109,7 +109,7 @@
   position: sticky;
   bottom: calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 8px);
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   gap: 8px;
   padding: 10px;
   border: 1px solid var(--borde);
@@ -118,7 +118,13 @@
   box-shadow: var(--sombra-suave);
 }
 
-.composer > :first-child {
+.composerRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.composerRow > :first-child {
   flex: 1;
 }
 

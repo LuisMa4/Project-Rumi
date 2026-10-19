@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useStartChat } from '../hooks/useStartChat'
 import { POST_TYPE_LABELS, type PostWithAuthor } from '../types'
 import { formatDateRange, formatPrice, formatRelative } from '../utils/format'
+import { Alert } from './Alert'
 import { Avatar } from './Avatar'
 import { Button } from './Button'
 import styles from './PostCard.module.css'
@@ -16,7 +17,7 @@ export function PostCard({
   currentUserId: string
   showActions?: boolean
 }) {
-  const startChat = useStartChat()
+  const { startChat, error } = useStartChat()
   const { autor } = post
   const fechas = formatDateRange(post.fechaDesde, post.fechaHasta)
   const propio = autor.id === currentUserId
@@ -64,6 +65,8 @@ export function PostCard({
           </li>
         )}
       </ul>
+
+      {error && <Alert>{error}</Alert>}
 
       <footer className={styles.foot}>
         <time dateTime={post.creadoEn} className={styles.time}>

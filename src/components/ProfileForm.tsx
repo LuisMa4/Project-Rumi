@@ -3,6 +3,7 @@ import { useFocusFirstInvalid } from '../hooks/useFocusFirstInvalid'
 import { ValidationError } from '../services/errors'
 import { update } from '../services/usersService'
 import type { PublicUser } from '../types'
+import { Alert } from './Alert'
 import { Button } from './Button'
 import { SelectField, TextAreaField, TextField } from './Field'
 import styles from './ProfileForm.module.css'
@@ -33,6 +34,7 @@ export function ProfileForm({
     instagram: user.instagram ? `@${user.instagram}` : '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   useFocusFirstInvalid(formRef, errors)
@@ -47,6 +49,7 @@ export function ProfileForm({
     e.preventDefault()
     const presupuesto = form.presupuesto === '' ? undefined : Number(form.presupuesto)
     setBusy(true)
+    setError(null)
     try {
       await update(user.id, {
         ...form,
@@ -57,13 +60,14 @@ export function ProfileForm({
       onSaved()
     } catch (err) {
       if (err instanceof ValidationError) setErrors(err.fieldErrors)
-      else throw err
+      else setError('No pudimos guardar los cambios. Intenta de nuevo.')
       setBusy(false)
     }
   }
 
   return (
     <form ref={formRef} className={styles.form} onSubmit={onSubmit} noValidate aria-label="Editar perfil">
+      {error && <Alert>{error}</Alert>}
       <TextField label="Nombre completo" autoComplete="name" {...field('nombre')} />
       <div className={styles.row}>
         <TextField label="Universidad" {...field('universidad')} />

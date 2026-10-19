@@ -1,5 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { expect, it } from 'vitest'
+import { getUsers, setUsers } from '../services/db'
 import { MSG } from '../services/validation'
 import { renderApp } from '../test/renderApp'
 
@@ -18,6 +19,25 @@ it('publica y aparece primero', async () => {
   await user.click(screen.getByRole('button', { name: 'Publicar' }))
   await waitFor(() => expect(screen.getAllByRole('article')[0]).toHaveTextContent('Busco roomie en Madrid'))
   expect(screen.getByLabelText('Publicación')).toHaveValue('')
+})
+
+it('un error inesperado al publicar se muestra arriba del formulario', async () => {
+  const { user } = await renderApp('/', { session: 'demo' })
+  await user.type(await screen.findByLabelText('Publicación'), 'Hola')
+  await user.type(screen.getByLabelText('Ciudad'), 'Madrid')
+  setUsers([]) // La cuenta desaparece (por ejemplo, se restableció en otra pestaña).
+  await user.click(screen.getByRole('button', { name: 'Publicar' }))
+  const form = screen.getByRole('form', { name: 'Nueva publicación' })
+  expect(await within(form).findByRole('alert')).toHaveTextContent('No pudimos publicar. Intenta de nuevo.')
+  expect(screen.getByRole('button', { name: 'Publicar' })).toBeEnabled()
+})
+
+it('un error inesperado al abrir el chat se muestra en la publicación', async () => {
+  const { user } = await renderApp('/', { session: 'demo' })
+  const post = (await screen.findAllByRole('article')).find((a) => within(a).queryByText('Valeria Ríos'))!
+  setUsers(getUsers().filter((u) => u.id !== 'u-01'))
+  await user.click(within(post).getByRole('button', { name: 'Enviar mensaje' }))
+  expect(await within(post).findByRole('alert')).toHaveTextContent('No pudimos abrir la conversación. Intenta de nuevo.')
 })
 
 it('valida publicación vacía', async () => {

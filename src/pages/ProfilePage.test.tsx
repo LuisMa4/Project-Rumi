@@ -1,5 +1,6 @@
-import { cleanup, screen, waitFor } from '@testing-library/react'
+import { cleanup, screen, waitFor, within } from '@testing-library/react'
 import { expect, it, vi } from 'vitest'
+import { getUsers, setUsers } from '../services/db'
 import { create } from '../services/postsService'
 import { MSG } from '../services/validation'
 import { renderApp } from '../test/renderApp'
@@ -35,6 +36,26 @@ it('muestra error de presupuesto no positivo', async () => {
   await user.click(screen.getByRole('button', { name: 'Guardar' }))
   expect(await screen.findByLabelText('Presupuesto mensual')).toHaveAccessibleDescription(MSG.presupuesto)
   expect(screen.getByRole('button', { name: 'Guardar' })).toBeEnabled()
+})
+
+it('un error inesperado al guardar se muestra y deja reintentar', async () => {
+  const { user } = await renderApp('/perfil', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Editar perfil' }))
+  setUsers([])
+  await user.click(screen.getByRole('button', { name: 'Guardar' }))
+  const form = screen.getByRole('form', { name: 'Editar perfil' })
+  expect(await within(form).findByRole('alert')).toHaveTextContent('No pudimos guardar los cambios. Intenta de nuevo.')
+  expect(screen.getByRole('button', { name: 'Guardar' })).toBeEnabled()
+  expect(screen.getByRole('button', { name: 'Cancelar' })).toBeEnabled()
+})
+
+it('un error inesperado al abrir el chat desde un perfil se muestra', async () => {
+  const { user } = await renderApp('/perfil/u-01', { session: 'demo' })
+  await screen.findByRole('button', { name: 'Enviar mensaje' })
+  expect(screen.queryByRole('alert')).toBeNull()
+  setUsers(getUsers().filter((u) => u.id !== 'u-01'))
+  await user.click(screen.getByRole('button', { name: 'Enviar mensaje' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos abrir la conversación. Intenta de nuevo.')
 })
 
 it('cancelar descarta los cambios', async () => {

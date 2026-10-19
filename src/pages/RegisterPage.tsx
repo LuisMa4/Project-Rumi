@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Alert } from '../components/Alert'
 import { AuthShell } from '../components/AuthShell'
 import { Button } from '../components/Button'
 import { TextField } from '../components/Field'
@@ -61,11 +62,7 @@ export function RegisterPage() {
       }
     >
       <form ref={formRef} className={styles.form} onSubmit={onSubmit} noValidate>
-        {error && (
-          <p role="alert" className={styles.alert}>
-            {error}
-          </p>
-        )}
+        {error && <Alert>{error}</Alert>}
         <TextField label="Nombre completo" autoComplete="name" {...field('nombre')} />
         <TextField label="Correo" type="email" autoComplete="email" {...field('email')} />
         <div className={styles.row}>
