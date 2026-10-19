@@ -51,6 +51,8 @@ export function HomePage() {
         textareaRef={textareaRef}
         onCreated={(post) => {
           if (!tipo || post.tipo === tipo) setPosts((prev) => [post, ...(prev ?? [])])
+          // Con otro filtro activo la publicación no se vería: volvemos a "Todo", que la recarga.
+          else setTipo(null)
         }}
       />
 

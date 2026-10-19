@@ -21,6 +21,30 @@ it('publica y aparece primero', async () => {
   expect(screen.getByLabelText('Publicación')).toHaveValue('')
 })
 
+it('al publicar con otro filtro activo vuelve a "Todo" y muestra la publicación', async () => {
+  const { user } = await renderApp('/', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Lugar recomendado' }))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(3))
+  await user.type(screen.getByLabelText('Publicación'), 'Busco roomie en Lisboa')
+  await user.type(screen.getByLabelText('Ciudad'), 'Lisboa')
+  await user.click(screen.getByRole('button', { name: 'Publicar' }))
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Todo' })).toHaveAttribute('aria-pressed', 'true'))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(13))
+  expect(screen.getAllByRole('article')[0]).toHaveTextContent('Busco roomie en Lisboa')
+})
+
+it('al publicar con el mismo filtro activo lo mantiene', async () => {
+  const { user } = await renderApp('/', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Busco roomie' }))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(3))
+  await user.type(screen.getByLabelText('Publicación'), 'Busco roomie en Lisboa')
+  await user.type(screen.getByLabelText('Ciudad'), 'Lisboa')
+  await user.click(screen.getByRole('button', { name: 'Publicar' }))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(4))
+  expect(screen.getAllByRole('article')[0]).toHaveTextContent('Busco roomie en Lisboa')
+  expect(screen.getByRole('button', { name: 'Busco roomie' })).toHaveAttribute('aria-pressed', 'true')
+})
+
 it('un error inesperado al publicar se muestra arriba del formulario', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
   await user.type(await screen.findByLabelText('Publicación'), 'Hola')
