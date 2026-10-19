@@ -94,7 +94,13 @@ export function PostComposer({
             <TextField label="Zona" placeholder="Moncloa" value={form.zona} onChange={set('zona')} />
           )}
           <TextField label="Desde" type="date" value={form.fechaDesde} onChange={set('fechaDesde')} />
-          <TextField label="Hasta" type="date" value={form.fechaHasta} onChange={set('fechaHasta')} />
+          <TextField
+            label="Hasta"
+            type="date"
+            value={form.fechaHasta}
+            onChange={set('fechaHasta')}
+            error={errors.fechaHasta}
+          />
         </div>
       )}
       <div className={styles.footer}>

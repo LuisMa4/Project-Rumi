@@ -26,6 +26,16 @@ it('valida publicación vacía', async () => {
   expect(await screen.findByLabelText('Publicación')).toHaveAccessibleDescription(MSG.postVacio)
 })
 
+it('valida que "Hasta" no sea anterior a "Desde"', async () => {
+  const { user } = await renderApp('/', { session: 'demo' })
+  await user.type(await screen.findByLabelText('Publicación'), 'Viaje a Sintra')
+  await user.type(screen.getByLabelText('Ciudad'), 'Lisboa')
+  await user.type(screen.getByLabelText('Desde'), '2027-03-10')
+  await user.type(screen.getByLabelText('Hasta'), '2027-03-09')
+  await user.click(screen.getByRole('button', { name: 'Publicar' }))
+  expect(await screen.findByLabelText('Hasta')).toHaveAccessibleDescription(MSG.fechasPost)
+})
+
 it('al fallar la validación, el foco va al cuadro de publicación', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
   await user.click(await screen.findByRole('button', { name: 'Publicar' }))

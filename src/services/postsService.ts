@@ -45,6 +45,9 @@ export async function create(autorId: string, input: NewPostInput): Promise<Post
   else if (texto.length > 500) errors.texto = MSG.postLargo
   if (ciudad === '') errors.ciudad = MSG.requerido
   if (conPrecio && input.precio !== undefined && !(input.precio > 0)) errors.precio = MSG.precio
+  if (input.fechaDesde && input.fechaHasta && input.fechaHasta < input.fechaDesde) {
+    errors.fechaHasta = MSG.fechasPost
+  }
   if (Object.keys(errors).length > 0) throw new ValidationError(errors)
 
   const post: Post = {

@@ -49,6 +49,15 @@ describe('create', () => {
     ).rejects.toMatchObject({ fieldErrors: { precio: MSG.precio } })
   })
 
+  it('rechaza "Hasta" anterior a "Desde", pero acepta el mismo día', async () => {
+    const base = { tipo: 'viaje', texto: 'x', ciudad: 'X' } as const
+    await expect(
+      create('u-demo', { ...base, fechaDesde: '2027-03-10', fechaHasta: '2027-03-09' }),
+    ).rejects.toMatchObject({ fieldErrors: { fechaHasta: MSG.fechasPost } })
+    const p = await create('u-demo', { ...base, fechaDesde: '2027-03-10', fechaHasta: '2027-03-10' })
+    expect(p.fechaHasta).toBe('2027-03-10')
+  })
+
   it('descarta precio y zona en tipos que no los usan', async () => {
     const p = await create('u-demo', { tipo: 'lugar', texto: 'x', ciudad: 'X', precio: 100, zona: 'Centro' })
     expect(p.precio).toBeUndefined()

@@ -46,10 +46,6 @@ export function ProfileForm({
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     const presupuesto = form.presupuesto === '' ? undefined : Number(form.presupuesto)
-    if (presupuesto !== undefined && !(presupuesto > 0)) {
-      setErrors({ presupuesto: 'El presupuesto debe ser mayor que 0' })
-      return
-    }
     setBusy(true)
     try {
       await update(user.id, {

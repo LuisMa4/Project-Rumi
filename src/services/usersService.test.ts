@@ -58,6 +58,15 @@ describe('update', () => {
     })
   })
 
+  it('valida que el presupuesto sea mayor que 0', async () => {
+    for (const presupuesto of [0, -5, Number.NaN]) {
+      await expect(update('u-demo', { presupuesto })).rejects.toMatchObject({
+        fieldErrors: { presupuesto: MSG.presupuesto },
+      })
+    }
+    expect((await getById('u-demo')).presupuesto).toBe(500)
+  })
+
   it('falla con un id inexistente', async () => {
     await expect(update('nope', { bio: 'x' })).rejects.toBeInstanceOf(NotFoundError)
   })
