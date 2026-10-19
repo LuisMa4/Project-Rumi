@@ -85,4 +85,11 @@ describe('send', () => {
     expect(cb).toHaveBeenCalledTimes(1)
     expect((await getMessages('c-01')).at(-1)!.autorId).toBe('u-01')
   })
+
+  it('descarta la respuesta pendiente si se restablece la demo', async () => {
+    await send('c-01', 'u-demo', 'hola')
+    await resetDemo()
+    await vi.advanceTimersByTimeAsync(2500)
+    expect((await getMessages('c-01')).map((m) => m.id)).toEqual(['c-01-m1', 'c-01-m2', 'c-01-m3'])
+  })
 })

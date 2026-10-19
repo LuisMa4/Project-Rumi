@@ -96,6 +96,8 @@ export async function send(conversacionId: string, autorId: string, texto: strin
   // Solo para la demo: el otro estudiante responde a los 1.5–2.5 s.
   const replier = otherId(conversation, autorId)
   setTimeout(() => {
+    // Si el mensaje ya no existe (se restablecieron los datos), no hay a quién responder.
+    if (!getAllMessages().some((m) => m.id === message.id)) return
     const reply = AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)]
     appendMessage(conversation, replier, reply)
   }, 1500 + Math.random() * 1000)
