@@ -26,6 +26,12 @@ it('valida publicación vacía', async () => {
   expect(await screen.findByLabelText('Publicación')).toHaveAccessibleDescription(MSG.postVacio)
 })
 
+it('al fallar la validación, el foco va al cuadro de publicación', async () => {
+  const { user } = await renderApp('/', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Publicar' }))
+  await waitFor(() => expect(screen.getByLabelText('Publicación')).toHaveFocus())
+})
+
 it('no ofrece mensaje en publicaciones propias', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
   await user.type(await screen.findByLabelText('Publicación'), 'Mía')

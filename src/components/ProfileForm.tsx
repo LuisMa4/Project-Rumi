@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
+import { useFocusFirstInvalid } from '../hooks/useFocusFirstInvalid'
 import { ValidationError } from '../services/errors'
 import { update } from '../services/usersService'
 import type { PublicUser } from '../types'
@@ -33,6 +34,8 @@ export function ProfileForm({
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [busy, setBusy] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+  useFocusFirstInvalid(formRef, errors)
 
   const field = (key: keyof typeof form) => ({
     value: form[key],
@@ -64,7 +67,7 @@ export function ProfileForm({
   }
 
   return (
-    <form className={styles.form} onSubmit={onSubmit} noValidate aria-label="Editar perfil">
+    <form ref={formRef} className={styles.form} onSubmit={onSubmit} noValidate aria-label="Editar perfil">
       <TextField label="Nombre completo" autoComplete="name" {...field('nombre')} />
       <div className={styles.row}>
         <TextField label="Universidad" {...field('universidad')} />

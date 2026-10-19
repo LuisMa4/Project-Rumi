@@ -22,7 +22,7 @@ La app se ve como una aplicación en el celular (barra de navegación inferior) 
 
 ## Cómo correrlo
 
-Requisitos: [Node.js](https://nodejs.org) 22 o superior (o 20.19+).
+Requisitos: [Node.js](https://nodejs.org) 24.15 o superior (o 22.22+), que es lo que piden Vitest y jsdom.
 
 ```bash
 npm install
@@ -30,6 +30,8 @@ npm run dev
 ```
 
 Abre la URL que muestra la terminal (normalmente http://localhost:5173).
+
+Para probarlo en tu celular, conectado a la misma red Wi-Fi, corre `npm run dev -- --host` y abre la dirección `Network` que aparece (por ejemplo, `http://192.168.1.20:5173`).
 
 Otros comandos:
 
@@ -48,7 +50,7 @@ Otros comandos:
 
 También puedes usar el botón **Entrar con cuenta demo** en la pantalla de inicio de sesión. Entras como Alex Romero, estudiante de la Universidad de Lima que se va a Madrid.
 
-> Es una demo: los datos se guardan solo en tu navegador (`localStorage`). Las contraseñas se guardan cifradas, pero **no uses contraseñas reales**.
+> Es una demo: los datos se guardan solo en tu navegador (`localStorage`). Las contraseñas se guardan como hash (SHA-256), no en texto plano, pero **no uses contraseñas reales**.
 
 Para volver a los datos de ejemplo, entra a **Perfil → Restablecer datos de demo**.
 

@@ -56,6 +56,16 @@ describe('login', () => {
     expect(await getCurrentUser()).toBeNull()
   })
 
+  it('datos con forma inesperada no rompen la sesión', async () => {
+    localStorage.setItem('rumi:users', '{}')
+    localStorage.setItem('rumi:session', JSON.stringify(DEMO_USER_ID))
+    expect(await getCurrentUser()).toBeNull()
+    localStorage.setItem('rumi:users', 'null')
+    expect(getUsers()).toEqual([])
+    localStorage.setItem('rumi:session', '42')
+    expect(getSession()).toBeNull()
+  })
+
   it('una sesión de un usuario inexistente se descarta', async () => {
     setSession('u-borrado')
     expect(await getCurrentUser()).toBeNull()

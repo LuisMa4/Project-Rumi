@@ -1,4 +1,5 @@
-import { useState, type FormEvent, type RefObject } from 'react'
+import { useRef, useState, type FormEvent, type RefObject } from 'react'
+import { useFocusFirstInvalid } from '../hooks/useFocusFirstInvalid'
 import { ValidationError } from '../services/errors'
 import { create } from '../services/postsService'
 import { POST_TYPE_LABELS, type PostType, type PostWithAuthor } from '../types'
@@ -23,6 +24,8 @@ export function PostComposer({
   const [busy, setBusy] = useState(false)
   // Plegado hasta que la persona empieza a escribir: así el feed se ve primero.
   const [expanded, setExpanded] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+  useFocusFirstInvalid(formRef, errors)
 
   const conPrecio = tipo === 'busco-roomie' || tipo === 'ofrezco-cuarto'
   const set = (key: keyof typeof EMPTY) => (e: { target: { value: string } }) =>
@@ -54,7 +57,7 @@ export function PostComposer({
   }
 
   return (
-    <form className={styles.composer} onSubmit={onSubmit} noValidate aria-label="Nueva publicación">
+    <form ref={formRef} className={styles.composer} onSubmit={onSubmit} noValidate aria-label="Nueva publicación">
       <TextAreaField
         ref={textareaRef}
         label="Publicación"

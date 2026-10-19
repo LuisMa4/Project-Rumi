@@ -100,6 +100,11 @@
   font-size: 0.75rem;
 }
 
+/* Al saltar al último mensaje, deja espacio para la caja de texto fija (y la barra en el celular). */
+.end {
+  scroll-margin-bottom: calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 112px);
+}
+
 .composer {
   position: sticky;
   bottom: calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 8px);
@@ -122,6 +127,10 @@
 }
 
 @media (min-width: 768px) {
+  .end {
+    scroll-margin-bottom: 112px;
+  }
+
   .composer {
     bottom: 16px;
   }

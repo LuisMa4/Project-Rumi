@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { expect, it } from 'vitest'
 import { getCurrentUser } from '../services/authService'
 import { MSG } from '../services/validation'
@@ -10,6 +10,12 @@ it('muestra errores por campo', async () => {
   await user.click(screen.getByRole('button', { name: 'Crear cuenta' }))
   expect(await screen.findByLabelText('Nombre completo')).toHaveAccessibleDescription(MSG.requerido)
   expect(screen.getByLabelText('Contraseña')).toHaveAccessibleDescription(MSG.password)
+})
+
+it('lleva el foco al primer campo con error', async () => {
+  const { user } = await renderApp('/registro')
+  await user.click(await screen.findByRole('button', { name: 'Crear cuenta' }))
+  await waitFor(() => expect(screen.getByLabelText('Nombre completo')).toHaveFocus())
 })
 
 it('registra y entra', async () => {

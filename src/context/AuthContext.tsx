@@ -9,11 +9,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false
-    authService.getCurrentUser().then((current) => {
-      if (cancelled) return
-      setUser(current)
-      setLoading(false)
-    })
+    authService
+      .getCurrentUser()
+      .catch(() => null) // Datos ilegibles: se entra como sin sesión.
+      .then((current) => {
+        if (cancelled) return
+        setUser(current)
+        setLoading(false)
+      })
     return () => {
       cancelled = true
     }

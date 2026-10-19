@@ -104,7 +104,7 @@ export function ChatPage() {
           </li>
         ))}
       </ol>
-      <div ref={endRef} />
+      <div ref={endRef} className={styles.end} />
 
       <form className={styles.composer} onSubmit={onSubmit} noValidate>
         <TextField

@@ -1,4 +1,4 @@
-import { cleanup, screen } from '@testing-library/react'
+import { cleanup, screen, waitFor } from '@testing-library/react'
 import { expect, it, vi } from 'vitest'
 import { create } from '../services/postsService'
 import { MSG } from '../services/validation'
@@ -24,6 +24,7 @@ it('muestra error de biografía larga', async () => {
   await user.paste('a'.repeat(301))
   await user.click(screen.getByRole('button', { name: 'Guardar' }))
   expect(await screen.findByLabelText('Biografía')).toHaveAccessibleDescription(MSG.bio)
+  await waitFor(() => expect(screen.getByLabelText('Biografía')).toHaveFocus())
 })
 
 it('cancelar descarta los cambios', async () => {

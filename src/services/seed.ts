@@ -5,7 +5,7 @@ import { hashPassword } from './crypto'
 import { setConversations, setMessages, setPosts, setSession, setUsers } from './db'
 import { clearAll, read, write } from './storage'
 
-export const SEED_VERSION = '1'
+export const SEED_VERSION = '2'
 export const DEMO_USER_ID = 'u-demo'
 export const DEMO_EMAIL = 'demo@rumi.app'
 export const DEMO_PASSWORD = 'rumidemo123'

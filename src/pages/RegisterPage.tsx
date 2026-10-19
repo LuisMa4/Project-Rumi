@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthShell } from '../components/AuthShell'
 import { Button } from '../components/Button'
 import { TextField } from '../components/Field'
 import { useAuth } from '../context/useAuth'
+import { useFocusFirstInvalid } from '../hooks/useFocusFirstInvalid'
 import { ValidationError } from '../services/errors'
 import type { RegisterInput } from '../types'
 import styles from './AuthPages.module.css'
@@ -27,6 +28,8 @@ export function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+  useFocusFirstInvalid(formRef, errors)
 
   const field = (key: keyof RegisterInput) => ({
     value: form[key],
@@ -57,7 +60,7 @@ export function RegisterPage() {
         </>
       }
     >
-      <form className={styles.form} onSubmit={onSubmit} noValidate>
+      <form ref={formRef} className={styles.form} onSubmit={onSubmit} noValidate>
         {error && (
           <p role="alert" className={styles.alert}>
             {error}
