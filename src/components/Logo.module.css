@@ -35,3 +35,8 @@
   background: var(--celeste);
   transform: translateX(-50%);
 }
+
+/* Sobre fondo celeste, el punto va en blanco para que se vea. */
+.dotBlanco {
+  background: var(--blanco);
+}

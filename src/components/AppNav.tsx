@@ -7,7 +7,7 @@ const ITEMS: { to: string; label: string; icon: LucideIcon; end?: boolean }[] = 
   { to: '/', label: 'Inicio', icon: House, end: true },
   { to: '/buscar', label: 'Buscar', icon: Search },
   { to: '/mensajes', label: 'Mensajes', icon: MessageCircle },
-  { to: '/perfil', label: 'Perfil', icon: User },
+  { to: '/perfil', label: 'Perfil', icon: User, end: true },
 ]
 
 function Item({ to, label, icon: Icon, end }: (typeof ITEMS)[number]) {

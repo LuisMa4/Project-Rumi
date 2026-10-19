@@ -41,6 +41,14 @@ it('?publicar=1 enfoca el cuadro', async () => {
   await waitFor(() => expect(screen.getByLabelText('Publicación')).toHaveFocus())
 })
 
+it('el formulario se despliega al escribir', async () => {
+  const { user } = await renderApp('/', { session: 'demo' })
+  await screen.findAllByRole('article')
+  expect(screen.queryByLabelText('Ciudad')).toBeNull()
+  await user.click(screen.getByLabelText('Publicación'))
+  expect(screen.getByLabelText('Ciudad')).toBeInTheDocument()
+})
+
 it('muestra precio y zona en los alquileres', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
   await user.click(await screen.findByRole('button', { name: 'Ofrezco cuarto' }))

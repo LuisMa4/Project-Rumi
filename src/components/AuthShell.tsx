@@ -9,7 +9,7 @@ export function AuthShell({ title, children, footer }: { title: string; children
   return (
     <div className={styles.page}>
       <section className={styles.welcome}>
-        <Logo size="lg" />
+        <Logo size="lg" dot="blanco" />
         <p className={styles.tagline}>Encuentra roomie para tu intercambio</p>
         <p className={styles.lead}>
           Conecta con estudiantes que viajan a tu misma ciudad, compara alquileres y llega con todo listo.

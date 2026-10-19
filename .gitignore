@@ -28,3 +28,6 @@ coverage
 
 # Espacio de trabajo de los planes
 .superpowers/
+
+# Configuración local de Claude Code
+.claude/

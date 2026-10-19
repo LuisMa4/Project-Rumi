@@ -20,6 +20,13 @@ it('marca la sección activa y navega', async () => {
   expect(await screen.findByRole('heading', { name: 'Buscar' })).toBeInTheDocument()
 })
 
+it('el perfil de otra persona no marca "Perfil" como activo', async () => {
+  await renderApp('/perfil/u-01', { session: 'demo' })
+  const nav = await screen.findByRole('navigation', { name: 'Principal' })
+  await screen.findByRole('heading', { name: 'Valeria Ríos' })
+  expect(within(nav).getByRole('link', { name: 'Perfil' })).not.toHaveAttribute('aria-current')
+})
+
 it('una ruta desconocida lleva a inicio', async () => {
   await renderApp('/xyz', { session: 'demo' })
   expect(await screen.findByRole('heading', { name: 'Inicio' })).toBeInTheDocument()

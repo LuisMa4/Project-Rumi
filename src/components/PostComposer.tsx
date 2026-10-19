@@ -21,6 +21,8 @@ export function PostComposer({
   const [form, setForm] = useState(EMPTY)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [busy, setBusy] = useState(false)
+  // Plegado hasta que la persona empieza a escribir: así el feed se ve primero.
+  const [expanded, setExpanded] = useState(false)
 
   const conPrecio = tipo === 'busco-roomie' || tipo === 'ofrezco-cuarto'
   const set = (key: keyof typeof EMPTY) => (e: { target: { value: string } }) =>
@@ -43,8 +45,9 @@ export function PostComposer({
       setForm((f) => ({ ...EMPTY, ciudad: f.ciudad }))
       setErrors({})
     } catch (err) {
-      if (err instanceof ValidationError) setErrors(err.fieldErrors)
-      else throw err
+      if (!(err instanceof ValidationError)) throw err
+      setErrors(err.fieldErrors)
+      setExpanded(true)
     } finally {
       setBusy(false)
     }
@@ -59,35 +62,38 @@ export function PostComposer({
         maxLength={500}
         value={form.texto}
         onChange={set('texto')}
+        onFocus={() => setExpanded(true)}
         error={errors.texto}
       />
-      <div className={styles.grid}>
-        <SelectField label="Tipo" value={tipo} onChange={(e) => setTipo(e.target.value as PostType)}>
-          {Object.entries(POST_TYPE_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </SelectField>
-        <TextField label="Ciudad" placeholder="Madrid" value={form.ciudad} onChange={set('ciudad')} error={errors.ciudad} />
-        {conPrecio && (
-          <TextField
-            label="Precio mensual"
-            type="number"
-            min={1}
-            inputMode="numeric"
-            placeholder="450"
-            value={form.precio}
-            onChange={set('precio')}
-            error={errors.precio}
-          />
-        )}
-        {tipo === 'ofrezco-cuarto' && (
-          <TextField label="Zona" placeholder="Moncloa" value={form.zona} onChange={set('zona')} />
-        )}
-        <TextField label="Desde" type="date" value={form.fechaDesde} onChange={set('fechaDesde')} />
-        <TextField label="Hasta" type="date" value={form.fechaHasta} onChange={set('fechaHasta')} />
-      </div>
+      {expanded && (
+        <div className={styles.grid}>
+          <SelectField label="Tipo" value={tipo} onChange={(e) => setTipo(e.target.value as PostType)}>
+            {Object.entries(POST_TYPE_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </SelectField>
+          <TextField label="Ciudad" placeholder="Madrid" value={form.ciudad} onChange={set('ciudad')} error={errors.ciudad} />
+          {conPrecio && (
+            <TextField
+              label="Precio mensual"
+              type="number"
+              min={1}
+              inputMode="numeric"
+              placeholder="450"
+              value={form.precio}
+              onChange={set('precio')}
+              error={errors.precio}
+            />
+          )}
+          {tipo === 'ofrezco-cuarto' && (
+            <TextField label="Zona" placeholder="Moncloa" value={form.zona} onChange={set('zona')} />
+          )}
+          <TextField label="Desde" type="date" value={form.fechaDesde} onChange={set('fechaDesde')} />
+          <TextField label="Hasta" type="date" value={form.fechaHasta} onChange={set('fechaHasta')} />
+        </div>
+      )}
       <div className={styles.footer}>
         <Button type="submit" disabled={busy}>
           Publicar
