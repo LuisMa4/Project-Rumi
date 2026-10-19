@@ -1,0 +1,22 @@
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--borde);
+  border-top: 4px solid var(--naranja);
+  border-radius: var(--radio-tarjeta);
+  background: var(--blanco);
+  scroll-margin-top: 72px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
