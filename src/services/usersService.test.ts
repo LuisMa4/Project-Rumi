@@ -45,8 +45,8 @@ describe('search', () => {
 
 describe('update', () => {
   it('actualiza y quita la @ de instagram', async () => {
-    await update('u-demo', { bio: 'Hola', instagram: '@cami.t' })
-    expect(await getById('u-demo')).toMatchObject({ bio: 'Hola', instagram: 'cami.t' })
+    await update('u-demo', { bio: 'Hola', instagram: '@alex.r' })
+    expect(await getById('u-demo')).toMatchObject({ bio: 'Hola', instagram: 'alex.r' })
   })
 
   it('valida bio, nombre y fechas combinadas', async () => {

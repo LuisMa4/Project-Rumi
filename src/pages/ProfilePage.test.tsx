@@ -6,14 +6,14 @@ import { renderApp } from '../test/renderApp'
 
 it('edita la biografía e instagram', async () => {
   const { user } = await renderApp('/perfil', { session: 'demo' })
-  expect(await screen.findByRole('heading', { name: 'Camila Torres' })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Alex Romero' })).toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Editar perfil' }))
   await user.clear(screen.getByLabelText('Biografía'))
   await user.type(screen.getByLabelText('Biografía'), 'Me gusta cocinar')
-  await user.type(screen.getByLabelText('Instagram'), '@cami')
+  await user.type(screen.getByLabelText('Instagram'), '@alex')
   await user.click(screen.getByRole('button', { name: 'Guardar' }))
   expect(await screen.findByText('Me gusta cocinar')).toBeInTheDocument()
-  expect(screen.getByRole('link', { name: '@cami' })).toHaveAttribute('href', 'https://instagram.com/cami')
+  expect(screen.getByRole('link', { name: '@alex' })).toHaveAttribute('href', 'https://instagram.com/alex')
 })
 
 it('muestra error de biografía larga', async () => {
@@ -32,7 +32,7 @@ it('cancelar descarta los cambios', async () => {
   await user.clear(screen.getByLabelText('Nombre completo'))
   await user.type(screen.getByLabelText('Nombre completo'), 'Otra Persona')
   await user.click(screen.getByRole('button', { name: 'Cancelar' }))
-  expect(await screen.findByRole('heading', { name: 'Camila Torres' })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Alex Romero' })).toBeInTheDocument()
 })
 
 it('perfil ajeno, propio por id y no encontrado', async () => {

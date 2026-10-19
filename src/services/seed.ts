@@ -24,7 +24,7 @@ type SeedUser = Omit<User, 'passwordHash' | 'creadoEn'>
 const USERS: SeedUser[] = [
   {
     id: DEMO_USER_ID,
-    nombre: 'Camila Torres',
+    nombre: 'Alex Romero',
     email: DEMO_EMAIL,
     universidad: 'Universidad de Lima',
     paisOrigen: 'Perú',
@@ -32,7 +32,7 @@ const USERS: SeedUser[] = [
     paisDestino: 'España',
     fechaLlegada: '2027-02-01',
     fechaSalida: '2027-07-15',
-    bio: 'Estudio Administración y me voy de intercambio a Madrid. Busco roomie tranquila para compartir piso.',
+    bio: 'Estudio Administración y me voy de intercambio a Madrid. Busco roomie para compartir piso cerca de la universidad.',
     intereses: ['Cocina', 'Museos', 'Running'],
     presupuesto: 500,
     moneda: 'EUR',
@@ -290,9 +290,9 @@ const CONVERSATIONS: { id: string; con: string; mensajes: SeedMessage[] }[] = [
     id: 'c-01',
     con: 'u-01',
     mensajes: [
-      { autorId: 'u-01', texto: '¡Hola Camila! Vi que también vas a Madrid en febrero.', horas: 3 },
+      { autorId: 'u-01', texto: '¡Hola Alex! Vi que también vas a Madrid en febrero.', horas: 3 },
       { autorId: DEMO_USER_ID, texto: '¡Hola Valeria! Sí, llego el 1 de febrero. ¿Ya tienes piso?', horas: 2.8 },
-      { autorId: 'u-01', texto: 'Todavía no, estoy mirando por Moncloa. ¿Te animas a buscar juntas?', horas: 2.5 },
+      { autorId: 'u-01', texto: 'Todavía no, estoy mirando por Moncloa. ¿Te animas a buscar piso conmigo?', horas: 2.5 },
     ],
   },
   {

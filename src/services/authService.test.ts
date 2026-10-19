@@ -51,7 +51,7 @@ describe('login', () => {
   })
 
   it('loginDemo y logout', async () => {
-    expect((await loginDemo()).nombre).toBe('Camila Torres')
+    expect((await loginDemo()).nombre).toBe('Alex Romero')
     await logout()
     expect(await getCurrentUser()).toBeNull()
   })

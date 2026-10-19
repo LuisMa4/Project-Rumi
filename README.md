@@ -46,7 +46,7 @@ Otros comandos:
 |---|---|
 | `demo@rumi.app` | `rumidemo123` |
 
-También puedes usar el botón **Entrar con cuenta demo** en la pantalla de inicio de sesión. Entras como Camila Torres, estudiante de la Universidad de Lima que se va a Madrid.
+También puedes usar el botón **Entrar con cuenta demo** en la pantalla de inicio de sesión. Entras como Alex Romero, estudiante de la Universidad de Lima que se va a Madrid.
 
 > Es una demo: los datos se guardan solo en tu navegador (`localStorage`). Las contraseñas se guardan cifradas, pero **no uses contraseñas reales**.
 

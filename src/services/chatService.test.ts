@@ -25,7 +25,7 @@ describe('conversaciones', () => {
   it('lista conversaciones con el otro y el último mensaje', async () => {
     const cs = await listConversations('u-demo')
     expect(cs.map((c) => c.otro.id)).toEqual(['u-01', 'u-04'])
-    expect(cs[0].ultimoMensaje?.texto).toContain('buscar juntas')
+    expect(cs[0].ultimoMensaje?.texto).toContain('buscar piso conmigo')
   })
 
   it('no duplica conversaciones', async () => {
