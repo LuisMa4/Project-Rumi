@@ -30,6 +30,15 @@ describe('storage', () => {
     expect(read('session', null)).toBe('u-1')
   })
 
+  it('usa memoria si getItem lanza error', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('SecurityError')
+    })
+    expect(read('session', 'sin sesión')).toBe('sin sesión')
+    write('session', 'u-1')
+    expect(read('session', null)).toBe('u-1')
+  })
+
   it('al pasar a memoria a mitad de sesión conserva lo ya guardado', () => {
     write('users', [1])
     localStorage.setItem('otra-app', 'x')

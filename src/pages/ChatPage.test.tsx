@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { expect, it } from 'vitest'
 import { setConversations } from '../services/db'
+import { MSG } from '../services/validation'
 import { renderApp } from '../test/renderApp'
 
 it('muestra el historial, envía y recibe la respuesta automática', async () => {
@@ -27,6 +28,22 @@ it('los mensajes de días anteriores muestran el día además de la hora', async
   await renderApp('/mensajes/c-02', { session: 'demo' })
   const log = await screen.findByRole('log', { name: 'Mensajes' })
   await waitFor(() => expect(within(log).getAllByText(/^(ayer|\d{1,2} [a-z]{3}), \d{2}:\d{2}$/)).toHaveLength(2))
+})
+
+it('no envía un mensaje con solo espacios', async () => {
+  const { user } = await renderApp('/mensajes/c-01', { session: 'demo' })
+  const log = await screen.findByRole('log', { name: 'Mensajes' })
+  await waitFor(() => expect(within(log).getAllByRole('listitem')).toHaveLength(3))
+  await user.type(screen.getByLabelText('Mensaje'), '   ')
+  await user.click(screen.getByRole('button', { name: 'Enviar' }))
+  expect(await screen.findByLabelText('Mensaje')).toHaveAccessibleDescription(MSG.mensajeVacio)
+  expect(within(log).getAllByRole('listitem')).toHaveLength(3)
+})
+
+it('la conversación de otras personas muestra no encontrado', async () => {
+  await renderApp('/mensajes/c-01', { session: 'u-05' })
+  expect(await screen.findByText('No encontramos este perfil o conversación')).toBeInTheDocument()
+  expect(screen.queryByText(/buscar piso conmigo/)).toBeNull()
 })
 
 it('id inválido muestra no encontrado', async () => {
