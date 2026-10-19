@@ -95,16 +95,19 @@ export function ChatPage() {
         </div>
       </header>
 
-      <ol aria-label="Mensajes" className={styles.thread}>
-        {messages.map((m) => (
-          <li key={m.id} className={m.autorId === userId ? styles.mine : styles.theirs}>
-            <p className={styles.bubble}>{m.texto}</p>
-            <time dateTime={m.enviadoEn} className={styles.time}>
-              {formatMessageTime(m.enviadoEn)}
-            </time>
-          </li>
-        ))}
-      </ol>
+      {/* role="log": los lectores de pantalla anuncian los mensajes que llegan. */}
+      <div role="log" aria-label="Mensajes">
+        <ol className={styles.thread}>
+          {messages.map((m) => (
+            <li key={m.id} className={m.autorId === userId ? styles.mine : styles.theirs}>
+              <p className={styles.bubble}>{m.texto}</p>
+              <time dateTime={m.enviadoEn} className={styles.time}>
+                {formatMessageTime(m.enviadoEn)}
+              </time>
+            </li>
+          ))}
+        </ol>
+      </div>
       <div ref={endRef} className={styles.end} />
 
       <form className={styles.composer} onSubmit={onSubmit} noValidate>

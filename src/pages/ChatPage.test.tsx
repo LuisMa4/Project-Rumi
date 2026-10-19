@@ -5,13 +5,13 @@ import { renderApp } from '../test/renderApp'
 
 it('muestra el historial, envía y recibe la respuesta automática', async () => {
   const { user } = await renderApp('/mensajes/c-01', { session: 'demo' })
-  const list = await screen.findByRole('list', { name: 'Mensajes' })
-  await waitFor(() => expect(within(list).getAllByRole('listitem')).toHaveLength(3))
+  const log = await screen.findByRole('log', { name: 'Mensajes' })
+  await waitFor(() => expect(within(log).getAllByRole('listitem')).toHaveLength(3))
   await user.type(screen.getByLabelText('Mensaje'), 'Hola Valeria')
   await user.click(screen.getByRole('button', { name: 'Enviar' }))
-  expect(await within(list).findByText('Hola Valeria')).toBeInTheDocument()
+  expect(await within(log).findByText('Hola Valeria')).toBeInTheDocument()
   expect(screen.getByLabelText('Mensaje')).toHaveValue('')
-  await waitFor(() => expect(within(list).getAllByRole('listitem')).toHaveLength(5), { timeout: 3000 })
+  await waitFor(() => expect(within(log).getAllByRole('listitem')).toHaveLength(5), { timeout: 3000 })
 })
 
 it('un error inesperado al enviar se muestra arriba de la caja de texto', async () => {
@@ -25,8 +25,8 @@ it('un error inesperado al enviar se muestra arriba de la caja de texto', async 
 
 it('los mensajes de días anteriores muestran el día además de la hora', async () => {
   await renderApp('/mensajes/c-02', { session: 'demo' })
-  const list = await screen.findByRole('list', { name: 'Mensajes' })
-  await waitFor(() => expect(within(list).getAllByText(/^(ayer|\d{1,2} [a-z]{3}), \d{2}:\d{2}$/)).toHaveLength(2))
+  const log = await screen.findByRole('log', { name: 'Mensajes' })
+  await waitFor(() => expect(within(log).getAllByText(/^(ayer|\d{1,2} [a-z]{3}), \d{2}:\d{2}$/)).toHaveLength(2))
 })
 
 it('id inválido muestra no encontrado', async () => {

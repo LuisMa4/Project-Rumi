@@ -14,20 +14,19 @@
   width: 100%;
   min-height: 44px;
   padding: 10px 14px;
-  border: 1px solid var(--borde);
+  border: 1px solid var(--borde-campo);
   border-radius: 12px;
   background: var(--blanco);
   transition: border-color 0.15s;
 }
 
 .control:hover {
-  border-color: var(--celeste);
+  border-color: var(--tinta-suave);
 }
 
+/* El anillo de foco es el global (:focus-visible en global.css). */
 .control:focus-visible {
-  outline: none;
-  border-color: var(--naranja);
-  box-shadow: 0 0 0 3px var(--naranja-suave);
+  border-color: var(--naranja-oscuro);
 }
 
 .control[aria-invalid='true'] {

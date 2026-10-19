@@ -75,6 +75,7 @@ Todos los valores viven en `src/styles/tokens.css`.
 | `--tinta` | `#1F2A33` | Texto principal |
 | `--tinta-suave` | `#5B6B76` | Texto secundario |
 | `--borde` | `#E3ECF0` | Bordes de tarjetas y separadores |
+| `--borde-campo` | `#7F8F99` | Borde de los campos de formulario (3.3:1 sobre blanco) |
 | `--error` | `#B42318` | Mensajes de error en formularios |
 
 - **Colores de origen:** Pantone 16-1448 TCX *Burnt Orange* y 14-4514 TCX *Atomizer*, tomados de `Documentos/Colores.jpeg`.

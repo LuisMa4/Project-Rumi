@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { EmptyState } from '../components/EmptyState'
 import { TextField } from '../components/Field'
 import { PostCard } from '../components/PostCard'
@@ -11,11 +11,17 @@ import styles from './SearchPage.module.css'
 
 type Tab = 'personas' | 'alquileres'
 
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'personas', label: 'Personas' },
+  { id: 'alquileres', label: 'Alquileres' },
+]
+
 const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`
 
 export function SearchPage() {
   const { user } = useAuth()
   const [tab, setTab] = useState<Tab>('personas')
+  const tabRefs = useRef<Partial<Record<Tab, HTMLButtonElement | null>>>({})
 
   const [personas, setPersonas] = useState({ texto: '', ciudadDestino: '', universidad: '', coincide: false })
   const [people, setPeople] = useState<PublicUser[] | null>(null)
@@ -53,22 +59,38 @@ export function SearchPage() {
 
   if (!user) return null
 
+  // Patrón de pestañas WAI-ARIA: las flechas, Inicio y Fin mueven el foco y activan la pestaña.
+  function onTabKeyDown(e: KeyboardEvent) {
+    const current = TABS.findIndex((t) => t.id === tab)
+    const target = { ArrowRight: current + 1, ArrowLeft: current - 1, Home: 0, End: TABS.length - 1 }[e.key]
+    if (target === undefined) return
+    e.preventDefault()
+    const next = TABS[(target + TABS.length) % TABS.length].id
+    setTab(next)
+    tabRefs.current[next]?.focus()
+  }
+
   return (
     <div className={styles.page}>
       <h1>Buscar</h1>
 
-      <div role="tablist" aria-label="Qué buscar" className={styles.tabs}>
-        {(['personas', 'alquileres'] as const).map((t) => (
+      <div role="tablist" aria-label="Qué buscar" className={styles.tabs} onKeyDown={onTabKeyDown}>
+        {TABS.map((t) => (
           <button
-            key={t}
+            key={t.id}
+            ref={(el) => {
+              tabRefs.current[t.id] = el
+            }}
+            type="button"
             role="tab"
-            id={`tab-${t}`}
-            aria-selected={tab === t}
-            aria-controls={`panel-${t}`}
+            id={`tab-${t.id}`}
+            aria-selected={tab === t.id}
+            aria-controls={`panel-${t.id}`}
+            tabIndex={tab === t.id ? 0 : -1}
             className={styles.tab}
-            onClick={() => setTab(t)}
+            onClick={() => setTab(t.id)}
           >
-            {t === 'personas' ? 'Personas' : 'Alquileres'}
+            {t.label}
           </button>
         ))}
       </div>
@@ -104,25 +126,23 @@ export function SearchPage() {
             </label>
           </div>
 
-          {people === null ? (
-            <p className={styles.count}>Cargando…</p>
-          ) : people.length === 0 ? (
-            <EmptyState
-              title="No encontramos estudiantes con esos filtros"
-              text="Prueba con otra ciudad o quita el filtro de fechas."
-            />
-          ) : (
-            <>
-              <p className={styles.count} aria-live="polite">
-                {plural(people.length, 'estudiante', 'estudiantes')}
-              </p>
+          {/* La región existe siempre (también con 0) para que el lector anuncie cada cambio. */}
+          <p role="status" className={people?.length === 0 ? 'sr-only' : styles.count}>
+            {people === null ? 'Cargando…' : plural(people.length, 'estudiante', 'estudiantes')}
+          </p>
+          {people !== null &&
+            (people.length === 0 ? (
+              <EmptyState
+                title="No encontramos estudiantes con esos filtros"
+                text="Prueba con otra ciudad o quita el filtro de fechas."
+              />
+            ) : (
               <ul aria-label="Resultados" className={styles.results}>
                 {people.map((p) => (
                   <UserCard key={p.id} user={p} />
                 ))}
               </ul>
-            </>
-          )}
+            ))}
         </section>
       ) : (
         <section role="tabpanel" id="panel-alquileres" aria-labelledby="tab-alquileres" className={styles.panel}>
@@ -144,25 +164,22 @@ export function SearchPage() {
             />
           </div>
 
-          {rentals === null ? (
-            <p className={styles.count}>Cargando…</p>
-          ) : rentals.length === 0 ? (
-            <EmptyState
-              title="No encontramos alquileres con esos filtros"
-              text="Sube el precio máximo o prueba con otra ciudad."
-            />
-          ) : (
-            <>
-              <p className={styles.count} aria-live="polite">
-                {plural(rentals.length, 'alquiler', 'alquileres')}
-              </p>
+          <p role="status" className={rentals?.length === 0 ? 'sr-only' : styles.count}>
+            {rentals === null ? 'Cargando…' : plural(rentals.length, 'alquiler', 'alquileres')}
+          </p>
+          {rentals !== null &&
+            (rentals.length === 0 ? (
+              <EmptyState
+                title="No encontramos alquileres con esos filtros"
+                text="Sube el precio máximo o prueba con otra ciudad."
+              />
+            ) : (
               <div className={styles.results}>
                 {rentals.map((post) => (
                   <PostCard key={post.id} post={post} currentUserId={user.id} />
                 ))}
               </div>
-            </>
-          )}
+            ))}
         </section>
       )}
     </div>

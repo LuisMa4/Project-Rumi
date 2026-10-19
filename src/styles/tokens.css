@@ -14,6 +14,8 @@
   --tinta: #1f2a33;
   --tinta-suave: #5b6b76;
   --borde: #e3ecf0;
+  /* Borde de campos de formulario: 3.3:1 sobre blanco (WCAG 1.4.11 pide 3:1). */
+  --borde-campo: #7f8f99;
   --error: #b42318;
 
   --radio-tarjeta: 16px;
