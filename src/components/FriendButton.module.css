@@ -1,0 +1,11 @@
+.button {
+  min-height: 38px;
+  padding: 0 16px;
+  font-size: 0.9rem;
+}
+
+.amigos {
+  border-color: var(--celeste);
+  color: var(--celeste-tinta);
+  cursor: default;
+}

@@ -2,7 +2,7 @@ import type { ProfileChanges, PublicUser, User } from '../types'
 import { includesNormalized } from '../utils/text'
 import { getUsers, setUsers, toPublic } from './db'
 import { NotFoundError, ValidationError } from './errors'
-import { validateProfileFields } from './validation'
+import { normalizeUsername, validateProfileFields } from './validation'
 
 export async function getById(id: string): Promise<PublicUser> {
   const user = getUsers().find((u) => u.id === id)
@@ -40,32 +40,12 @@ export async function update(id: string, changes: ProfileChanges): Promise<Publi
   return toPublic(updated)
 }
 
-// Se reemplaza en la Task 5 por la búsqueda por nombre de usuario.
-export interface UserSearchFilters {
-  texto?: string
-  ciudadDestino?: string
-  universidad?: string
-  coincideCon?: string
-}
-
-const overlaps = (a: User, b: User) =>
-  !!a.fechaLlegada &&
-  !!a.fechaSalida &&
-  !!b.fechaLlegada &&
-  !!b.fechaSalida &&
-  a.fechaLlegada <= b.fechaSalida &&
-  b.fechaLlegada <= a.fechaSalida
-
-export async function search(filters: UserSearchFilters, currentUserId: string): Promise<PublicUser[]> {
-  const users = getUsers()
-  const reference = filters.coincideCon ? users.find((u) => u.id === filters.coincideCon) : undefined
-
-  return users
-    .filter((u) => u.id !== currentUserId)
-    .filter((u) => includesNormalized(u.nombre, filters.texto ?? ''))
-    .filter((u) => includesNormalized(u.ciudadDestino ?? '', filters.ciudadDestino ?? ''))
-    .filter((u) => includesNormalized(u.universidad ?? '', filters.universidad ?? ''))
-    .filter((u) => !reference || overlaps(u, reference))
-    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
+/** Busca por nombre de usuario (contiene, sin '@', sin tildes). Con el texto vacío no devuelve nada. */
+export async function searchByUsername(texto: string, currentUserId: string): Promise<PublicUser[]> {
+  const buscado = normalizeUsername(texto)
+  if (!buscado) return []
+  return getUsers()
+    .filter((u) => u.id !== currentUserId && includesNormalized(u.usuario, buscado))
+    .sort((a, b) => a.usuario.localeCompare(b.usuario))
     .map(toPublic)
 }

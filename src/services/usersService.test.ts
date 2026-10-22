@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import type { PublicUser } from '../types'
 import { NotFoundError } from './errors'
 import { resetDemo } from './seed'
-import { getById, search, update } from './usersService'
+import { getById, searchByUsername, update } from './usersService'
 import { MSG } from './validation'
 
 const ids = (us: PublicUser[]) => us.map((u) => u.id)
@@ -18,28 +18,18 @@ it('getById', async () => {
   await expect(getById('nope')).rejects.toBeInstanceOf(NotFoundError)
 })
 
-describe('search', () => {
-  it('busca por nombre sin tildes', async () => {
-    expect(ids(await search({ texto: 'rios' }, 'u-demo'))).toEqual(['u-01'])
+describe('searchByUsername', () => {
+  it('busca por usuario parcial, con @ y sin tildes, excluyendo al actual', async () => {
+    expect(ids(await searchByUsername('@RIOS', 'u-demo'))).toEqual(['u-01'])
+    expect(ids(await searchByUsername('lucía', 'u-demo'))).toEqual(['u-03'])
+    expect(await searchByUsername('  ', 'u-demo')).toEqual([])
+    expect(await searchByUsername('alex', 'u-demo')).toEqual([])
   })
 
-  it('busca por ciudad, ordena y excluye al usuario actual', async () => {
-    expect(ids(await search({ ciudadDestino: 'madrid' }, 'u-demo'))).toEqual(['u-03', 'u-02', 'u-01'])
-  })
-
-  it('filtra por fechas que coinciden', async () => {
-    expect(ids(await search({ ciudadDestino: 'Madrid', coincideCon: 'u-demo' }, 'u-demo'))).toEqual([
-      'u-02',
-      'u-01',
-    ])
-  })
-
-  it('busca por universidad', async () => {
-    expect(ids(await search({ universidad: 'chile' }, 'u-demo'))).toEqual(['u-02'])
-  })
-
-  it('sin filtros devuelve a todos menos al usuario actual', async () => {
-    expect(await search({}, 'u-demo')).toHaveLength(8)
+  it('ordena por usuario', async () => {
+    expect(ids(await searchByUsername('a', 'u-demo'))).toEqual(
+      ['u-06', 'u-04', 'u-07', 'u-08', 'u-03', 'u-02', 'u-05', 'u-01'],
+    )
   })
 })
 

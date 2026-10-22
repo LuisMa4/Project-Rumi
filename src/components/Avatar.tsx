@@ -16,7 +16,12 @@ function tone(id: string): 'celeste' | 'naranja' {
   return Math.abs(hash) % 2 === 0 ? 'celeste' : 'naranja'
 }
 
-export function Avatar({ id, nombre, size = 40 }: { id: string; nombre: string; size?: number }) {
+export function Avatar({ id, nombre, size = 40, src }: { id: string; nombre: string; size?: number; src?: string }) {
+  if (src) {
+    return (
+      <img src={src} alt="" className={styles.avatar} style={{ width: size, height: size, objectFit: 'cover' }} />
+    )
+  }
   return (
     <span
       aria-hidden="true"
