@@ -42,7 +42,7 @@ export function PostComposer({
         tipo,
         texto: form.texto,
         ciudad: form.ciudad,
-        precio: conPrecio && form.precio !== '' ? Number(form.precio) : undefined,
+        precioMin: conPrecio && form.precio !== '' ? Number(form.precio) : undefined,
         zona: form.zona || undefined,
         fechaDesde: form.fechaDesde || undefined,
         fechaHasta: form.fechaHasta || undefined,

@@ -10,10 +10,8 @@ const sizeOf = (url: unknown) => (typeof url === 'string' && url.startsWith('dat
 
 export function photoBytesInUse(): number {
   let total = 0
-  for (const u of getUsers() as Array<{ avatarUrl?: string; portadaUrl?: string }>) {
-    total += sizeOf(u.avatarUrl) + sizeOf(u.portadaUrl)
-  }
-  for (const p of getPosts() as Array<{ fotos?: unknown }>) {
+  for (const u of getUsers()) total += sizeOf(u.avatarUrl) + sizeOf(u.portadaUrl)
+  for (const p of getPosts()) {
     if (Array.isArray(p.fotos)) for (const f of p.fotos) total += sizeOf(f)
   }
   return total

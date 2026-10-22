@@ -12,14 +12,10 @@ import styles from './AuthPages.module.css'
 
 const EMPTY: RegisterInput = {
   nombre: '',
+  usuario: '',
   email: '',
-  universidad: '',
-  paisOrigen: '',
-  ciudadDestino: '',
-  paisDestino: '',
-  fechaLlegada: '',
-  fechaSalida: '',
   password: '',
+  confirmPassword: '',
 }
 
 export function RegisterPage() {
@@ -64,19 +60,15 @@ export function RegisterPage() {
       <form ref={formRef} className={styles.form} onSubmit={onSubmit} noValidate>
         {error && <Alert>{error}</Alert>}
         <TextField label="Nombre completo" autoComplete="name" {...field('nombre')} />
+        <TextField
+          label="Nombre de usuario"
+          placeholder="alex.romero"
+          autoComplete="username"
+          autoCapitalize="none"
+          hint="Así te encuentran en Rumi. De 3 a 20 letras minúsculas, números, punto o guion bajo."
+          {...field('usuario')}
+        />
         <TextField label="Correo" type="email" autoComplete="email" {...field('email')} />
-        <div className={styles.row}>
-          <TextField label="Universidad" {...field('universidad')} />
-          <TextField label="País de origen" autoComplete="country-name" {...field('paisOrigen')} />
-        </div>
-        <div className={styles.row}>
-          <TextField label="Ciudad destino" {...field('ciudadDestino')} />
-          <TextField label="País destino" {...field('paisDestino')} />
-        </div>
-        <div className={styles.row}>
-          <TextField label="Fecha de llegada" type="date" {...field('fechaLlegada')} />
-          <TextField label="Fecha de salida" type="date" {...field('fechaSalida')} />
-        </div>
         <TextField
           label="Contraseña"
           type="password"
@@ -84,6 +76,7 @@ export function RegisterPage() {
           hint="Mínimo 8 caracteres. No uses una contraseña real: es una demo."
           {...field('password')}
         />
+        <TextField label="Confirmar contraseña" type="password" autoComplete="new-password" {...field('confirmPassword')} />
         <Button type="submit" disabled={busy}>
           Crear cuenta
         </Button>

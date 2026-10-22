@@ -30,7 +30,7 @@ export async function listConversations(userId: string): Promise<ConversationSum
       .at(-1)
     // Abrir un chat y no escribir no debe dejar una conversación vacía en la bandeja.
     if (!ultimoMensaje) continue
-    summaries.push({ conversation, otro, ultimoMensaje })
+    summaries.push({ conversation, otro, ultimoMensaje, noLeidos: false })
   }
   return summaries.sort((a, b) => b.conversation.actualizadoEn.localeCompare(a.conversation.actualizadoEn))
 }
@@ -47,6 +47,7 @@ export async function getOrCreateConversation(a: string, b: string): Promise<Con
     id: newId(),
     participantes: [a, b],
     actualizadoEn: new Date().toISOString(),
+    leidoHasta: {},
   }
   setConversations([...conversations, conversation])
   return conversation

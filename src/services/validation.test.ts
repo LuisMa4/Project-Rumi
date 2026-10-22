@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { MSG, normalizeEmail, validateProfileFields } from './validation'
+import { MSG, normalizeEmail, normalizeUsername, validateProfileFields } from './validation'
 
 describe('validateProfileFields', () => {
   it('marca obligatorios vacíos o con espacios', () => {
-    expect(validateProfileFields({ nombre: '   ', universidad: '' })).toEqual({
+    expect(validateProfileFields({ nombre: '   ', usuario: '' })).toEqual({
       nombre: MSG.requerido,
-      universidad: MSG.requerido,
+      usuario: MSG.requerido,
     })
   })
 
@@ -20,8 +20,16 @@ describe('validateProfileFields', () => {
     ).toEqual({ email: MSG.email, password: MSG.password, fechaSalida: MSG.fechas })
   })
 
-  it('una fecha presente pero vacía es obligatoria', () => {
-    expect(validateProfileFields({ fechaLlegada: '' })).toEqual({ fechaLlegada: MSG.requerido })
+  it('el destino y las fechas ya no son obligatorios', () => {
+    expect(validateProfileFields({ ciudadDestino: '', fechaLlegada: '' })).toEqual({})
+  })
+
+  it('valida el formato del usuario y la confirmación', () => {
+    expect(validateProfileFields({ usuario: 'Ana Perez' })).toEqual({ usuario: MSG.usuario })
+    expect(validateProfileFields({ usuario: 'ana_perez.2' })).toEqual({})
+    expect(validateProfileFields({ password: 'clave-segura-1', confirmPassword: 'otra' })).toEqual({
+      confirmPassword: MSG.confirmar,
+    })
   })
 
   it('limita la bio a 300', () => {
@@ -36,4 +44,8 @@ describe('validateProfileFields', () => {
 
 it('normaliza correos', () => {
   expect(normalizeEmail('  Ana@Mail.COM ')).toBe('ana@mail.com')
+})
+
+it('normaliza usuarios', () => {
+  expect(normalizeUsername('  @@Ana.Perez ')).toBe('ana.perez')
 })

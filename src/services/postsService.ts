@@ -28,7 +28,10 @@ export async function searchRentals(f: { ciudad?: string; precioMax?: number }):
     getPosts()
       .filter((p) => p.tipo === 'ofrezco-cuarto')
       .filter((p) => includesNormalized(p.ciudad, f.ciudad ?? ''))
-      .filter((p) => f.precioMax === undefined || (p.precio !== undefined && p.precio <= f.precioMax)),
+      .filter((p) => {
+        const precio = p.precioMin ?? p.precioMax
+        return f.precioMax === undefined || (precio !== undefined && precio <= f.precioMax)
+      }),
   )
 }
 
@@ -44,7 +47,7 @@ export async function create(autorId: string, input: NewPostInput): Promise<Post
   if (texto === '') errors.texto = MSG.postVacio
   else if (texto.length > 500) errors.texto = MSG.postLargo
   if (ciudad === '') errors.ciudad = MSG.requerido
-  if (conPrecio && input.precio !== undefined && !(input.precio > 0)) errors.precio = MSG.precio
+  if (conPrecio && input.precioMin !== undefined && !(input.precioMin > 0)) errors.precio = MSG.precio
   if (input.fechaDesde && input.fechaHasta && input.fechaHasta < input.fechaDesde) {
     errors.fechaHasta = MSG.fechasPost
   }
@@ -56,12 +59,15 @@ export async function create(autorId: string, input: NewPostInput): Promise<Post
     tipo: input.tipo,
     texto,
     ciudad,
+    hashtags: input.hashtags ?? [],
+    fotos: input.fotos ?? [],
     creadoEn: new Date().toISOString(),
   }
   if (input.fechaDesde) post.fechaDesde = input.fechaDesde
   if (input.fechaHasta) post.fechaHasta = input.fechaHasta
-  if (conPrecio && input.precio !== undefined) {
-    post.precio = input.precio
+  if (conPrecio && (input.precioMin !== undefined || input.precioMax !== undefined)) {
+    if (input.precioMin !== undefined) post.precioMin = input.precioMin
+    if (input.precioMax !== undefined) post.precioMax = input.precioMax
     post.moneda = input.moneda || 'EUR'
   }
   if (input.tipo === 'ofrezco-cuarto' && input.zona?.trim()) post.zona = input.zona.trim()

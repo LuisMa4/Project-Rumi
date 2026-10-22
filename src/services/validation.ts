@@ -11,26 +11,21 @@ export const MSG = {
   postVacio: 'Escribe algo para publicar',
   postLargo: 'La publicación puede tener hasta 500 caracteres',
   precio: 'El precio debe ser mayor que 0',
-  presupuesto: 'El presupuesto debe ser mayor que 0',
   mensajeVacio: 'Escribe un mensaje',
   mensajeLargo: 'El mensaje puede tener hasta 1000 caracteres',
+  usuario: 'Usa de 3 a 20 letras minúsculas, números, punto o guion bajo',
+  usuarioDuplicado: 'Ese nombre de usuario ya está en uso',
+  confirmar: 'Las contraseñas no coinciden',
+  login: 'Usuario, correo o contraseña incorrectos',
   espacioFotos: 'Ya no hay espacio en este navegador para más fotos. Usa menos fotos o imágenes más livianas',
   espacioGeneral: 'No hay espacio en este navegador. Restablece los datos de demo desde tu perfil',
 } as const
 
+export const USERNAME_RE = /^(?!\.)[a-z0-9._]{3,20}(?<!\.)$/
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const REQUIRED_TEXT = [
-  'nombre',
-  'email',
-  'universidad',
-  'paisOrigen',
-  'ciudadDestino',
-  'paisDestino',
-  'fechaLlegada',
-  'fechaSalida',
-  'password',
-] as const
+const REQUIRED_TEXT = ['nombre', 'usuario', 'email', 'password'] as const
 
 type ProfileFields = Partial<RegisterInput & ProfileChanges>
 
@@ -46,14 +41,17 @@ export function validateProfileFields(f: ProfileFields): Record<string, string> 
   if (f.email !== undefined && !errors.email && !EMAIL_RE.test(f.email.trim())) {
     errors.email = MSG.email
   }
+  if (f.usuario !== undefined && !errors.usuario && !USERNAME_RE.test(normalizeUsername(f.usuario))) {
+    errors.usuario = MSG.usuario
+  }
   if (f.password !== undefined && !errors.password && f.password.length < 8) {
     errors.password = MSG.password
   }
+  if (f.confirmPassword !== undefined && f.confirmPassword !== f.password) {
+    errors.confirmPassword = MSG.confirmar
+  }
   if (f.bio !== undefined && f.bio.length > 300) {
     errors.bio = MSG.bio
-  }
-  if (f.presupuesto !== undefined && !(f.presupuesto > 0)) {
-    errors.presupuesto = MSG.presupuesto
   }
   if (f.fechaLlegada && f.fechaSalida && !errors.fechaSalida && f.fechaSalida <= f.fechaLlegada) {
     errors.fechaSalida = MSG.fechas
@@ -64,4 +62,9 @@ export function validateProfileFields(f: ProfileFields): Record<string, string> 
 
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase()
+}
+
+/** '  @Ana.Perez ' → 'ana.perez' */
+export function normalizeUsername(usuario: string): string {
+  return usuario.trim().replace(/^@+/, '').toLowerCase()
 }

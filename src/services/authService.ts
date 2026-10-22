@@ -4,32 +4,31 @@ import { getSession, getUsers, setSession, setUsers, toPublic } from './db'
 import { AuthError, ValidationError } from './errors'
 import { DEMO_EMAIL, DEMO_PASSWORD } from './seed'
 import { newId } from './storage'
-import { MSG, normalizeEmail, validateProfileFields } from './validation'
-
-const LOGIN_ERROR = 'Correo o contraseña incorrectos'
+import { MSG, normalizeEmail, normalizeUsername, validateProfileFields } from './validation'
 
 export async function register(input: RegisterInput): Promise<PublicUser> {
   const users = getUsers()
   const email = normalizeEmail(input.email)
+  const usuario = normalizeUsername(input.usuario)
   const errors = validateProfileFields(input)
   if (!errors.email && users.some((u) => u.email === email)) {
     errors.email = MSG.emailDuplicado
   }
+  if (!errors.usuario && users.some((u) => u.usuario === usuario)) {
+    errors.usuario = MSG.usuarioDuplicado
+  }
   if (Object.keys(errors).length > 0) throw new ValidationError(errors)
 
+  // El destino, las fechas y la universidad se completan después, desde el perfil.
   const user: User = {
     id: newId(),
     nombre: input.nombre.trim(),
+    usuario,
     email,
     passwordHash: await hashPassword(input.password),
-    universidad: input.universidad.trim(),
-    paisOrigen: input.paisOrigen.trim(),
-    ciudadDestino: input.ciudadDestino.trim(),
-    paisDestino: input.paisDestino.trim(),
-    fechaLlegada: input.fechaLlegada,
-    fechaSalida: input.fechaSalida,
     bio: '',
     intereses: [],
+    verificacion: {},
     creadoEn: new Date().toISOString(),
   }
   setUsers([...users, user])
@@ -37,11 +36,16 @@ export async function register(input: RegisterInput): Promise<PublicUser> {
   return toPublic(user)
 }
 
-export async function login(email: string, password: string): Promise<PublicUser> {
-  const user = getUsers().find((u) => u.email === normalizeEmail(email))
-  // Mismo mensaje para correo o contraseña: no revelamos qué correos existen.
+/** `identificador` es el correo (si lleva '@' en medio) o el nombre de usuario, con o sin '@'. */
+export async function login(identificador: string, password: string): Promise<PublicUser> {
+  const id = identificador.trim()
+  const esCorreo = id.indexOf('@') > 0
+  const user = esCorreo
+    ? getUsers().find((u) => u.email === normalizeEmail(id))
+    : getUsers().find((u) => u.usuario === normalizeUsername(id))
+  // Mismo mensaje para todo: no revelamos qué usuarios o correos existen.
   if (!user || user.passwordHash !== (await hashPassword(password))) {
-    throw new AuthError(LOGIN_ERROR)
+    throw new AuthError(MSG.login)
   }
   setSession(user.id)
   return toPublic(user)

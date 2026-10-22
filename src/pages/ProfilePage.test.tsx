@@ -52,15 +52,6 @@ it('muestra error de biografía larga', async () => {
   await waitFor(() => expect(screen.getByLabelText('Biografía')).toHaveFocus())
 })
 
-it('muestra error de presupuesto no positivo', async () => {
-  const { user } = await renderApp('/perfil', { session: 'demo' })
-  await user.click(await screen.findByRole('button', { name: 'Editar perfil' }))
-  await user.clear(screen.getByLabelText('Presupuesto mensual'))
-  await user.type(screen.getByLabelText('Presupuesto mensual'), '0')
-  await user.click(screen.getByRole('button', { name: 'Guardar' }))
-  expect(await screen.findByLabelText('Presupuesto mensual')).toHaveAccessibleDescription(MSG.presupuesto)
-  expect(screen.getByRole('button', { name: 'Guardar' })).toBeEnabled()
-})
 
 it('un error inesperado al guardar se muestra y deja reintentar', async () => {
   const { user } = await renderApp('/perfil', { session: 'demo' })

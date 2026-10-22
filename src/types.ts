@@ -7,28 +7,45 @@ export const POST_TYPE_LABELS: Record<PostType, string> = {
   viaje: 'Viaje',
 }
 
+export type LugarCategoria = 'restaurante' | 'cafe' | 'zona' | 'bar' | 'museo' | 'tienda' | 'otro'
+
+export interface LatLng {
+  lat: number
+  lng: number
+}
+
+export interface Verificacion {
+  dni?: { ultimos: string; verificadoEn: string }
+  celular?: { enmascarado: string; verificadoEn: string }
+  universidad?: { nombre: string; correoEnmascarado: string; verificadoEn: string }
+}
+
 export interface User {
   id: string
   nombre: string
+  /** Único, en minúsculas y sin '@'. */
+  usuario: string
   /** Se guarda en minúsculas; es único. */
   email: string
   /** SHA-256 en hex; nunca sale de los servicios. */
   passwordHash: string
-  universidad: string
-  paisOrigen: string
-  ciudadDestino: string
-  paisDestino: string
-  /** ISO 'YYYY-MM-DD' */
-  fechaLlegada: string
+  /** Solo la pone la verificación de universidad. */
+  universidad?: string
+  paisOrigen?: string
+  ciudadDestino?: string
+  paisDestino?: string
+  /** ISO 'YYYY-MM-DD'; van las dos fechas o ninguna. */
+  fechaLlegada?: string
   /** ISO 'YYYY-MM-DD', posterior a fechaLlegada */
-  fechaSalida: string
+  fechaSalida?: string
   bio: string
   intereses: string[]
-  /** Mensual */
-  presupuesto?: number
-  moneda?: string
   /** Usuario sin '@' */
   instagram?: string
+  /** Data URL o ruta relativa. */
+  avatarUrl?: string
+  portadaUrl?: string
+  verificacion: Verificacion
   creadoEn: string
 }
 
@@ -40,20 +57,48 @@ export interface Post {
   tipo: PostType
   texto: string
   ciudad: string
+  /** Zona o barrio. */
+  zona?: string
   fechaDesde?: string
   fechaHasta?: string
-  /** Solo 'ofrezco-cuarto' y 'busco-roomie' */
-  precio?: number
+  /** Solo 'busco-roomie' y 'ofrezco-cuarto'; ambos opcionales. */
+  precioMin?: number
+  precioMax?: number
   moneda?: string
-  /** Barrio o zona, solo 'ofrezco-cuarto' */
-  zona?: string
+  /** Solo 'busco-roomie' (1–6). */
+  personas?: number
+  /** Solo 'lugar'. */
+  categoria?: LugarCategoria
+  nombreLugar?: string
+  /** Sin '#', máximo 10. */
+  hashtags: string[]
+  enlace?: string
+  /** Data URLs o rutas relativas, máximo 4. */
+  fotos: string[]
+  /** Solo 'ofrezco-cuarto' y 'lugar'. */
+  ubicacion?: LatLng
   creadoEn: string
 }
+
+export type FriendRequestEstado = 'pendiente' | 'aceptada' | 'rechazada'
+
+export interface FriendRequest {
+  id: string
+  de: string
+  para: string
+  estado: FriendRequestEstado
+  creadoEn: string
+  respondidoEn?: string
+}
+
+export type Relation = 'ninguna' | 'enviada' | 'recibida' | 'amigos'
 
 export interface Conversation {
   id: string
   participantes: [string, string]
   actualizadoEn: string
+  /** userId → ISO del último mensaje leído. */
+  leidoHasta: Record<string, string>
 }
 
 export interface Message {
@@ -64,23 +109,18 @@ export interface Message {
   enviadoEn: string
 }
 
-export type RegisterInput = Pick<
-  User,
-  | 'nombre'
-  | 'email'
-  | 'universidad'
-  | 'paisOrigen'
-  | 'ciudadDestino'
-  | 'paisDestino'
-  | 'fechaLlegada'
-  | 'fechaSalida'
-> & { password: string }
+export interface RegisterInput {
+  nombre: string
+  usuario: string
+  email: string
+  password: string
+  confirmPassword: string
+}
 
 export type ProfileChanges = Partial<
   Pick<
     User,
     | 'nombre'
-    | 'universidad'
     | 'paisOrigen'
     | 'ciudadDestino'
     | 'paisDestino'
@@ -88,27 +128,35 @@ export type ProfileChanges = Partial<
     | 'fechaSalida'
     | 'bio'
     | 'intereses'
-    | 'presupuesto'
-    | 'moneda'
     | 'instagram'
   >
 >
 
 export type NewPostInput = Pick<Post, 'tipo' | 'texto' | 'ciudad'> &
-  Partial<Pick<Post, 'fechaDesde' | 'fechaHasta' | 'precio' | 'moneda' | 'zona'>>
+  Partial<
+    Pick<
+      Post,
+      | 'zona'
+      | 'fechaDesde'
+      | 'fechaHasta'
+      | 'precioMin'
+      | 'precioMax'
+      | 'moneda'
+      | 'personas'
+      | 'categoria'
+      | 'nombreLugar'
+      | 'hashtags'
+      | 'enlace'
+      | 'fotos'
+      | 'ubicacion'
+    >
+  >
 
 export type PostWithAuthor = Post & { autor: PublicUser }
-
-export interface UserSearchFilters {
-  texto?: string
-  ciudadDestino?: string
-  universidad?: string
-  /** Id de un usuario cuyas fechas deben solaparse con las del resultado. */
-  coincideCon?: string
-}
 
 export interface ConversationSummary {
   conversation: Conversation
   otro: PublicUser
   ultimoMensaje: Message
+  noLeidos: boolean
 }

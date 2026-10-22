@@ -1,4 +1,4 @@
-import type { ProfileChanges, PublicUser, User, UserSearchFilters } from '../types'
+import type { ProfileChanges, PublicUser, User } from '../types'
 import { includesNormalized } from '../utils/text'
 import { getUsers, setUsers, toPublic } from './db'
 import { NotFoundError, ValidationError } from './errors'
@@ -12,7 +12,7 @@ export async function getById(id: string): Promise<PublicUser> {
 
 function cleanChanges(changes: ProfileChanges): ProfileChanges {
   const clean: ProfileChanges = { ...changes }
-  for (const key of ['nombre', 'universidad', 'paisOrigen', 'ciudadDestino', 'paisDestino'] as const) {
+  for (const key of ['nombre', 'paisOrigen', 'ciudadDestino', 'paisDestino'] as const) {
     if (clean[key] !== undefined) clean[key] = clean[key].trim()
   }
   if (clean.intereses) clean.intereses = clean.intereses.map((i) => i.trim()).filter(Boolean)
@@ -40,8 +40,21 @@ export async function update(id: string, changes: ProfileChanges): Promise<Publi
   return toPublic(updated)
 }
 
+// Se reemplaza en la Task 5 por la búsqueda por nombre de usuario.
+export interface UserSearchFilters {
+  texto?: string
+  ciudadDestino?: string
+  universidad?: string
+  coincideCon?: string
+}
+
 const overlaps = (a: User, b: User) =>
-  a.fechaLlegada <= b.fechaSalida && b.fechaLlegada <= a.fechaSalida
+  !!a.fechaLlegada &&
+  !!a.fechaSalida &&
+  !!b.fechaLlegada &&
+  !!b.fechaSalida &&
+  a.fechaLlegada <= b.fechaSalida &&
+  b.fechaLlegada <= a.fechaSalida
 
 export async function search(filters: UserSearchFilters, currentUserId: string): Promise<PublicUser[]> {
   const users = getUsers()
@@ -50,8 +63,8 @@ export async function search(filters: UserSearchFilters, currentUserId: string):
   return users
     .filter((u) => u.id !== currentUserId)
     .filter((u) => includesNormalized(u.nombre, filters.texto ?? ''))
-    .filter((u) => includesNormalized(u.ciudadDestino, filters.ciudadDestino ?? ''))
-    .filter((u) => includesNormalized(u.universidad, filters.universidad ?? ''))
+    .filter((u) => includesNormalized(u.ciudadDestino ?? '', filters.ciudadDestino ?? ''))
+    .filter((u) => includesNormalized(u.universidad ?? '', filters.universidad ?? ''))
     .filter((u) => !reference || overlaps(u, reference))
     .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
     .map(toPublic)

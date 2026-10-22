@@ -1,4 +1,4 @@
-import { AtSign, CalendarDays, MapPin, Wallet } from 'lucide-react'
+import { AtSign, CalendarDays, MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Alert } from '../components/Alert'
@@ -14,7 +14,7 @@ import { listByAuthor } from '../services/postsService'
 import { resetDemo } from '../services/seed'
 import { getById } from '../services/usersService'
 import type { PostWithAuthor, PublicUser } from '../types'
-import { formatDateRange, formatPrice } from '../utils/format'
+import { formatDateRange } from '../utils/format'
 import styles from './ProfilePage.module.css'
 
 type Loaded =
@@ -95,12 +95,6 @@ export function ProfilePage() {
                 <CalendarDays size={16} aria-hidden="true" />
                 {formatDateRange(profile.fechaLlegada, profile.fechaSalida)}
               </li>
-              {profile.presupuesto !== undefined && (
-                <li>
-                  <Wallet size={16} aria-hidden="true" />
-                  Presupuesto de {formatPrice(profile.presupuesto, profile.moneda)} al mes
-                </li>
-              )}
               {profile.instagram && (
                 <li>
                   <AtSign size={16} aria-hidden="true" />

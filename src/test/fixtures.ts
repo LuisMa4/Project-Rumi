@@ -4,13 +4,9 @@ import type { RegisterInput } from '../types'
 export function nuevo(): RegisterInput {
   return {
     nombre: 'Ana Pérez',
+    usuario: 'ana.perez',
     email: 'ana@mail.com',
-    universidad: 'Universidad de Lima',
-    paisOrigen: 'Perú',
-    ciudadDestino: 'Lisboa',
-    paisDestino: 'Portugal',
-    fechaLlegada: '2027-02-01',
-    fechaSalida: '2027-07-01',
     password: 'clave-segura-1',
+    confirmPassword: 'clave-segura-1',
   }
 }

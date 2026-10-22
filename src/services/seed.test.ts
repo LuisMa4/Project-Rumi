@@ -1,7 +1,7 @@
 import { beforeEach, expect, it } from 'vitest'
 import { nuevo } from '../test/fixtures'
 import { register } from './authService'
-import { getConversations, getPosts, getSession, getUsers } from './db'
+import { getConversations, getFriendRequests, getPosts, getSession, getUsers } from './db'
 import { ensureSeeded, resetDemo } from './seed'
 
 beforeEach(async () => {
@@ -33,4 +33,41 @@ it('las publicaciones de ejemplo tienen 3 de cada tipo y ninguna de la cuenta de
     expect(posts.filter((p) => p.tipo === tipo)).toHaveLength(3)
   }
   expect(posts.some((p) => p.autorId === 'u-demo')).toBe(false)
+})
+
+it('v3: usuarios con usuario único y universidad solo si está verificada', () => {
+  const us = getUsers()
+  expect(new Set(us.map((u) => u.usuario)).size).toBe(9)
+  const alex = us.find((u) => u.id === 'u-demo')!
+  expect(alex.usuario).toBe('alex.romero')
+  expect(alex.universidad).toBeUndefined()
+  expect(us.every((u) => !u.universidad || u.verificacion.universidad)).toBe(true)
+  expect(us.some((u) => 'presupuesto' in u)).toBe(false)
+})
+
+it('v3: amistades y solicitudes de la cuenta demo', () => {
+  const fr = getFriendRequests()
+  expect(fr.filter((r) => r.estado === 'aceptada')).toHaveLength(3)
+  expect(
+    fr
+      .filter((r) => r.estado === 'pendiente' && r.para === 'u-demo')
+      .map((r) => r.de)
+      .sort(),
+  ).toEqual(['u-05', 'u-06'])
+})
+
+it('v3: alquileres con rango y ubicación; lugares sin fechas', () => {
+  const ps = getPosts()
+  expect(ps.find((p) => p.zona === 'Moncloa')).toMatchObject({
+    precioMin: 450,
+    precioMax: 500,
+    ubicacion: { lat: 40.435, lng: -3.719 },
+  })
+  expect(ps.filter((p) => p.tipo === 'lugar').every((p) => !p.fechaDesde && p.categoria && p.nombreLugar)).toBe(true)
+  expect(ps.every((p) => p.hashtags.length > 0 && Array.isArray(p.fotos))).toBe(true)
+})
+
+it('v3: la conversación con Valeria queda sin leer para la cuenta demo', () => {
+  const c01 = getConversations().find((c) => c.id === 'c-01')!
+  expect(c01.leidoHasta['u-demo'] < c01.actualizadoEn).toBe(true)
 })

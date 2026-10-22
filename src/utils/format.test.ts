@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatDateRange, formatMessageTime, formatPrice, formatRelative } from './format'
+import { formatDate, formatDateRange, formatMessageTime, formatPrice, formatPriceRange, formatRelative } from './format'
 
 describe('formatRelative', () => {
   const now = new Date(2026, 9, 18, 12, 0)
@@ -42,4 +42,11 @@ describe('fechas', () => {
 
 it('formatPrice', () => {
   expect(formatPrice(450).replace(/\s/g, ' ')).toBe('450 €')
+})
+
+it('formatPriceRange', () => {
+  expect(formatPriceRange(450, 500).replace(/\s/g, ' ')).toBe('450–500 € al mes')
+  expect(formatPriceRange(450).replace(/\s/g, ' ')).toBe('desde 450 € al mes')
+  expect(formatPriceRange(undefined, 500).replace(/\s/g, ' ')).toBe('hasta 500 € al mes')
+  expect(formatPriceRange()).toBe('')
 })

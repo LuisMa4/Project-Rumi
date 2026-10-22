@@ -57,3 +57,14 @@ export function formatPrice(precio: number, moneda = 'EUR'): string {
     maximumFractionDigits: 0,
   }).format(precio)
 }
+
+/** Rango de precio mensual: "450–500 € al mes", "desde 450 € al mes", "hasta 500 € al mes" o ''. */
+export function formatPriceRange(min?: number, max?: number, moneda = 'EUR'): string {
+  if (min !== undefined && max !== undefined && min !== max) {
+    const desde = formatPrice(min, moneda).replace(/[^\d.,]/g, '')
+    return `${desde}–${formatPrice(max, moneda)} al mes`
+  }
+  if (min !== undefined) return `${max !== undefined ? '' : 'desde '}${formatPrice(min, moneda)} al mes`
+  if (max !== undefined) return `hasta ${formatPrice(max, moneda)} al mes`
+  return ''
+}

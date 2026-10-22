@@ -45,7 +45,7 @@ describe('create', () => {
       create('u-demo', { tipo: 'viaje', texto: 'a'.repeat(501), ciudad: 'X' }),
     ).rejects.toMatchObject({ fieldErrors: { texto: MSG.postLargo } })
     await expect(
-      create('u-demo', { tipo: 'ofrezco-cuarto', texto: 'x', ciudad: 'X', precio: 0 }),
+      create('u-demo', { tipo: 'ofrezco-cuarto', texto: 'x', ciudad: 'X', precioMin: 0 }),
     ).rejects.toMatchObject({ fieldErrors: { precio: MSG.precio } })
   })
 
@@ -59,13 +59,13 @@ describe('create', () => {
   })
 
   it('descarta precio y zona en tipos que no los usan', async () => {
-    const p = await create('u-demo', { tipo: 'lugar', texto: 'x', ciudad: 'X', precio: 100, zona: 'Centro' })
-    expect(p.precio).toBeUndefined()
+    const p = await create('u-demo', { tipo: 'viaje', texto: 'x', ciudad: 'X', precioMin: 100, zona: 'Centro' })
+    expect(p.precioMin).toBeUndefined()
     expect(p.zona).toBeUndefined()
   })
 
   it('usa EUR como moneda por defecto', async () => {
-    const p = await create('u-demo', { tipo: 'ofrezco-cuarto', texto: 'x', ciudad: 'X', precio: 300 })
+    const p = await create('u-demo', { tipo: 'ofrezco-cuarto', texto: 'x', ciudad: 'X', precioMin: 300 })
     expect(p.moneda).toBe('EUR')
   })
 })
@@ -73,5 +73,5 @@ describe('create', () => {
 it('busca alquileres', async () => {
   expect(await searchRentals({})).toHaveLength(3)
   const r = await searchRentals({ ciudad: 'madrid', precioMax: 500 })
-  expect(r.map((p) => p.precio)).toEqual([450])
+  expect(r.map((p) => p.precioMin)).toEqual([450])
 })

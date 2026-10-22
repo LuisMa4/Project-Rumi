@@ -11,7 +11,7 @@ import styles from './AuthPages.module.css'
 export function LoginPage() {
   const { login, loginDemo } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [identificador, setIdentificador] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -30,7 +30,7 @@ export function LoginPage() {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault()
-    run(() => login(email, password))
+    run(() => login(identificador, password))
   }
 
   return (
@@ -45,11 +45,11 @@ export function LoginPage() {
       <form className={styles.form} onSubmit={onSubmit} noValidate>
         {error && <Alert>{error}</Alert>}
         <TextField
-          label="Correo"
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          label="Usuario o correo"
+          autoComplete="username"
+          autoCapitalize="none"
+          value={identificador}
+          onChange={(e) => setIdentificador(e.target.value)}
         />
         <TextField
           label="Contraseña"

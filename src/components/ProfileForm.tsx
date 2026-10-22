@@ -5,10 +5,8 @@ import { update } from '../services/usersService'
 import type { PublicUser } from '../types'
 import { Alert } from './Alert'
 import { Button } from './Button'
-import { SelectField, TextAreaField, TextField } from './Field'
+import { TextAreaField, TextField } from './Field'
 import styles from './ProfileForm.module.css'
-
-const MONEDAS = ['EUR', 'USD', 'PEN', 'ARS', 'MXN', 'CLP', 'COP', 'CAD']
 
 export function ProfileForm({
   user,
@@ -29,8 +27,6 @@ export function ProfileForm({
     fechaSalida: user.fechaSalida,
     bio: user.bio,
     intereses: user.intereses.join(', '),
-    presupuesto: user.presupuesto?.toString() ?? '',
-    moneda: user.moneda ?? 'EUR',
     instagram: user.instagram ? `@${user.instagram}` : '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -47,15 +43,12 @@ export function ProfileForm({
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
-    const presupuesto = form.presupuesto === '' ? undefined : Number(form.presupuesto)
     setBusy(true)
     setError(null)
     try {
       await update(user.id, {
         ...form,
         intereses: form.intereses.split(','),
-        presupuesto,
-        moneda: presupuesto === undefined ? undefined : form.moneda,
       })
       onSaved()
     } catch (err) {
@@ -88,16 +81,6 @@ export function ProfileForm({
         {...field('bio')}
       />
       <TextField label="Intereses" hint="Sepáralos con comas." placeholder="Cocina, Fotografía" {...field('intereses')} />
-      <div className={styles.row}>
-        <TextField label="Presupuesto mensual" type="number" min={1} inputMode="numeric" {...field('presupuesto')} />
-        <SelectField label="Moneda" {...field('moneda')}>
-          {MONEDAS.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </SelectField>
-      </div>
       <TextField label="Instagram" placeholder="@usuario" autoComplete="off" {...field('instagram')} />
       <div className={styles.actions}>
         <Button variant="ghost" onClick={onCancel} disabled={busy}>

@@ -27,26 +27,50 @@ describe('register', () => {
 
   it('reporta todos los campos inválidos', async () => {
     await expect(
-      register({
-        ...nuevo(),
-        nombre: '',
-        password: 'corta',
-        fechaLlegada: '2027-03-01',
-        fechaSalida: '2027-02-01',
-      }),
+      register({ ...nuevo(), nombre: '', usuario: 'a.', password: 'corta', confirmPassword: 'otra' }),
     ).rejects.toMatchObject({
-      fieldErrors: { nombre: MSG.requerido, password: MSG.password, fechaSalida: MSG.fechas },
+      fieldErrors: {
+        nombre: MSG.requerido,
+        usuario: MSG.usuario,
+        password: MSG.password,
+        confirmPassword: MSG.confirmar,
+      },
     })
+  })
+
+  it('registra con usuario normalizado y sin datos de destino', async () => {
+    const u = await register({ ...nuevo(), usuario: '@Ana.Perez' })
+    expect(u).toMatchObject({ usuario: 'ana.perez', verificacion: {} })
+    expect(u.ciudadDestino).toBeUndefined()
+  })
+
+  it('rechaza usuario duplicado sin importar mayúsculas ni @', async () => {
+    await expect(register({ ...nuevo(), usuario: '@Alex.Romero' })).rejects.toMatchObject({
+      fieldErrors: { usuario: MSG.usuarioDuplicado },
+    })
+  })
+
+  it('rechaza formatos de usuario inválidos', async () => {
+    for (const usuario of ['ab', '.ana', 'ana.', 'ana perez', 'añá', 'a'.repeat(21)]) {
+      await expect(register({ ...nuevo(), usuario })).rejects.toMatchObject({ fieldErrors: { usuario: MSG.usuario } })
+    }
   })
 })
 
 describe('login', () => {
+  it('entra con usuario, @usuario o correo', async () => {
+    for (const id of ['alex.romero', '@Alex.Romero', '  DEMO@rumi.app ']) {
+      expect((await login(id, DEMO_PASSWORD)).id).toBe(DEMO_USER_ID)
+    }
+    await expect(login('nadie', DEMO_PASSWORD)).rejects.toThrow(MSG.login)
+  })
+
   it('normaliza el correo', async () => {
     expect((await login('  DEMO@rumi.app ', DEMO_PASSWORD)).id).toBe(DEMO_USER_ID)
   })
 
   it('falla con el mismo mensaje para clave o correo malos', async () => {
-    await expect(login(DEMO_EMAIL, 'incorrecta')).rejects.toThrow('Correo o contraseña incorrectos')
+    await expect(login(DEMO_EMAIL, 'incorrecta')).rejects.toThrow(MSG.login)
     await expect(login('nadie@mail.com', DEMO_PASSWORD)).rejects.toBeInstanceOf(AuthError)
   })
 

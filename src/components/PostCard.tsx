@@ -2,7 +2,7 @@ import { CalendarDays, House, MapPin, Wallet } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useStartChat } from '../hooks/useStartChat'
 import { POST_TYPE_LABELS, type PostWithAuthor } from '../types'
-import { formatDateRange, formatPrice, formatRelative } from '../utils/format'
+import { formatDateRange, formatPriceRange, formatRelative } from '../utils/format'
 import { Alert } from './Alert'
 import { Avatar } from './Avatar'
 import { Button } from './Button'
@@ -58,10 +58,10 @@ export function PostCard({
             {fechas}
           </li>
         )}
-        {post.precio !== undefined && (
+        {(post.precioMin !== undefined || post.precioMax !== undefined) && (
           <li>
             <Wallet size={15} aria-hidden="true" />
-            {formatPrice(post.precio, post.moneda)} al mes
+            {formatPriceRange(post.precioMin, post.precioMax, post.moneda)}
           </li>
         )}
       </ul>
