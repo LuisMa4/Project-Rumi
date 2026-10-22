@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { StorageFullError } from './errors'
 import { __resetStorageForTests, clearAll, read, remove, write } from './storage'
 
 describe('storage', () => {
@@ -68,5 +69,15 @@ describe('storage', () => {
     clearAll()
     expect(localStorage.getItem('otra-app')).toBe('x')
     expect(localStorage.getItem('rumi:users')).toBeNull()
+  })
+
+  it('un error de cuota lanza StorageFullError y no pasa a memoria', () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('full', 'QuotaExceededError')
+    })
+    expect(() => write('posts', [1])).toThrow(StorageFullError)
+    vi.restoreAllMocks()
+    write('posts', [2])
+    expect(localStorage.getItem('rumi:posts')).toBe('[2]')
   })
 })

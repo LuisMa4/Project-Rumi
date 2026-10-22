@@ -14,6 +14,8 @@ export const MSG = {
   presupuesto: 'El presupuesto debe ser mayor que 0',
   mensajeVacio: 'Escribe un mensaje',
   mensajeLargo: 'El mensaje puede tener hasta 1000 caracteres',
+  espacioFotos: 'Ya no hay espacio en este navegador para más fotos. Usa menos fotos o imágenes más livianas',
+  espacioGeneral: 'No hay espacio en este navegador. Restablece los datos de demo desde tu perfil',
 } as const
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/

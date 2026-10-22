@@ -21,3 +21,14 @@ export class NotFoundError extends Error {
     this.name = 'NotFoundError'
   }
 }
+
+/** El navegador se quedó sin espacio ('general') o las fotos superan su presupuesto ('fotos'). */
+export class StorageFullError extends Error {
+  kind: 'fotos' | 'general'
+
+  constructor(kind: 'fotos' | 'general' = 'general') {
+    super(kind === 'fotos' ? 'Sin espacio para más fotos' : 'Sin espacio en el navegador')
+    this.name = 'StorageFullError'
+    this.kind = kind
+  }
+}

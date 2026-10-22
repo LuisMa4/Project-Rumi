@@ -1,6 +1,16 @@
 // Única puerta de la app hacia localStorage. Si el navegador lo bloquea
-// (modo privado, cuota llena), la sesión sigue funcionando en memoria.
+// (modo privado), la sesión sigue funcionando en memoria. Si se llena,
+// se avisa con StorageFullError en vez de seguir en memoria y perder datos al recargar.
+import { StorageFullError } from './errors'
+
 const PREFIX = 'rumi:'
+
+function isQuotaError(e: unknown): boolean {
+  if (!(e instanceof Error) && !(e instanceof DOMException)) return false
+  const { name } = e as { name?: string }
+  const { code } = e as { code?: number }
+  return name === 'QuotaExceededError' || name === 'NS_ERROR_DOM_QUOTA_REACHED' || code === 22 || code === 1014
+}
 
 let useMemory = false
 const memory = new Map<string, string>()
@@ -35,7 +45,8 @@ function setRaw(key: string, value: string): void {
     try {
       localStorage.setItem(PREFIX + key, value)
       return
-    } catch {
+    } catch (e) {
+      if (isQuotaError(e)) throw new StorageFullError('general')
       switchToMemory()
     }
   }
