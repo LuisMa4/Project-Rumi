@@ -83,7 +83,13 @@
   }
 
   .brand {
-    padding: 0 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6px 28px 14px;
+  }
+
+  .brandLink {
     text-decoration: none;
   }
 

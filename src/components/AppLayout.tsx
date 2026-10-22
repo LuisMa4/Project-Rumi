@@ -1,6 +1,7 @@
 import { Link, Outlet } from 'react-router-dom'
 import { AppNav } from './AppNav'
 import { Logo } from './Logo'
+import { NotificationsBell } from './NotificationsBell'
 import styles from './AppLayout.module.css'
 
 export function AppLayout() {
@@ -10,6 +11,7 @@ export function AppLayout() {
         <Link to="/" aria-label="Ir al inicio">
           <Logo size="sm" />
         </Link>
+        <NotificationsBell />
       </header>
       <AppNav />
       <main className={styles.main}>

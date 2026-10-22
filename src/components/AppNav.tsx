@@ -1,6 +1,7 @@
 import { House, MessageCircle, Plus, Search, User, type LucideIcon } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
 import { Logo } from './Logo'
+import { NotificationsBell } from './NotificationsBell'
 import styles from './AppNav.module.css'
 
 const ITEMS: { to: string; label: string; icon: LucideIcon; end?: boolean }[] = [
@@ -23,9 +24,12 @@ function Item({ to, label, icon: Icon, end }: (typeof ITEMS)[number]) {
 export function AppNav() {
   return (
     <nav aria-label="Principal" className={styles.nav}>
-      <Link to="/" className={styles.brand} aria-label="Ir al inicio">
-        <Logo size="md" />
-      </Link>
+      <div className={styles.brand}>
+        <Link to="/" aria-label="Ir al inicio" className={styles.brandLink}>
+          <Logo size="md" />
+        </Link>
+        <NotificationsBell />
+      </div>
       <Item {...ITEMS[0]} />
       <Item {...ITEMS[1]} />
       <Link to="/?publicar=1" className={styles.publish} aria-label="Publicar">

@@ -1,0 +1,31 @@
+.bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--tinta);
+}
+
+.bell:hover {
+  background: var(--celeste-suave);
+}
+
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid var(--blanco);
+  border-radius: var(--radio-pildora);
+  background: var(--naranja);
+  color: var(--blanco);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+}

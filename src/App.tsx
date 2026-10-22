@@ -8,6 +8,7 @@ import { LoginPage } from './pages/LoginPage'
 import { MessagesPage } from './pages/MessagesPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { RegisterPage } from './pages/RegisterPage'
+import { RequestsPage } from './pages/RequestsPage'
 import { SearchPage } from './pages/SearchPage'
 
 export function AppRoutes() {
@@ -25,6 +26,7 @@ export function AppRoutes() {
           <Route path="/mensajes/:id" element={<ChatPage />} />
           <Route path="/perfil" element={<ProfilePage />} />
           <Route path="/perfil/:id" element={<ProfilePage />} />
+          <Route path="/solicitudes" element={<RequestsPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
