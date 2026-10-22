@@ -28,6 +28,11 @@
   margin: 0 auto;
 }
 
+.main[data-fill] {
+  padding-top: 12px;
+  padding-bottom: calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 12px);
+}
+
 @media (min-width: 768px) {
   .topbar {
     display: none;
@@ -36,5 +41,10 @@
   .main {
     margin-left: var(--ancho-menu-lateral);
     padding: 40px 32px 64px;
+  }
+
+  .main[data-fill] {
+    padding-top: 24px;
+    padding-bottom: 24px;
   }
 }

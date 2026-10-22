@@ -29,6 +29,7 @@
   --fuente-texto: 'DM Sans', system-ui, sans-serif;
 
   --ancho-contenido: 640px;
+  --alto-topbar: 56px;
   --alto-barra-inferior: 68px;
   --ancho-menu-lateral: 240px;
 }

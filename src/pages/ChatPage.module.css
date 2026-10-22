@@ -1,7 +1,18 @@
+/* La página ocupa el alto visible: solo la lista de mensajes tiene scroll y la caja queda fija abajo. */
 .page {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  height: calc(100dvh - var(--alto-topbar) - var(--alto-barra-inferior) - env(safe-area-inset-bottom) - 40px);
+  min-height: 320px;
+}
+
+.log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
 }
 
 .header {
@@ -100,14 +111,9 @@
   font-size: 0.75rem;
 }
 
-/* Al saltar al último mensaje, deja espacio para la caja de texto fija (y la barra en el celular). */
-.end {
-  scroll-margin-bottom: calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 112px);
-}
+
 
 .composer {
-  position: sticky;
-  bottom: calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 8px);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -133,11 +139,9 @@
 }
 
 @media (min-width: 768px) {
-  .end {
-    scroll-margin-bottom: 112px;
-  }
+  
 
-  .composer {
-    bottom: 16px;
+  .page {
+    height: calc(100dvh - 80px);
   }
 }

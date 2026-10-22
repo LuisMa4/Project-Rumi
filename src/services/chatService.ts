@@ -1,6 +1,6 @@
 import type { Conversation, ConversationSummary, Message, PublicUser } from '../types'
 import { getConversations, getMessages as getAllMessages, getUsers, setConversations, setMessages, toPublic } from './db'
-import { NotFoundError, ValidationError } from './errors'
+import { NotFoundError, StorageFullError, ValidationError } from './errors'
 import { AUTO_REPLIES } from './seed'
 import { newId } from './storage'
 import { MSG } from './validation'
@@ -132,7 +132,12 @@ export async function send(conversacionId: string, autorId: string, texto: strin
     // Si el mensaje ya no existe (se restablecieron los datos), no hay a quién responder.
     if (!getAllMessages().some((m) => m.id === message.id)) return
     const reply = AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)]
-    appendMessage(conversation, replier, reply)
+    try {
+      appendMessage(conversation, replier, reply)
+    } catch (e) {
+      // Sin espacio en el navegador: la respuesta de la demo simplemente no llega.
+      if (!(e instanceof StorageFullError)) throw e
+    }
   }, 1500 + Math.random() * 1000)
 
   return message

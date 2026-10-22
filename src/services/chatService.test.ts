@@ -120,3 +120,12 @@ describe('send', () => {
     expect((await getMessages('c-01')).map((m) => m.id)).toEqual(['c-01-m1', 'c-01-m2', 'c-01-m3'])
   })
 })
+
+it('la respuesta automática ignora StorageFullError', async () => {
+  await send('c-01', 'u-demo', 'hola')
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    throw new DOMException('full', 'QuotaExceededError')
+  })
+  await expect(vi.advanceTimersByTimeAsync(2500)).resolves.not.toThrow()
+  vi.restoreAllMocks()
+})

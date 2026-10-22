@@ -63,3 +63,11 @@ it('volver lleva a la lista de mensajes', async () => {
   await user.click(await screen.findByRole('link', { name: 'Volver' }))
   expect(await screen.findByRole('heading', { name: 'Mensajes' })).toBeInTheDocument()
 })
+
+it('abrir el chat marca como leído y el anillo desaparece del inicio', async () => {
+  const { user } = await renderApp('/', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Valeria Ríos, mensajes sin leer' }))
+  await screen.findByRole('heading', { name: 'Valeria Ríos' })
+  await user.click(screen.getAllByRole('link', { name: 'Inicio' })[0])
+  expect(await screen.findByRole('button', { name: 'Valeria Ríos' })).toBeInTheDocument()
+})

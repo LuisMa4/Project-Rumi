@@ -7,7 +7,7 @@ import { Button } from '../components/Button'
 import { TextField } from '../components/Field'
 import { NotFound } from '../components/NotFound'
 import { useAuth } from '../context/useAuth'
-import { getConversation, getMessages, send, subscribe } from '../services/chatService'
+import { getConversation, getMessages, markRead, send, subscribe } from '../services/chatService'
 import { ValidationError } from '../services/errors'
 import type { Message, PublicUser } from '../types'
 import { formatMessageTime } from '../utils/format'
@@ -28,7 +28,7 @@ export function ChatPage() {
   const [texto, setTexto] = useState('')
   const [error, setError] = useState<string>()
   const [sendError, setSendError] = useState<string | null>(null)
-  const endRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!userId) return
@@ -56,9 +56,13 @@ export function ChatPage() {
   }, [id, userId])
 
   const count = state.status === 'ok' ? state.messages.length : 0
+  const listo = state.status === 'ok'
   useEffect(() => {
-    endRef.current?.scrollIntoView?.({ block: 'end' })
-  }, [count])
+    // Baja la lista (no la página) al último mensaje y lo marca como leído.
+    const list = listRef.current
+    if (list) list.scrollTop = list.scrollHeight
+    if (listo && userId) markRead(id, userId)
+  }, [count, listo, id, userId])
 
   if (state.status === 'notfound') return <NotFound />
   if (state.status === 'loading' || !userId) return <p className={styles.muted}>Cargando…</p>
@@ -84,19 +88,19 @@ export function ChatPage() {
         <Link to="/mensajes" aria-label="Volver" className={styles.back}>
           <ArrowLeft size={22} aria-hidden="true" />
         </Link>
-        <Avatar id={otro.id} nombre={otro.nombre} size={44} />
+        <Avatar id={otro.id} nombre={otro.nombre} size={44} src={otro.avatarUrl} />
         <div className={styles.who}>
           <h1 className={styles.name}>
             <Link to={`/perfil/${otro.id}`}>{otro.nombre}</Link>
           </h1>
           <p className={styles.muted}>
-            {otro.universidad} → {otro.ciudadDestino}
+            {otro.universidad && otro.ciudadDestino ? `${otro.universidad} → ${otro.ciudadDestino}` : `@${otro.usuario}`}
           </p>
         </div>
       </header>
 
       {/* role="log": los lectores de pantalla anuncian los mensajes que llegan. */}
-      <div role="log" aria-label="Mensajes">
+      <div role="log" aria-label="Mensajes" ref={listRef} className={styles.log}>
         <ol className={styles.thread}>
           {messages.map((m) => (
             <li key={m.id} className={m.autorId === userId ? styles.mine : styles.theirs}>
@@ -108,7 +112,6 @@ export function ChatPage() {
           ))}
         </ol>
       </div>
-      <div ref={endRef} className={styles.end} />
 
       <form className={styles.composer} onSubmit={onSubmit} noValidate>
         {sendError && <Alert>{sendError}</Alert>}
