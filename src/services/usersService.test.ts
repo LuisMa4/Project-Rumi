@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import type { PublicUser } from '../types'
 import { NotFoundError } from './errors'
+import { register } from './authService'
+import { nuevo } from '../test/fixtures'
 import { resetDemo } from './seed'
 import { StorageFullError } from './errors'
 import { PHOTO_BUDGET_BYTES } from './photoBudget'
@@ -70,4 +72,15 @@ describe('fotos', () => {
     await setPortada('u-demo', 'data:image/jpeg;base64,AA')
     expect((await getById('u-demo')).portadaUrl).toBe('data:image/jpeg;base64,AA')
   })
+})
+
+it('las fechas van juntas', async () => {
+  const ana = await register(nuevo())
+  await expect(update(ana.id, { fechaLlegada: '2027-02-01' })).rejects.toMatchObject({
+    fieldErrors: { fechaSalida: MSG.fechasPar },
+  })
+  await update(ana.id, { fechaLlegada: '2027-02-01', fechaSalida: '2027-07-01' })
+  await expect(update(ana.id, { fechaSalida: '' })).rejects.toMatchObject({ fieldErrors: { fechaSalida: MSG.fechasPar } })
+  await update(ana.id, { fechaLlegada: '', fechaSalida: '' })
+  expect((await getById(ana.id)).fechaLlegada).toBeFalsy()
 })

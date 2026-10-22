@@ -1,21 +1,37 @@
 import { AtSign, CalendarDays, MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Alert } from '../components/Alert'
 import { Avatar } from '../components/Avatar'
 import { Button } from '../components/Button'
 import { EmptyState } from '../components/EmptyState'
+import { FriendButton } from '../components/FriendButton'
 import { NotFound } from '../components/NotFound'
+import { PhotoPicker } from '../components/PhotoPicker'
 import { PostCard } from '../components/PostCard'
 import { ProfileForm } from '../components/ProfileForm'
 import { useAuth } from '../context/useAuth'
 import { useStartChat } from '../hooks/useStartChat'
 import { listByAuthor } from '../services/postsService'
+import { StorageFullError } from '../services/errors'
 import { resetDemo } from '../services/seed'
-import { getById } from '../services/usersService'
+import { getById, setAvatar, setPortada } from '../services/usersService'
+import { MSG } from '../services/validation'
 import type { PostWithAuthor, PublicUser } from '../types'
 import { formatDateRange } from '../utils/format'
 import styles from './ProfilePage.module.css'
+
+const VERIFICACIONES = [
+  { key: 'dni', label: 'DNI' },
+  { key: 'celular', label: 'Celular' },
+  { key: 'universidad', label: 'Universidad' },
+] as const
+
+/** "Perú → Madrid, España" (lo que haya). */
+function destino(p: PublicUser): string {
+  const llegada = [p.ciudadDestino, p.paisDestino].filter(Boolean).join(', ')
+  return [p.paisOrigen, llegada].filter(Boolean).join(' → ')
+}
 
 type Loaded =
   | { key: string; status: 'notfound' }
@@ -29,6 +45,7 @@ export function ProfilePage() {
   const [editing, setEditing] = useState(false)
   const [version, setVersion] = useState(0)
   const [loaded, setLoaded] = useState<Loaded | null>(null)
+  const [photoError, setPhotoError] = useState<string | null>(null)
 
   const profileId = id ?? user?.id ?? ''
   const key = `${profileId}:${version}`
@@ -56,11 +73,25 @@ export function ProfilePage() {
 
   const { profile, posts } = loaded
   const propio = profile.id === user.id
+  const verificados = VERIFICACIONES.filter(({ key }) => profile.verificacion[key]).length
 
   async function onSaved() {
     setEditing(false)
     setVersion((v) => v + 1)
     await refreshUser()
+  }
+
+  async function cambiarFoto(set: typeof setAvatar, dataUrl: string) {
+    if (!user) return
+    setPhotoError(null)
+    try {
+      await set(user.id, dataUrl)
+      setVersion((v) => v + 1)
+      await refreshUser()
+    } catch (e) {
+      if (!(e instanceof StorageFullError)) throw e
+      setPhotoError(e.kind === 'fotos' ? MSG.espacioFotos : MSG.espacioGeneral)
+    }
   }
 
   async function onReset() {
@@ -73,13 +104,41 @@ export function ProfilePage() {
   return (
     <div className={styles.page}>
       <section className={styles.card}>
-        <div className={styles.cover} aria-hidden="true" />
+        <div className={styles.cover}>
+          {profile.portadaUrl && <img src={profile.portadaUrl} alt="" className={styles.coverImg} />}
+          {propio && (
+            <PhotoPicker
+              label="Cambiar portada"
+              mode="portada"
+              className={styles.coverPicker}
+              onPicked={(f) => cambiarFoto(setPortada, f)}
+            />
+          )}
+        </div>
         <div className={styles.identity}>
           <span className={styles.avatar}>
-            <Avatar id={profile.id} nombre={profile.nombre} size={88} />
+            <Avatar id={profile.id} nombre={profile.nombre} size={88} src={profile.avatarUrl} />
           </span>
+          {propio && (
+            <PhotoPicker label="Cambiar foto de perfil" mode="avatar" onPicked={(f) => cambiarFoto(setAvatar, f)} />
+          )}
           <h1 className={styles.name}>{profile.nombre}</h1>
-          <p className={styles.muted}>{profile.universidad}</p>
+          <p className={styles.muted}>@{profile.usuario}</p>
+          {profile.universidad && <p>{profile.universidad}</p>}
+          <ul className={styles.badges} aria-label="Verificación">
+            {VERIFICACIONES.filter(({ key }) => propio || profile.verificacion[key]).map(({ key, label }) =>
+              profile.verificacion[key] ? (
+                <li key={key} className={styles.badgeOk}>
+                  ✓ {label}
+                </li>
+              ) : (
+                <li key={key} className={styles.badgeNo}>
+                  Sin verificar: {label}
+                </li>
+              ),
+            )}
+          </ul>
+          {photoError && <Alert>{photoError}</Alert>}
         </div>
 
         {editing ? (
@@ -87,14 +146,27 @@ export function ProfilePage() {
         ) : (
           <div className={styles.details}>
             <ul className={styles.facts}>
-              <li>
-                <MapPin size={16} aria-hidden="true" />
-                {profile.paisOrigen} → {profile.ciudadDestino}, {profile.paisDestino}
-              </li>
-              <li>
-                <CalendarDays size={16} aria-hidden="true" />
-                {formatDateRange(profile.fechaLlegada, profile.fechaSalida)}
-              </li>
+              {profile.ciudadDestino ? (
+                <li>
+                  <MapPin size={16} aria-hidden="true" />
+                  {destino(profile)}
+                </li>
+              ) : (
+                propio && (
+                  <li>
+                    <MapPin size={16} aria-hidden="true" />
+                    <button type="button" className={styles.addDestino} onClick={() => setEditing(true)}>
+                      Agrega tu destino
+                    </button>
+                  </li>
+                )
+              )}
+              {profile.fechaLlegada && (
+                <li>
+                  <CalendarDays size={16} aria-hidden="true" />
+                  {formatDateRange(profile.fechaLlegada, profile.fechaSalida)}
+                </li>
+              )}
               {profile.instagram && (
                 <li>
                   <AtSign size={16} aria-hidden="true" />
@@ -129,6 +201,13 @@ export function ProfilePage() {
             <div className={styles.actions}>
               {propio ? (
                 <>
+                  {verificados === 3 ? (
+                    <span className={styles.verified}>Cuenta verificada</span>
+                  ) : (
+                    <Link to="/verificar" className={styles.verify}>
+                      Verificar cuenta ({verificados} de 3)
+                    </Link>
+                  )}
                   <Button variant="secondary" onClick={() => setEditing(true)}>
                     Editar perfil
                   </Button>
@@ -137,7 +216,10 @@ export function ProfilePage() {
                   </Button>
                 </>
               ) : (
-                <Button onClick={() => startChat(profile.id)}>Enviar mensaje</Button>
+                <>
+                  <FriendButton otroId={profile.id} />
+                  <Button onClick={() => startChat(profile.id)}>Enviar mensaje</Button>
+                </>
               )}
             </div>
           </div>

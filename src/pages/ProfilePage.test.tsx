@@ -3,7 +3,13 @@ import { expect, it, vi } from 'vitest'
 import { getUsers, setUsers } from '../services/db'
 import { create } from '../services/postsService'
 import { MSG } from '../services/validation'
+import { PHOTO_BUDGET_BYTES } from '../services/photoBudget'
 import { renderApp } from '../test/renderApp'
+
+const compress = vi.hoisted(() => vi.fn())
+vi.mock('../utils/image', () => ({ compressImage: compress }))
+
+const foto = () => new File(['x'], 'foto.jpg', { type: 'image/jpeg' })
 
 it('edita la biografía e instagram', async () => {
   const { user } = await renderApp('/perfil', { session: 'demo' })
@@ -110,4 +116,53 @@ it('restablece la demo', async () => {
   await user.click(await screen.findByRole('button', { name: 'Restablecer datos de demo' }))
   expect(await screen.findByRole('heading', { name: 'Inicio' })).toBeInTheDocument()
   expect(await screen.findAllByRole('article')).toHaveLength(12)
+})
+
+it('sube foto de perfil y portada', async () => {
+  compress.mockResolvedValue('data:image/jpeg;base64,AA')
+  const { user } = await renderApp('/perfil', { session: 'demo' })
+  await user.upload(await screen.findByLabelText('Cambiar foto de perfil'), foto())
+  await waitFor(() => expect(document.querySelector('img[src="data:image/jpeg;base64,AA"]')).not.toBeNull())
+  compress.mockResolvedValue('data:image/jpeg;base64,BB')
+  await user.upload(screen.getByLabelText('Cambiar portada'), foto())
+  await waitFor(() => expect(document.querySelector('img[src="data:image/jpeg;base64,BB"]')).not.toBeNull())
+})
+
+it('si la foto no entra en el presupuesto, avisa', async () => {
+  compress.mockResolvedValue('data:' + 'a'.repeat(PHOTO_BUDGET_BYTES + 10))
+  const { user } = await renderApp('/perfil', { session: 'demo' })
+  await user.upload(await screen.findByLabelText('Cambiar portada'), foto())
+  expect(await screen.findByRole('alert')).toHaveTextContent(MSG.espacioFotos)
+})
+
+it('insignias, usuario y botón de verificación; sin presupuesto', async () => {
+  await renderApp('/perfil', { session: 'demo' })
+  expect(await screen.findByText('@alex.romero')).toBeInTheDocument()
+  expect(screen.getByText('✓ DNI')).toBeInTheDocument()
+  expect(screen.getByText('✓ Celular')).toBeInTheDocument()
+  expect(screen.getByText('Sin verificar: Universidad')).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Verificar cuenta (2 de 3)' })).toHaveAttribute('href', '/verificar')
+  expect(screen.queryByText(/Presupuesto/)).toBeNull()
+})
+
+it('perfil de otro: botón de amistad y solo las insignias verificadas', async () => {
+  await renderApp('/perfil/u-07', { session: 'demo' })
+  expect(await screen.findByRole('button', { name: 'Agregar amigo' })).toBeInTheDocument()
+  expect(screen.getByText('✓ Universidad')).toBeInTheDocument()
+  expect(screen.queryByText(/Sin verificar/)).toBeNull()
+  expect(screen.queryByRole('link', { name: /Verificar cuenta/ })).toBeNull()
+})
+
+it('cuenta nueva sin destino muestra "Agrega tu destino"', async () => {
+  const { user } = await renderApp('/registro')
+  await user.type(await screen.findByLabelText('Nombre completo'), 'Ana Pérez')
+  await user.type(screen.getByLabelText('Nombre de usuario'), 'ana.perez')
+  await user.type(screen.getByLabelText('Correo'), 'ana@mail.com')
+  await user.type(screen.getByLabelText('Contraseña'), 'clave-segura-1')
+  await user.type(screen.getByLabelText('Confirmar contraseña'), 'clave-segura-1')
+  await user.click(screen.getByRole('button', { name: 'Crear cuenta' }))
+  await screen.findByRole('heading', { name: 'Inicio' })
+  await user.click(screen.getAllByRole('link', { name: 'Perfil' })[0])
+  await user.click(await screen.findByRole('button', { name: 'Agrega tu destino' }))
+  expect(screen.getByLabelText('Ciudad destino')).toBeInTheDocument()
 })

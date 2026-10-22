@@ -3,7 +3,7 @@ import { includesNormalized } from '../utils/text'
 import { getUsers, setUsers, toPublic } from './db'
 import { NotFoundError, ValidationError } from './errors'
 import { assertPhotoBudget } from './photoBudget'
-import { normalizeUsername, validateProfileFields } from './validation'
+import { MSG, normalizeUsername, validateProfileFields } from './validation'
 
 export async function getById(id: string): Promise<PublicUser> {
   const user = getUsers().find((u) => u.id === id)
@@ -27,16 +27,18 @@ export async function update(id: string, changes: ProfileChanges): Promise<Publi
   if (!current) throw new NotFoundError()
 
   const clean = cleanChanges(changes)
-  // Las fechas se validan contra la combinación de lo nuevo y lo guardado.
-  const errors = validateProfileFields({
-    ...clean,
-    fechaLlegada: clean.fechaLlegada ?? current.fechaLlegada,
-    fechaSalida: clean.fechaSalida ?? current.fechaSalida,
-  })
+  // Las fechas se validan contra la combinación de lo nuevo y lo guardado: van las dos o ninguna.
+  const llegada = clean.fechaLlegada ?? current.fechaLlegada ?? ''
+  const salida = clean.fechaSalida ?? current.fechaSalida ?? ''
+  const errors = validateProfileFields({ ...clean, fechaLlegada: llegada, fechaSalida: salida })
+  if (!errors.fechaSalida && !llegada !== !salida) errors.fechaSalida = MSG.fechasPar
   if (Object.keys(errors).length > 0) throw new ValidationError(errors)
 
   const updated: User = { ...current, ...clean }
-  if (!updated.instagram) delete updated.instagram
+  // Un campo opcional vacío se borra en vez de guardarse como ''.
+  for (const key of ['instagram', 'paisOrigen', 'ciudadDestino', 'paisDestino', 'fechaLlegada', 'fechaSalida'] as const) {
+    if (!updated[key]) delete updated[key]
+  }
   setUsers(users.map((u) => (u.id === id ? updated : u)))
   return toPublic(updated)
 }

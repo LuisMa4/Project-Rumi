@@ -19,12 +19,11 @@ export function ProfileForm({
 }) {
   const [form, setForm] = useState({
     nombre: user.nombre,
-    universidad: user.universidad,
-    paisOrigen: user.paisOrigen,
-    ciudadDestino: user.ciudadDestino,
-    paisDestino: user.paisDestino,
-    fechaLlegada: user.fechaLlegada,
-    fechaSalida: user.fechaSalida,
+    paisOrigen: user.paisOrigen ?? '',
+    ciudadDestino: user.ciudadDestino ?? '',
+    paisDestino: user.paisDestino ?? '',
+    fechaLlegada: user.fechaLlegada ?? '',
+    fechaSalida: user.fechaSalida ?? '',
     bio: user.bio,
     intereses: user.intereses.join(', '),
     instagram: user.instagram ? `@${user.instagram}` : '',
@@ -62,10 +61,7 @@ export function ProfileForm({
     <form ref={formRef} className={styles.form} onSubmit={onSubmit} noValidate aria-label="Editar perfil">
       {error && <Alert>{error}</Alert>}
       <TextField label="Nombre completo" autoComplete="name" {...field('nombre')} />
-      <div className={styles.row}>
-        <TextField label="Universidad" {...field('universidad')} />
-        <TextField label="País de origen" {...field('paisOrigen')} />
-      </div>
+      <TextField label="País de origen" {...field('paisOrigen')} />
       <div className={styles.row}>
         <TextField label="Ciudad destino" {...field('ciudadDestino')} />
         <TextField label="País destino" {...field('paisDestino')} />

@@ -16,8 +16,84 @@
 }
 
 .cover {
-  height: 104px;
+  position: relative;
+  height: 120px;
   background: var(--celeste);
+}
+
+.coverImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverPicker {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badgeOk,
+.badgeNo {
+  padding: 3px 10px;
+  border-radius: var(--radio-pildora);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.badgeOk {
+  background: var(--verde-suave);
+  color: var(--verde-tinta);
+}
+
+.badgeNo {
+  background: var(--celeste-suave);
+  color: var(--tinta-suave);
+}
+
+.addDestino {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--naranja-oscuro);
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.verify {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: var(--radio-pildora);
+  background: var(--naranja);
+  color: var(--blanco);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.verify:hover {
+  background: var(--naranja-oscuro);
+}
+
+.verified {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  color: var(--verde-tinta);
+  font-weight: 700;
 }
 
 .identity {

@@ -17,6 +17,7 @@ export const MSG = {
   usuarioDuplicado: 'Ese nombre de usuario ya está en uso',
   confirmar: 'Las contraseñas no coinciden',
   login: 'Usuario, correo o contraseña incorrectos',
+  fechasPar: 'Completa las dos fechas o ninguna',
   precioRango: "El precio 'desde' no puede ser mayor que 'hasta'",
   personas: 'Indica entre 1 y 6 personas',
   enlace: 'Ingresa un enlace que empiece con https://',
