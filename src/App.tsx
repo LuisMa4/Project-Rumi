@@ -11,6 +11,7 @@ import { PublishPage } from './pages/PublishPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { RequestsPage } from './pages/RequestsPage'
 import { SearchPage } from './pages/SearchPage'
+import { VerifyPage } from './pages/VerifyPage'
 
 export function AppRoutes() {
   return (
@@ -29,6 +30,7 @@ export function AppRoutes() {
           <Route path="/perfil/:id" element={<ProfilePage />} />
           <Route path="/solicitudes" element={<RequestsPage />} />
           <Route path="/publicar" element={<PublishPage />} />
+          <Route path="/verificar" element={<VerifyPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

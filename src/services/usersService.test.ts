@@ -6,7 +6,17 @@ import { nuevo } from '../test/fixtures'
 import { resetDemo } from './seed'
 import { StorageFullError } from './errors'
 import { PHOTO_BUDGET_BYTES } from './photoBudget'
-import { getById, searchByUsername, setAvatar, setPortada, update } from './usersService'
+import {
+  generateCode,
+  getById,
+  searchByUsername,
+  setAvatar,
+  setPortada,
+  update,
+  verifyCelular,
+  verifyDni,
+  verifyUniversidad,
+} from './usersService'
 import { MSG } from './validation'
 
 const ids = (us: PublicUser[]) => us.map((u) => u.id)
@@ -83,4 +93,37 @@ it('las fechas van juntas', async () => {
   await expect(update(ana.id, { fechaSalida: '' })).rejects.toMatchObject({ fieldErrors: { fechaSalida: MSG.fechasPar } })
   await update(ana.id, { fechaLlegada: '', fechaSalida: '' })
   expect((await getById(ana.id)).fechaLlegada).toBeFalsy()
+})
+
+describe('verificación', () => {
+  it('verifyDni guarda solo los últimos 3 caracteres', async () => {
+    await verifyDni('u-08', { numero: '45678912' })
+    expect(localStorage.getItem('rumi:users')).not.toContain('45678912')
+    expect((await getById('u-08')).verificacion.dni?.ultimos).toBe('912')
+    await expect(verifyDni('u-08', { numero: '12-34' })).rejects.toMatchObject({ fieldErrors: { numero: MSG.documento } })
+  })
+
+  it('verifyCelular guarda el número enmascarado', async () => {
+    await verifyCelular('u-08', { codigoPais: '+51', numero: '987654321' })
+    expect((await getById('u-08')).verificacion.celular?.enmascarado).toBe('+51 ••• ••• 321')
+    expect(localStorage.getItem('rumi:users')).not.toContain('987654321')
+    await expect(verifyCelular('u-08', { codigoPais: '+51', numero: '123' })).rejects.toMatchObject({
+      fieldErrors: { numero: MSG.celular },
+    })
+  })
+
+  it('verifyUniversidad rechaza correos personales y guarda la universidad', async () => {
+    await expect(
+      verifyUniversidad('u-demo', { universidad: 'Universidad de Lima', correo: 'alex@gmail.com' }),
+    ).rejects.toMatchObject({ fieldErrors: { correo: MSG.correoPersonal } })
+    await verifyUniversidad('u-demo', { universidad: 'Universidad de Lima', correo: 'alex@aloe.ulima.edu.pe' })
+    expect(await getById('u-demo')).toMatchObject({
+      universidad: 'Universidad de Lima',
+      verificacion: { universidad: { nombre: 'Universidad de Lima', correoEnmascarado: 'a•••@aloe.ulima.edu.pe' } },
+    })
+  })
+
+  it('generateCode da 6 dígitos', () => {
+    expect(generateCode()).toMatch(/^\d{6}$/)
+  })
 })
