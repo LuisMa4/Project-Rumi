@@ -1,0 +1,66 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 10px;
+  border-radius: var(--radio-pildora);
+  background: var(--naranja-suave);
+  color: var(--naranja-oscuro);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.remove:hover {
+  background: var(--blanco);
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.suggestion {
+  padding: 4px 10px;
+  border: 1px dashed var(--celeste);
+  border-radius: var(--radio-pildora);
+  background: var(--blanco);
+  color: var(--celeste-tinta);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.suggestion[aria-pressed='true'] {
+  border-style: solid;
+  background: var(--celeste-suave);
+  font-weight: 700;
+}

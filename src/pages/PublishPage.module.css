@@ -1,0 +1,165 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.page h1 {
+  font-size: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid var(--borde);
+  border-top: 4px solid var(--naranja);
+  border-radius: var(--radio-tarjeta);
+  background: var(--blanco);
+}
+
+.descripcion {
+  margin-top: -6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--celeste-suave);
+  color: var(--celeste-tinta);
+  font-size: 0.9rem;
+}
+
+.row,
+.row3 {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 480px) {
+  .row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .row3 {
+    grid-template-columns: 1fr 1fr 110px;
+  }
+}
+
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.fieldset legend {
+  margin-bottom: 6px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-pildora);
+  background: var(--blanco);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.chip[aria-checked='true'] {
+  border-color: var(--naranja);
+  background: var(--naranja-suave);
+  color: var(--naranja-oscuro);
+  font-weight: 700;
+}
+
+.error {
+  color: var(--error);
+  font-size: 0.85rem;
+}
+
+.advanced {
+  border-top: 1px solid var(--borde);
+  padding-top: 8px;
+}
+
+.advancedToggle {
+  padding: 0 4px;
+  color: var(--naranja-oscuro);
+}
+
+.advancedToggle::after {
+  content: '⌄';
+  margin-left: 4px;
+}
+
+.advancedToggle[aria-expanded='true']::after {
+  content: '⌃';
+}
+
+.advancedBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.thumbs li {
+  position: relative;
+}
+
+.thumbs img {
+  width: 76px;
+  height: 76px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.removeThumb {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--blanco);
+  color: var(--tinta);
+  box-shadow: var(--sombra-suave);
+  cursor: pointer;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

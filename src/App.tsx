@@ -7,6 +7,7 @@ import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { MessagesPage } from './pages/MessagesPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { PublishPage } from './pages/PublishPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { RequestsPage } from './pages/RequestsPage'
 import { SearchPage } from './pages/SearchPage'
@@ -27,6 +28,7 @@ export function AppRoutes() {
           <Route path="/perfil" element={<ProfilePage />} />
           <Route path="/perfil/:id" element={<ProfilePage />} />
           <Route path="/solicitudes" element={<RequestsPage />} />
+          <Route path="/publicar" element={<PublishPage />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

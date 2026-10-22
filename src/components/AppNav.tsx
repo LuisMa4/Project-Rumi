@@ -32,7 +32,7 @@ export function AppNav() {
       </div>
       <Item {...ITEMS[0]} />
       <Item {...ITEMS[1]} />
-      <Link to="/?publicar=1" className={styles.publish} aria-label="Publicar">
+      <Link to="/publicar" className={styles.publish} aria-label="Publicar">
         <Plus size={24} strokeWidth={2.5} aria-hidden="true" />
         <span className={styles.publishText}>Publicar</span>
       </Link>
