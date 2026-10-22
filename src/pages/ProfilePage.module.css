@@ -104,6 +104,8 @@
 }
 
 .avatar {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-self: flex-start;
   margin-top: -44px;

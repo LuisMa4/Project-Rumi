@@ -10,13 +10,13 @@ Este repositorio contiene el **Release 01 (MVP)**: solo el front end, con datos 
 
 | Historia | Pantalla |
 |---|---|
-| HU-01 Registro de usuario | `/registro` |
-| HU-02 Inicio de sesión | `/login` (incluye "Entrar con cuenta demo") |
-| HU-03 Página principal | `/` publicaciones de otros estudiantes con filtros por tipo |
-| HU-04 Configuración de perfil | `/perfil` (editable) y `/perfil/:id` |
-| HU-05 Chat entre usuarios | `/mensajes` y `/mensajes/:id` |
-| HU-06 Publicaciones | Cuadro para publicar en el inicio |
-| HU-07 Búsqueda personalizada | `/buscar` (personas y alquileres) |
+| HU-01 Registro de usuario | `/registro`: nombre, nombre de usuario único, correo y contraseña (con confirmación) |
+| HU-02 Inicio de sesión | `/login` con usuario o correo (incluye "Entrar con cuenta demo") |
+| HU-03 Página principal | `/`: fila de amigos (tocas uno y se abre el chat), publicaciones con filtros y rango de precio para alquileres |
+| HU-04 Configuración de perfil | `/perfil`: foto de perfil y portada, destino, fechas e intereses; `/verificar`: DNI, celular y universidad |
+| HU-05 Chat entre usuarios | `/mensajes` y `/mensajes/:id`, con mensajes sin leer |
+| HU-06 Publicaciones | `/publicar`: tipos guiados, hashtags, fotos, enlace del anuncio y ubicación en el mapa |
+| HU-07 Búsqueda personalizada | `/buscar` por nombre de usuario, con solicitudes de amistad (y la campana en `/solicitudes`) |
 
 La app se ve como una aplicación en el celular (barra de navegación inferior) y como una web en la laptop (menú lateral).
 
@@ -44,15 +44,23 @@ Otros comandos:
 
 ## Cuenta demo
 
-| Correo | Contraseña |
-|---|---|
-| `demo@rumi.app` | `rumidemo123` |
+| Usuario | Correo | Contraseña |
+|---|---|---|
+| `alex.romero` | `demo@rumi.app` | `rumidemo123` |
 
-También puedes usar el botón **Entrar con cuenta demo** en la pantalla de inicio de sesión. Entras como Alex Romero, estudiante de la Universidad de Lima que se va a Madrid.
+También puedes usar el botón **Entrar con cuenta demo** en la pantalla de inicio de sesión. Entras como Alex Romero, estudiante peruano que se va a Madrid. Tiene 3 amigos, 2 solicitudes de amistad pendientes y la universidad sin verificar, para mostrar ese paso.
+
+Los usuarios de ejemplo aceptan solos, a los pocos segundos, las solicitudes de amistad que les envíes, igual que responden solos en el chat.
 
 > Es una demo: los datos se guardan solo en tu navegador (`localStorage`). Las contraseñas se guardan como hash (SHA-256), no en texto plano, pero **no uses contraseñas reales**.
 
 Para volver a los datos de ejemplo, entra a **Perfil → Restablecer datos de demo**.
+
+Otras cosas de la demo:
+
+- **Verificación:** no se envían SMS ni correos reales; el código aparece en pantalla. Del documento solo se guardan los últimos 3 caracteres y la foto nunca se guarda.
+- **Fotos:** se recortan y comprimen en el navegador. Entre todas (perfil, portadas y publicaciones) pueden ocupar hasta 3 MB; si se pasa, la app avisa y no guarda la foto.
+- **Mapa:** usa OpenStreetMap y necesita internet. Sin conexión se ve el aviso y el enlace "Abrir en Google Maps".
 
 ## Estructura
 
@@ -61,19 +69,19 @@ src/
   App.tsx            Rutas de la app
   types.ts           Tipos de datos (usuario, publicación, conversación, mensaje)
   styles/            tokens.css (colores y fuentes) y global.css
-  services/          Capa de datos: auth, usuarios, publicaciones, chat, datos de demo
+  services/          Capa de datos: auth, usuarios (y verificación), amigos, publicaciones, chat, datos de demo
   context/           Sesión del usuario (AuthProvider y useAuth)
-  components/        Piezas reutilizables (PostCard, Avatar, AppNav, Field…)
+  components/        Piezas reutilizables (PostCard, FriendsRow, HashtagEditor, map/…)
   pages/             Una página por pantalla
-  hooks/             useStartChat
-  utils/             Formatos de fecha y precio, búsqueda sin tildes
+  hooks/             useStartChat, useIncomingRequests, useFocusFirstInvalid
+  utils/             Formatos, hashtags, compresión de imágenes, máscaras, búsqueda sin tildes
 docs/superpowers/    Diseño (spec) y plan de implementación
 Documentos/          Información general del proyecto y paleta de colores
 ```
 
 ## Cómo pasar a un backend real
 
-Las pantallas **nunca** leen `localStorage` directamente: solo llaman a las funciones de `src/services/` (`authService`, `usersService`, `postsService`, `chatService`), que ya son asíncronas.
+Las pantallas **nunca** leen `localStorage` directamente: solo llaman a las funciones de `src/services/` (`authService`, `usersService`, `friendsService`, `postsService`, `chatService`), que ya son asíncronas.
 
 Para el siguiente release basta con reescribir el interior de esos archivos (por ejemplo, con Firebase, Supabase o una API propia) manteniendo las mismas funciones. Las pantallas no cambian. `src/services/db.ts` y `src/services/storage.ts` son las piezas que quedan obsoletas.
 
