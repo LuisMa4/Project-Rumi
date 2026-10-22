@@ -17,6 +17,36 @@ const otherId = (c: Conversation, userId: string) => c.participantes.find((p) =>
 
 const byDate = (a: Message, b: Message) => a.enviadoEn.localeCompare(b.enviadoEn)
 
+/** Sin leer: el último mensaje es del otro y es posterior a lo que `userId` ya leyó. */
+function isUnread(conversation: Conversation, ultimo: Message, userId: string): boolean {
+  if (ultimo.autorId === userId) return false
+  const leido = conversation.leidoHasta?.[userId]
+  return !leido || leido < ultimo.enviadoEn
+}
+
+/** Ids de las personas que te escribieron mensajes que aún no leíste. */
+export async function unreadFrom(userId: string): Promise<Set<string>> {
+  const summaries = await listConversations(userId)
+  return new Set(summaries.filter((s) => s.noLeidos).map((s) => s.otro.id))
+}
+
+/** Marca como leída la conversación hasta su último mensaje. */
+export async function markRead(conversacionId: string, userId: string): Promise<void> {
+  const conversations = getConversations()
+  const conversation = conversations.find((c) => c.id === conversacionId)
+  if (!conversation || !conversation.participantes.includes(userId)) return
+  const ultimo = getAllMessages()
+    .filter((m) => m.conversacionId === conversacionId)
+    .sort(byDate)
+    .at(-1)
+  if (!ultimo || conversation.leidoHasta?.[userId] === ultimo.enviadoEn) return
+  setConversations(
+    conversations.map((c) =>
+      c.id === conversacionId ? { ...c, leidoHasta: { ...c.leidoHasta, [userId]: ultimo.enviadoEn } } : c,
+    ),
+  )
+}
+
 export async function listConversations(userId: string): Promise<ConversationSummary[]> {
   const messages = getAllMessages()
   const summaries: ConversationSummary[] = []
@@ -30,7 +60,7 @@ export async function listConversations(userId: string): Promise<ConversationSum
       .at(-1)
     // Abrir un chat y no escribir no debe dejar una conversación vacía en la bandeja.
     if (!ultimoMensaje) continue
-    summaries.push({ conversation, otro, ultimoMensaje, noLeidos: false })
+    summaries.push({ conversation, otro, ultimoMensaje, noLeidos: isUnread(conversation, ultimoMensaje, userId) })
   }
   return summaries.sort((a, b) => b.conversation.actualizadoEn.localeCompare(a.conversation.actualizadoEn))
 }

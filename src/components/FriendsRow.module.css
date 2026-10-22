@@ -1,0 +1,93 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  font-size: 1.1rem;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 0 -16px;
+  padding: 2px 16px 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}
+
+.friend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  width: 68px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--tinta);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ring {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 50%;
+  background: var(--borde);
+}
+
+.ring > * {
+  border: 3px solid var(--celeste-suave);
+}
+
+/* Anillo naranja-celeste: tiene mensajes sin leer. */
+.unread {
+  background: conic-gradient(var(--naranja), var(--celeste), var(--naranja));
+}
+
+.add {
+  background: transparent;
+}
+
+.plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: 2px dashed var(--celeste) !important;
+  border-radius: 50%;
+  background: var(--blanco);
+  color: var(--celeste-tinta);
+}
+
+.name {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  align-self: center;
+  color: var(--tinta-suave);
+  font-size: 0.9rem;
+}
+
+@media (min-width: 768px) {
+  .row {
+    margin: 0;
+    padding: 2px 0 6px;
+    flex-wrap: wrap;
+  }
+}

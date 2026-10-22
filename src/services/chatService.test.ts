@@ -5,8 +5,10 @@ import {
   getMessages,
   getOrCreateConversation,
   listConversations,
+  markRead,
   send,
   subscribe,
+  unreadFrom,
 } from './chatService'
 import { getConversations } from './db'
 import { NotFoundError, ValidationError } from './errors'
@@ -20,6 +22,23 @@ beforeEach(async () => {
 
 afterEach(() => {
   vi.useRealTimers()
+})
+
+describe('no leídos', () => {
+  it('noLeidos y markRead', async () => {
+    expect((await listConversations('u-demo')).find((c) => c.otro.id === 'u-01')!.noLeidos).toBe(true)
+    expect((await listConversations('u-demo')).find((c) => c.otro.id === 'u-04')!.noLeidos).toBe(false)
+    expect([...(await unreadFrom('u-demo'))]).toEqual(['u-01'])
+    await markRead('c-01', 'u-demo')
+    expect((await unreadFrom('u-demo')).size).toBe(0)
+  })
+
+  it('un mensaje propio no cuenta como no leído para quien lo escribe', async () => {
+    await markRead('c-01', 'u-demo')
+    await send('c-01', 'u-demo', 'hola')
+    expect((await unreadFrom('u-demo')).size).toBe(0)
+    expect([...(await unreadFrom('u-01'))]).toEqual(['u-demo'])
+  })
 })
 
 describe('conversaciones', () => {

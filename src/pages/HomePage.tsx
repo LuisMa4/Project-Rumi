@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { Chip } from '../components/Chip'
 import { EmptyState } from '../components/EmptyState'
 import { PostCard } from '../components/PostCard'
-import { PostComposer } from '../components/PostComposer'
+import { FriendsRow } from '../components/FriendsRow'
 import { useAuth } from '../context/useAuth'
 import { list } from '../services/postsService'
 import { POST_TYPE_LABELS, type PostType, type PostWithAuthor } from '../types'
@@ -15,8 +14,6 @@ export function HomePage() {
   const { user } = useAuth()
   const [tipo, setTipo] = useState<PostType | null>(null)
   const [posts, setPosts] = useState<PostWithAuthor[] | null>(null)
-  const [searchParams, setSearchParams] = useSearchParams()
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -28,14 +25,6 @@ export function HomePage() {
     }
   }, [tipo])
 
-  // El botón "Publicar" de la navegación llega con ?publicar=1.
-  useEffect(() => {
-    if (searchParams.get('publicar') !== '1') return
-    textareaRef.current?.focus()
-    textareaRef.current?.scrollIntoView?.({ block: 'center' })
-    setSearchParams({}, { replace: true })
-  }, [searchParams, setSearchParams])
-
   if (!user) return null
   const nombre = user.nombre.split(' ')[0]
 
@@ -46,15 +35,7 @@ export function HomePage() {
         <p className={styles.greeting}>Hola, {nombre}. Esto es lo nuevo entre estudiantes de intercambio.</p>
       </header>
 
-      <PostComposer
-        autorId={user.id}
-        textareaRef={textareaRef}
-        onCreated={(post) => {
-          if (!tipo || post.tipo === tipo) setPosts((prev) => [post, ...(prev ?? [])])
-          // Con otro filtro activo la publicación no se vería: volvemos a "Todo", que la recarga.
-          else setTipo(null)
-        }}
-      />
+      <FriendsRow />
 
       <div className={styles.filters} role="group" aria-label="Filtrar publicaciones">
         <Chip selected={tipo === null} onClick={() => setTipo(null)}>

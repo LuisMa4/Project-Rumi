@@ -63,3 +63,9 @@
   color: var(--tinta-suave);
   font-size: 0.8rem;
 }
+
+.unread .name,
+.unread .preview {
+  color: var(--tinta);
+  font-weight: 700;
+}

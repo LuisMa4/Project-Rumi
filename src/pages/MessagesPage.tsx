@@ -37,10 +37,10 @@ export function MessagesPage() {
         />
       ) : (
         <ul className={styles.list}>
-          {items.map(({ conversation, otro, ultimoMensaje }) => (
+          {items.map(({ conversation, otro, ultimoMensaje, noLeidos }) => (
             <li key={conversation.id}>
-              <Link to={`/mensajes/${conversation.id}`} className={styles.row}>
-                <Avatar id={otro.id} nombre={otro.nombre} size={48} />
+              <Link to={`/mensajes/${conversation.id}`} className={`${styles.row} ${noLeidos ? styles.unread : ''}`}>
+                <Avatar id={otro.id} nombre={otro.nombre} size={48} src={otro.avatarUrl} />
                 <span className={styles.body}>
                   <span className={styles.name}>{otro.nombre}</span>
                   <span className={styles.preview}>
