@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { expect, it } from 'vitest'
 import { getUsers, setUsers } from '../services/db'
 import { renderApp } from '../test/renderApp'
@@ -51,4 +51,13 @@ it('muestra precio y zona en los alquileres', async () => {
   await user.click(await screen.findByRole('button', { name: 'Ofrezco cuarto' }))
   await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(3))
   expect(screen.getByText('Moncloa')).toBeInTheDocument()
+})
+
+it('el rango de precio filtra alquileres', async () => {
+  const { user } = await renderApp('/', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Ofrezco cuarto' }))
+  fireEvent.change(await screen.findByLabelText('Precio desde'), { target: { value: '550' } })
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(2)) // Chamberí (600) y Gràcia (520–560)
+  expect(screen.queryByText(/Moncloa, a 10 minutos/)).toBeNull()
+  expect(screen.getByText(/Desde 550/)).toBeInTheDocument()
 })

@@ -1,0 +1,87 @@
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-tarjeta);
+  background: var(--blanco);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.values {
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+}
+
+.track {
+  position: relative;
+  height: 28px;
+}
+
+.track::before {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-radius: var(--radio-pildora);
+  background: var(--borde);
+}
+
+.fill {
+  position: absolute;
+  top: 11px;
+  height: 6px;
+  border-radius: var(--radio-pildora);
+  background: var(--naranja);
+}
+
+/* Dos sliders superpuestos: solo los "pulgares" reciben el puntero. */
+.track input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  background: none;
+  pointer-events: none;
+  appearance: none;
+}
+
+.track input::-webkit-slider-thumb {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--naranja);
+  border-radius: 50%;
+  background: var(--blanco);
+  pointer-events: auto;
+  appearance: none;
+  cursor: pointer;
+}
+
+.track input::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--naranja);
+  border-radius: 50%;
+  background: var(--blanco);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.track input:focus-visible::-webkit-slider-thumb {
+  outline: 3px solid var(--naranja-oscuro);
+  outline-offset: 2px;
+}
