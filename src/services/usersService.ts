@@ -2,6 +2,7 @@ import type { ProfileChanges, PublicUser, User } from '../types'
 import { includesNormalized } from '../utils/text'
 import { getUsers, setUsers, toPublic } from './db'
 import { NotFoundError, ValidationError } from './errors'
+import { assertPhotoBudget } from './photoBudget'
 import { normalizeUsername, validateProfileFields } from './validation'
 
 export async function getById(id: string): Promise<PublicUser> {
@@ -49,3 +50,17 @@ export async function searchByUsername(texto: string, currentUserId: string): Pr
     .sort((a, b) => a.usuario.localeCompare(b.usuario))
     .map(toPublic)
 }
+
+async function setPhoto(id: string, campo: 'avatarUrl' | 'portadaUrl', dataUrl: string): Promise<PublicUser> {
+  const users = getUsers()
+  const current = users.find((u) => u.id === id)
+  if (!current) throw new NotFoundError()
+  // La foto anterior deja de contar en el presupuesto.
+  assertPhotoBudget([dataUrl], current[campo] ? [current[campo]] : [])
+  const updated: User = { ...current, [campo]: dataUrl }
+  setUsers(users.map((u) => (u.id === id ? updated : u)))
+  return toPublic(updated)
+}
+
+export const setAvatar = (id: string, dataUrl: string) => setPhoto(id, 'avatarUrl', dataUrl)
+export const setPortada = (id: string, dataUrl: string) => setPhoto(id, 'portadaUrl', dataUrl)

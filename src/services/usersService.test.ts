@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import type { PublicUser } from '../types'
 import { NotFoundError } from './errors'
 import { resetDemo } from './seed'
-import { getById, searchByUsername, update } from './usersService'
+import { StorageFullError } from './errors'
+import { PHOTO_BUDGET_BYTES } from './photoBudget'
+import { getById, searchByUsername, setAvatar, setPortada, update } from './usersService'
 import { MSG } from './validation'
 
 const ids = (us: PublicUser[]) => us.map((u) => u.id)
@@ -51,5 +53,21 @@ describe('update', () => {
 
   it('falla con un id inexistente', async () => {
     await expect(update('nope', { bio: 'x' })).rejects.toBeInstanceOf(NotFoundError)
+  })
+})
+
+describe('fotos', () => {
+  it('setAvatar reemplaza y libera la anterior en el presupuesto', async () => {
+    const mitad = 'data:' + 'a'.repeat(PHOTO_BUDGET_BYTES / 2)
+    await setAvatar('u-demo', mitad)
+    await setAvatar('u-demo', mitad) // no suma dos veces
+    expect((await getById('u-demo')).avatarUrl).toBe(mitad)
+    await expect(setPortada('u-demo', mitad + 'x'.repeat(PHOTO_BUDGET_BYTES))).rejects.toBeInstanceOf(StorageFullError)
+    expect((await getById('u-demo')).portadaUrl).toBeUndefined()
+  })
+
+  it('setPortada guarda la portada', async () => {
+    await setPortada('u-demo', 'data:image/jpeg;base64,AA')
+    expect((await getById('u-demo')).portadaUrl).toBe('data:image/jpeg;base64,AA')
   })
 })

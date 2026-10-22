@@ -25,6 +25,7 @@ export const MSG = {
   fotosMax: 'Puedes subir hasta 4 fotos',
   hashtag: 'Usa de 2 a 30 letras, números o _',
   hashtagsMax: 'Máximo 10 hashtags',
+  imagen: 'No pudimos leer esa imagen. Prueba con otra (JPG o PNG)',
   espacioFotos: 'Ya no hay espacio en este navegador para más fotos. Usa menos fotos o imágenes más livianas',
   espacioGeneral: 'No hay espacio en este navegador. Restablece los datos de demo desde tu perfil',
 } as const
