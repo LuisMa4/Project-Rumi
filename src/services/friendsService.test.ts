@@ -54,6 +54,20 @@ describe('responder', () => {
     await sendRequest('u-demo', 'u-05')
     expect(await relation('u-demo', 'u-05')).toBe('enviada')
   })
+
+  it('si los dos rechazan la solicitud del otro, quien rechazó último ve ninguna y puede volver a pedirla', async () => {
+    const r = (await listIncoming('u-demo')).find((x) => x.de.id === 'u-05')!
+    await reject(r.request.id, 'u-demo')
+    const nueva = await sendRequest('u-demo', 'u-05')
+    await reject(nueva.id, 'u-05')
+    expect(await relation('u-05', 'u-demo')).toBe('ninguna')
+    expect(await relation('u-demo', 'u-05')).toBe('enviada')
+    await expect(sendRequest('u-demo', 'u-05')).rejects.toMatchObject({
+      fieldErrors: { amistad: 'Ya enviaste una solicitud' },
+    })
+    await sendRequest('u-05', 'u-demo')
+    expect(await relation('u-demo', 'u-05')).toBe('recibida')
+  })
 })
 
 describe('enviar', () => {

@@ -30,13 +30,20 @@ function findUser(id: string): PublicUser | undefined {
   return user && toPublic(user)
 }
 
+/**
+ * Las solicitudes entre `a` y `b`, en orden de creación (así se guardan). Manda la última:
+ * si los dos rechazaron la del otro, cuenta el rechazo más reciente.
+ */
+const requestsBetween = (a: string, b: string) => getFriendRequests().filter((r) => between(r, a, b))
+
 export async function relation(a: string, b: string): Promise<Relation> {
-  const requests = getFriendRequests().filter((r) => between(r, a, b))
+  const requests = requestsBetween(a, b)
   if (requests.some((r) => r.estado === 'aceptada')) return 'amigos'
-  if (requests.some((r) => r.estado === 'pendiente' && r.para === a)) return 'recibida'
+  const ultima = requests.at(-1)
   // Una solicitud rechazada se sigue viendo como enviada: quien la envió no se entera del rechazo.
-  if (requests.some((r) => r.de === a && r.estado !== 'aceptada')) return 'enviada'
-  return 'ninguna'
+  if (ultima?.de === a) return 'enviada'
+  // Quien rechazó la última ve 'ninguna' y puede enviar una nueva.
+  return ultima?.estado === 'pendiente' ? 'recibida' : 'ninguna'
 }
 
 function respond(requestId: string, userId: string, estado: 'aceptada' | 'rechazada'): FriendRequest {
@@ -61,13 +68,12 @@ export async function sendRequest(de: string, para: string): Promise<FriendReque
   if (de === para) throw new ValidationError({ amistad: 'No puedes agregarte a ti mismo' })
   if (!findUser(de) || !findUser(para)) throw new NotFoundError()
 
-  const requests = getFriendRequests().filter((r) => between(r, de, para))
+  const requests = requestsBetween(de, para)
   if (requests.some((r) => r.estado === 'aceptada')) throw new ValidationError({ amistad: 'Ya son amigos' })
-  if (requests.some((r) => r.de === de && r.estado !== 'aceptada')) {
-    throw new ValidationError({ amistad: 'Ya enviaste una solicitud' })
-  }
-  const inversa = requests.find((r) => r.de === para && r.estado === 'pendiente')
-  if (inversa) return respond(inversa.id, de, 'aceptada')
+  const ultima = requests.at(-1)
+  if (ultima?.de === de) throw new ValidationError({ amistad: 'Ya enviaste una solicitud' })
+  // La otra persona ya te la había enviado: se acepta directamente.
+  if (ultima?.estado === 'pendiente') return respond(ultima.id, de, 'aceptada')
 
   const request: FriendRequest = { id: newId(), de, para, estado: 'pendiente', creadoEn: new Date().toISOString() }
   setFriendRequests([...getFriendRequests(), request])
