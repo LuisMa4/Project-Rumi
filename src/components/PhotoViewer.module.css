@@ -20,6 +20,7 @@
 
 .img {
   max-width: min(100%, 960px);
+  max-height: calc(100vh - 32px);
   max-height: calc(100dvh - 32px);
   border-radius: 12px;
   object-fit: contain;
