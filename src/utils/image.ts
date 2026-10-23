@@ -65,6 +65,9 @@ export async function compressImage(file: File, mode: ImageMode): Promise<string
     canvas.height = c.h
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('Sin canvas')
+    // JPEG no tiene transparencia: sin este fondo, un PNG transparente queda negro.
+    ctx.fillStyle = 'white'
+    ctx.fillRect(0, 0, c.w, c.h)
     ctx.drawImage(bitmap, c.sx, c.sy, c.sw, c.sh, 0, 0, c.w, c.h)
     return canvas.toDataURL('image/jpeg', IMAGE_SIZES[mode].q)
   } catch {
