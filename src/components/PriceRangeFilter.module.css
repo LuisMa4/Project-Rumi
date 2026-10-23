@@ -90,3 +90,10 @@
   outline: 3px solid var(--naranja-oscuro);
   outline-offset: 2px;
 }
+
+/* El mismo anillo en Firefox, con box-shadow: 2px de separación y 3px de anillo. */
+.track input:focus-visible::-moz-range-thumb {
+  box-shadow:
+    0 0 0 2px var(--blanco),
+    0 0 0 5px var(--naranja-oscuro);
+}
