@@ -1,5 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, expect, it, vi } from 'vitest'
+import { getPosts } from '../services/db'
 import { PHOTO_BUDGET_BYTES } from '../services/photoBudget'
 import { MSG } from '../services/validation'
 import { renderApp } from '../test/renderApp'
@@ -61,6 +62,52 @@ it('hashtags automáticos, sugeridos y escritos; quitar uno', async () => {
   expect(screen.queryByRole('button', { name: 'Quitar #Madrid' })).toBeNull()
   await user.type(screen.getByLabelText('Agregar hashtag'), 'a{Enter}')
   expect(screen.getByLabelText('Agregar hashtag')).toHaveAccessibleDescription(MSG.hashtag)
+})
+
+it('un hashtag escrito que también es automático se quita con un solo clic', async () => {
+  const { user } = await renderApp('/publicar', { session: 'demo' })
+  await user.type(await screen.findByLabelText('Agregar hashtag'), 'Madrid{Enter}')
+  await user.type(screen.getByLabelText('Ciudad'), 'Madrid')
+  expect(screen.getAllByRole('button', { name: 'Quitar #Madrid' })).toHaveLength(1)
+  await user.click(screen.getByRole('button', { name: 'Quitar #Madrid' }))
+  expect(screen.queryByRole('button', { name: 'Quitar #Madrid' })).toBeNull()
+})
+
+it('un automático que quitaste vuelve cuando cambia el campo que lo generó', async () => {
+  const { user } = await renderApp('/publicar', { session: 'demo' })
+  await user.type(await screen.findByLabelText('Ciudad'), 'Madrid')
+  await user.click(screen.getByRole('button', { name: 'Quitar #Madrid' }))
+  await user.type(screen.getByLabelText('Zona'), 'Centro')
+  expect(screen.queryByRole('button', { name: 'Quitar #Madrid' })).toBeNull()
+  await user.clear(screen.getByLabelText('Ciudad'))
+  await user.type(screen.getByLabelText('Ciudad'), 'Madrid')
+  expect(screen.getByRole('button', { name: 'Quitar #Madrid' })).toBeInTheDocument()
+
+  await user.click(screen.getByRole('button', { name: 'Quitar #BuscoRoomie' }))
+  await user.click(screen.getByRole('radio', { name: 'Viaje' }))
+  await user.click(screen.getByRole('radio', { name: 'Busco roomie' }))
+  expect(screen.getByRole('button', { name: 'Quitar #BuscoRoomie' })).toBeInTheDocument()
+})
+
+it('los automáticos no pasan de 10 hashtags ni hacen perder uno escrito', async () => {
+  const { user } = await renderApp('/publicar', { session: 'demo' })
+  await user.click(await screen.findByRole('radio', { name: 'Ofrezco cuarto' }))
+  await user.type(screen.getByLabelText('Descripción'), 'Cuarto luminoso')
+  await user.type(screen.getByLabelText('Ciudad'), 'Madrid')
+  for (const s of ['Amoblado', 'GastosIncluidos', 'Mascotas', 'CercaDelMetro', 'BañoPrivado']) {
+    await user.click(screen.getByRole('button', { name: `+ ${s}` }))
+  }
+  for (const t of ['Luminoso', 'Balcon', 'Terraza']) {
+    await user.type(screen.getByLabelText('Agregar hashtag'), `${t}{Enter}`)
+  }
+  expect(screen.getAllByRole('button', { name: /^Quitar #/ })).toHaveLength(10)
+  await user.type(screen.getByLabelText('Zona'), 'Moncloa')
+  expect(screen.getAllByRole('button', { name: /^Quitar #/ })).toHaveLength(10)
+  await user.click(screen.getByRole('button', { name: 'Publicar' }))
+  await screen.findByRole('heading', { name: 'Inicio' })
+  const guardada = getPosts().find((p) => p.texto === 'Cuarto luminoso')!
+  expect(guardada.hashtags).toHaveLength(10)
+  expect(guardada.hashtags).toEqual(expect.arrayContaining(['Luminoso', 'Balcon', 'Terraza']))
 })
 
 it('publica con opciones avanzadas y vuelve al inicio con la publicación arriba', async () => {

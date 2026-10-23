@@ -14,7 +14,15 @@ import { coordsForCity, DEFAULT_COORDS } from '../services/cities'
 import { ValidationError } from '../services/errors'
 import { create } from '../services/postsService'
 import type { LatLng, LugarCategoria, PostType } from '../types'
-import { buildAutoHashtags, hashtagKey, LUGAR_CATEGORIAS, SUGGESTED_HASHTAGS } from '../utils/hashtags'
+import {
+  autoHashtagSources,
+  buildAutoHashtags,
+  hashtagKey,
+  LUGAR_CATEGORIAS,
+  MAX_HASHTAGS,
+  SUGGESTED_HASHTAGS,
+  type AutoHashtagSource,
+} from '../utils/hashtags'
 import { errorMessage } from '../utils/errorMessage'
 import { TYPE_INFO } from '../utils/postTypes'
 import styles from './PublishPage.module.css'
@@ -67,7 +75,7 @@ export function PublishPage() {
   const [fotos, setFotos] = useState<string[]>([])
   const [ubicacion, setUbicacion] = useState<LatLng>()
   const [extra, setExtra] = useState<string[]>([])
-  const [removedAuto, setRemovedAuto] = useState<string[]>([])
+  const [removedAuto, setRemovedAuto] = useState<AutoHashtagSource[]>([])
   const [advanced, setAdvanced] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | null>(null)
@@ -79,30 +87,39 @@ export function PublishPage() {
   const labels = LABELS[tipo]
   const usaUbicacion = tipo === 'ofrezco-cuarto' || tipo === 'lugar'
 
-  // Hashtags: los automáticos (menos los que quitaste) y los agregados a mano.
-  const auto = buildAutoHashtags({
+  // Hashtags: los agregados a mano y, en los lugares libres hasta 10, los automáticos
+  // (menos los que quitaste). Así ninguno escrito se pierde al guardar.
+  const autoInput = {
     tipo,
     ciudad: form.ciudad,
     zona: labels.zona ? form.zona : undefined,
     categoria: tipo === 'lugar' ? categoria : undefined,
-  }).filter((t) => !removedAuto.includes(hashtagKey(t)))
-  const tags = [...auto, ...extra.filter((t) => !auto.some((a) => hashtagKey(a) === hashtagKey(t)))]
+  }
+  const auto = buildAutoHashtags(autoInput, removedAuto)
+    .filter((t) => !extra.some((x) => hashtagKey(x) === hashtagKey(t)))
+    .slice(0, MAX_HASHTAGS - extra.length)
+  const tags = [...auto, ...extra]
+
+  /** Si cambias el campo que generó un hashtag automático que quitaste, ese hashtag vuelve. */
+  const volverAuto = (fuente: AutoHashtagSource) => setRemovedAuto((rs) => rs.filter((r) => r !== fuente))
 
   const field = (key: keyof typeof EMPTY) => ({
     value: form[key],
     error: errors[key],
-    onChange: (e: { target: { value: string } }) => setForm((f) => ({ ...f, [key]: e.target.value })),
+    onChange: (e: { target: { value: string } }) => {
+      setForm((f) => ({ ...f, [key]: e.target.value }))
+      if (key === 'ciudad' || key === 'zona') volverAuto(key)
+    },
   })
 
+  // Un mismo hashtag puede ser escrito y automático a la vez: se quita de los dos con un clic.
   function removeTag(tag: string) {
     const key = hashtagKey(tag)
-    if (extra.some((t) => hashtagKey(t) === key)) setExtra((xs) => xs.filter((t) => hashtagKey(t) !== key))
-    else setRemovedAuto((rs) => [...rs, key])
+    setExtra((xs) => xs.filter((t) => hashtagKey(t) !== key))
+    setRemovedAuto((rs) => [...rs, ...autoHashtagSources(autoInput, tag)])
   }
 
   function addTag(tag: string) {
-    const key = hashtagKey(tag)
-    setRemovedAuto((rs) => rs.filter((r) => r !== key))
     setExtra((xs) => [...xs, tag])
   }
 
@@ -155,6 +172,7 @@ export function PublishPage() {
         <TypePicker
           value={tipo}
           onChange={(t) => {
+            if (t !== tipo) volverAuto('tipo')
             setTipo(t)
             setErrors({})
           }}
@@ -180,7 +198,10 @@ export function PublishPage() {
                     role="radio"
                     aria-checked={categoria === c}
                     className={styles.chip}
-                    onClick={() => setCategoria(c)}
+                    onClick={() => {
+                      if (c !== categoria) volverAuto('categoria')
+                      setCategoria(c)
+                    }}
                   >
                     {LUGAR_CATEGORIAS[c].label}
                   </button>

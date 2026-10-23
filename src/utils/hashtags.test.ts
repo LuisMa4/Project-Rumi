@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { ValidationError } from '../services/errors'
 import { MSG } from '../services/validation'
-import { addHashtag, buildAutoHashtags, hashtagFrom, isValidHashtag, parseHashtagInput } from './hashtags'
+import {
+  addHashtag,
+  autoHashtagSources,
+  buildAutoHashtags,
+  hashtagFrom,
+  isValidHashtag,
+  parseHashtagInput,
+} from './hashtags'
 
 describe('hashtags', () => {
   it('hashtagFrom', () => {
@@ -42,5 +49,14 @@ describe('hashtags', () => {
       'BuscoRoomie',
       'CiudadDeMéxico',
     ])
+  })
+
+  it('autoHashtagSources dice qué campos generan un hashtag y buildAutoHashtags los puede omitir', () => {
+    const f = { tipo: 'ofrezco-cuarto', ciudad: 'Madrid', zona: 'madrid' } as const
+    expect(autoHashtagSources(f, 'MADRID')).toEqual(['ciudad', 'zona'])
+    expect(autoHashtagSources(f, 'Moncloa')).toEqual([])
+    expect(buildAutoHashtags(f, ['ciudad'])).toEqual(['OfrezcoCuarto', 'Madrid'])
+    expect(buildAutoHashtags(f, ['ciudad', 'zona'])).toEqual(['OfrezcoCuarto'])
+    expect(buildAutoHashtags(f, ['tipo'])).toEqual(['Madrid'])
   })
 })

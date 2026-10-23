@@ -58,22 +58,37 @@ export function addHashtag(list: string[], tag: string): string[] {
   return [...list, clean]
 }
 
-/** Hashtags que salen solos del tipo, la ciudad, la zona y la categoría, en ese orden. */
-export function buildAutoHashtags(f: {
-  tipo: PostType
-  ciudad: string
-  zona?: string
-  categoria?: LugarCategoria
-}): string[] {
-  const candidatos = [
-    TYPE_HASHTAG[f.tipo],
-    hashtagFrom(f.ciudad),
-    hashtagFrom(f.zona ?? ''),
-    f.categoria ? LUGAR_CATEGORIAS[f.categoria].hashtag : undefined,
+/** Campos del formulario que generan un hashtag automático. */
+export type AutoHashtagSource = 'tipo' | 'ciudad' | 'zona' | 'categoria'
+
+type AutoHashtagInput = { tipo: PostType; ciudad: string; zona?: string; categoria?: LugarCategoria }
+
+/** El hashtag que propone cada campo, sin validar ni deduplicar. */
+function candidatos(f: AutoHashtagInput): [AutoHashtagSource, string | undefined][] {
+  return [
+    ['tipo', TYPE_HASHTAG[f.tipo]],
+    ['ciudad', hashtagFrom(f.ciudad)],
+    ['zona', hashtagFrom(f.zona ?? '')],
+    ['categoria', f.categoria ? LUGAR_CATEGORIAS[f.categoria].hashtag : undefined],
   ]
+}
+
+/**
+ * Hashtags que salen solos del tipo, la ciudad, la zona y la categoría, en ese orden.
+ * `omitir`: los campos cuyo hashtag quitó la persona.
+ */
+export function buildAutoHashtags(f: AutoHashtagInput, omitir: AutoHashtagSource[] = []): string[] {
   const result: string[] = []
-  for (const tag of candidatos) {
+  for (const [fuente, tag] of candidatos(f)) {
+    if (omitir.includes(fuente)) continue
     if (tag && isValidHashtag(tag) && !result.some((t) => hashtagKey(t) === hashtagKey(tag))) result.push(tag)
   }
   return result
+}
+
+/** Los campos que generan `tag` como hashtag automático (puede ser más de uno: ciudad y zona). */
+export function autoHashtagSources(f: AutoHashtagInput, tag: string): AutoHashtagSource[] {
+  return candidatos(f)
+    .filter(([, t]) => t !== undefined && hashtagKey(t) === hashtagKey(tag))
+    .map(([fuente]) => fuente)
 }
