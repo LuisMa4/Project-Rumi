@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
 
 // Se lee como texto (ruta desde la raíz del proyecto): en las pruebas, Vite no procesa el CSS.
@@ -28,6 +28,15 @@ function contrast(a: string, b: string): number {
 it('el borde de los campos contrasta al menos 3:1 con los fondos', () => {
   expect(contrast(token('borde-campo'), token('blanco'))).toBeGreaterThanOrEqual(3)
   expect(contrast(token('borde-campo'), token('celeste-suave'))).toBeGreaterThanOrEqual(3)
+})
+
+it('los estilos solo usan colores de tokens.css', () => {
+  const css = readdirSync('src', { recursive: true, encoding: 'utf8' })
+    .filter((f) => f.endsWith('.css') && !f.endsWith('tokens.css'))
+    .map((f) => `src/${f.replaceAll('\\', '/')}`)
+  expect(css.length).toBeGreaterThan(10)
+  const sueltos = css.filter((f) => /#[0-9a-f]{3,8}\b|\b(rgba?|hsla?)\(/i.test(readFileSync(f, 'utf8')))
+  expect(sueltos).toEqual([])
 })
 
 it('el anillo de foco contrasta al menos 3:1 con los fondos', () => {

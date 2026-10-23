@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: rgb(31 42 51 / 0.88);
+  background: var(--fondo-visor);
 }
 
 .frame {

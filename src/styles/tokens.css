@@ -20,6 +20,8 @@
   --verde-suave: #e3f4ea;
   --verde-tinta: #1e6b3d;
   --error: #b42318;
+  /* Fondo del visor de fotos: --tinta al 88 %. */
+  --fondo-visor: rgb(31 42 51 / 0.88);
 
   --radio-tarjeta: 16px;
   --radio-pildora: 999px;
