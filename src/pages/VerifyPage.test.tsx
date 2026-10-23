@@ -72,6 +72,33 @@ it('verifica el celular con el código', async () => {
   expect(await screen.findByRole('heading', { name: 'Universidad' })).toBeInTheDocument()
 })
 
+it('si cambias el celular después de pedir el código, ese código ya no sirve', async () => {
+  const { user } = await renderApp('/verificar', { session: 'u-08' })
+  await user.click(await screen.findByRole('button', { name: 'Omitir este paso' }))
+  await user.type(await screen.findByLabelText('Número de celular'), '987654321')
+  await user.click(screen.getByRole('button', { name: 'Enviar código' }))
+  const code = codigoEnPantalla()
+  await user.selectOptions(screen.getByLabelText('Código de país'), '+56')
+  expect(screen.queryByText(/Tu código es/)).toBeNull()
+  await user.type(screen.getByLabelText('Código de 6 dígitos'), code)
+  await user.click(screen.getByRole('button', { name: 'Verificar' }))
+  expect(screen.getByLabelText('Código de 6 dígitos')).toHaveAccessibleDescription(MSG.codigoPendiente)
+  expect(screen.getByRole('heading', { name: 'Celular' })).toBeInTheDocument()
+})
+
+it('si cambias el correo después de pedir el código, ese código ya no sirve', async () => {
+  const { user } = await renderApp('/verificar', { session: 'demo' })
+  await user.type(await screen.findByLabelText('Universidad'), 'Universidad de Lima')
+  await user.type(screen.getByLabelText('Correo institucional'), 'alex@aloe.ulima.edu.pe')
+  await user.click(screen.getByRole('button', { name: 'Enviar código' }))
+  const code = codigoEnPantalla()
+  await user.type(screen.getByLabelText('Correo institucional'), 'x')
+  await user.type(screen.getByLabelText('Código de 6 dígitos'), code)
+  await user.click(screen.getByRole('button', { name: 'Verificar' }))
+  expect(screen.getByLabelText('Código de 6 dígitos')).toHaveAccessibleDescription(MSG.codigoPendiente)
+  expect(localStorage.getItem('rumi:users')).not.toContain('aloe.ulima.edu.pe')
+})
+
 it('sin espacio en el DNI avisa y no deja la pantalla trabada', async () => {
   const { user } = await renderApp('/verificar', { session: 'u-08' })
   await user.type(await screen.findByLabelText('Número de DNI o pasaporte'), '45678912')

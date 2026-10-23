@@ -94,11 +94,15 @@ function DniStep({ userId, onDone, onSkip }: StepProps) {
   )
 }
 
-/** Paso con código de 6 dígitos (celular o correo): el código se muestra en pantalla porque es una demo. */
+/**
+ * Paso con código de 6 dígitos (celular o correo): el código se muestra en pantalla porque es una demo.
+ * `destino` es a dónde se "envió" el código: si cambia, ese código deja de servir.
+ */
 function CodeStep({
   titulo,
   intro,
   medio,
+  destino,
   campos,
   validar,
   verificar,
@@ -108,22 +112,24 @@ function CodeStep({
   titulo: string
   intro: string
   medio: 'SMS' | 'correos'
+  destino: string
   campos: (errors: Record<string, string>) => ReactNode
   validar: () => Record<string, string>
   verificar: () => Promise<unknown>
   onDone: () => Promise<void>
   onSkip: () => void
 }) {
-  const [codigo, setCodigo] = useState<string | null>(null)
+  const [enviado, setEnviado] = useState<{ codigo: string; destino: string } | null>(null)
   const [ingresado, setIngresado] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const codigo = enviado?.destino === destino ? enviado.codigo : null
 
   function enviar() {
     const errs = validar()
     setErrors(errs)
-    if (Object.keys(errs).length === 0) setCodigo(generateCode())
+    if (Object.keys(errs).length === 0) setEnviado({ codigo: generateCode(), destino })
   }
 
   async function onSubmit(e: FormEvent) {
@@ -177,6 +183,7 @@ function CelularStep({ userId, onDone, onSkip }: StepProps) {
       titulo="Celular"
       intro="Te enviamos un código para confirmar que el número es tuyo."
       medio="SMS"
+      destino={`${codigoPais} ${numero}`}
       validar={() => validateCelular({ codigoPais, numero })}
       verificar={() => verifyCelular(userId, { codigoPais, numero })}
       onDone={onDone}
@@ -213,6 +220,7 @@ function UniversidadStep({ userId, onDone, onSkip }: StepProps) {
       titulo="Universidad"
       intro="Confirma que estudias ahí con tu correo institucional. Tu universidad se mostrará en tu perfil."
       medio="correos"
+      destino={correo}
       validar={() => validateUniversidad({ universidad, correo })}
       verificar={() => verifyUniversidad(userId, { universidad, correo })}
       onDone={onDone}
