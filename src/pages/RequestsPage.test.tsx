@@ -1,6 +1,23 @@
 import { screen, waitFor, within } from '@testing-library/react'
-import { expect, it } from 'vitest'
+import { afterEach, expect, it, vi } from 'vitest'
 import { renderApp } from '../test/renderApp'
+
+// `accept` real, pero puede quedar esperando para ver la pantalla mientras responde.
+const freno = vi.hoisted(() => ({ espera: null as Promise<void> | null }))
+vi.mock('../services/friendsService', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../services/friendsService')>()
+  return {
+    ...real,
+    accept: async (...args: Parameters<typeof real.accept>) => {
+      await freno.espera
+      return real.accept(...args)
+    },
+  }
+})
+
+afterEach(() => {
+  freno.espera = null
+})
 
 it('la campana muestra 2 y lleva a solicitudes', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
@@ -18,4 +35,19 @@ it('aceptar y rechazar actualizan la lista y la campana', async () => {
   await user.click(within(screen.getByText('Andrés Molina').closest('li')!).getByRole('button', { name: 'Rechazar' }))
   expect(await screen.findByText('No tienes solicitudes pendientes')).toBeInTheDocument()
   expect(screen.getAllByRole('link', { name: 'Solicitudes de amistad' }).length).toBeGreaterThan(0)
+})
+
+it('mientras responde, los botones quedan deshabilitados', async () => {
+  let soltar = () => {}
+  freno.espera = new Promise((resolve) => {
+    soltar = resolve
+  })
+  const { user } = await renderApp('/solicitudes', { session: 'demo' })
+  const row = (await screen.findByText('Sofía Castro')).closest('li')!
+  await user.click(within(row).getByRole('button', { name: 'Aceptar' }))
+  expect(within(row).getByRole('button', { name: 'Aceptar' })).toBeDisabled()
+  expect(within(row).getByRole('button', { name: 'Rechazar' })).toBeDisabled()
+  soltar()
+  await waitFor(() => expect(screen.queryByText('Sofía Castro')).toBeNull())
+  expect(within(screen.getByText('Andrés Molina').closest('li')!).getByRole('button', { name: 'Aceptar' })).toBeEnabled()
 })

@@ -14,14 +14,19 @@ export function RequestsPage() {
   const { user } = useAuth()
   const requests = useIncomingRequests()
   const [error, setError] = useState<string | null>(null)
+  // Mientras responde, los botones se deshabilitan: así no se responde dos veces.
+  const [busy, setBusy] = useState(false)
 
   async function responder(requestId: string, aceptar: boolean) {
     if (!user) return
     setError(null)
+    setBusy(true)
     try {
       await (aceptar ? accept : reject)(requestId, user.id)
     } catch (err) {
       setError(errorMessage(err, 'No pudimos responder la solicitud. Intenta de nuevo.'))
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -45,10 +50,15 @@ export function RequestsPage() {
                 </span>
               </Link>
               <div className={styles.actions}>
-                <Button className={styles.small} onClick={() => responder(request.id, true)}>
+                <Button className={styles.small} disabled={busy} onClick={() => responder(request.id, true)}>
                   Aceptar
                 </Button>
-                <Button variant="ghost" className={styles.small} onClick={() => responder(request.id, false)}>
+                <Button
+                  variant="ghost"
+                  className={styles.small}
+                  disabled={busy}
+                  onClick={() => responder(request.id, false)}
+                >
                   Rechazar
                 </Button>
               </div>
