@@ -25,10 +25,12 @@ import {
 } from '../utils/hashtags'
 import { errorMessage } from '../utils/errorMessage'
 import { TYPE_INFO } from '../utils/postTypes'
+import { radioGroup } from '../utils/radioGroup'
 import styles from './PublishPage.module.css'
 
 const MONEDAS = ['EUR', 'USD', 'PEN', 'ARS', 'MXN', 'CLP', 'COP', 'CAD']
 const MAX_FOTOS = 4
+const CATEGORIAS = Object.keys(LUGAR_CATEGORIAS) as LugarCategoria[]
 
 /** Etiquetas que cambian según el tipo de publicación. */
 const LABELS: Record<
@@ -112,6 +114,12 @@ export function PublishPage() {
     },
   })
 
+  function elegirCategoria(c: LugarCategoria) {
+    if (c !== categoria) volverAuto('categoria')
+    setCategoria(c)
+  }
+  const categorias = radioGroup(CATEGORIAS, categoria, elegirCategoria)
+
   // Un mismo hashtag puede ser escrito y automático a la vez: se quita de los dos con un clic.
   function removeTag(tag: string) {
     const key = hashtagKey(tag)
@@ -188,20 +196,19 @@ export function PublishPage() {
               aria-describedby={errors.categoria ? 'categoria-error' : undefined}
               tabIndex={-1}
               className={styles.section}
+              onKeyDown={categorias.onKeyDown}
             >
               <span className={styles.label}>¿Qué tipo de lugar?</span>
               <div className={styles.chips}>
-                {(Object.keys(LUGAR_CATEGORIAS) as LugarCategoria[]).map((c) => (
+                {CATEGORIAS.map((c) => (
                   <button
                     key={c}
                     type="button"
                     role="radio"
                     aria-checked={categoria === c}
+                    tabIndex={categorias.tabIndex(c)}
                     className={styles.chip}
-                    onClick={() => {
-                      if (c !== categoria) volverAuto('categoria')
-                      setCategoria(c)
-                    }}
+                    onClick={() => elegirCategoria(c)}
                   >
                     {LUGAR_CATEGORIAS[c].label}
                   </button>
