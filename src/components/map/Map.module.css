@@ -4,6 +4,24 @@
   gap: 6px;
 }
 
+.frame {
+  position: relative;
+}
+
+/* Aviso encima del mapa cuando las teselas no cargan (sin internet). */
+.offline {
+  position: absolute;
+  inset: auto 8px 8px;
+  z-index: 500;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--blanco);
+  color: var(--celeste-tinta);
+  font-size: 0.9rem;
+  text-align: center;
+  box-shadow: var(--sombra-suave);
+}
+
 .map {
   width: 100%;
   border-radius: 12px;

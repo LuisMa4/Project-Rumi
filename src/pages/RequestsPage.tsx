@@ -7,6 +7,7 @@ import { EmptyState } from '../components/EmptyState'
 import { useAuth } from '../context/useAuth'
 import { useIncomingRequests } from '../hooks/useIncomingRequests'
 import { accept, reject } from '../services/friendsService'
+import { errorMessage } from '../utils/errorMessage'
 import styles from './RequestsPage.module.css'
 
 export function RequestsPage() {
@@ -19,8 +20,8 @@ export function RequestsPage() {
     setError(null)
     try {
       await (aceptar ? accept : reject)(requestId, user.id)
-    } catch {
-      setError('No pudimos responder la solicitud. Intenta de nuevo.')
+    } catch (err) {
+      setError(errorMessage(err, 'No pudimos responder la solicitud. Intenta de nuevo.'))
     }
   }
 

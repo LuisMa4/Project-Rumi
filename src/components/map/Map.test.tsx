@@ -6,10 +6,13 @@ import { MapPicker } from './MapPicker'
 import { MapView } from './MapView'
 
 vi.mock('./LeafletMap', () => ({
-  default: ({ onPick }: { onPick?: (p: { lat: number; lng: number }) => void }) => (
+  default: ({ onPick, onTileError }: { onPick?: (p: { lat: number; lng: number }) => void; onTileError?: () => void }) => (
     <div data-testid="leaflet">
       <button type="button" onClick={() => onPick?.({ lat: 1, lng: 2 })}>
         Elegir punto de prueba
+      </button>
+      <button type="button" onClick={() => onTileError?.()}>
+        Simular teselas sin conexión
       </button>
     </div>
   ),
@@ -33,4 +36,11 @@ it('MapPicker elige y quita la ubicación', async () => {
   rerender(<MapPicker center={DEFAULT_COORDS} value={{ lat: 1, lng: 2 }} onChange={onChange} />)
   await userEvent.click(screen.getByRole('button', { name: 'Quitar ubicación' }))
   expect(onChange).toHaveBeenLastCalledWith(undefined)
+})
+
+it('si las teselas no cargan (sin internet) se ve el aviso y el enlace sigue', async () => {
+  render(<MapView lat={1} lng={2} />)
+  await userEvent.click(await screen.findByRole('button', { name: 'Simular teselas sin conexión' }))
+  expect(screen.getByText('No pudimos cargar el mapa')).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Abrir en Google Maps' })).toBeInTheDocument()
 })

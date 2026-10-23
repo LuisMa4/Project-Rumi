@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/useAuth'
 import { accept, listIncoming, relation, sendRequest, subscribe } from '../services/friendsService'
+import { ValidationError } from '../services/errors'
 import type { Relation } from '../types'
+import { errorMessage } from '../utils/errorMessage'
+import { Alert } from './Alert'
 import { Button } from './Button'
 import styles from './FriendButton.module.css'
 
@@ -18,6 +21,7 @@ export function FriendButton({ otroId }: { otroId: string }) {
   const userId = user?.id
   const [estado, setEstado] = useState<{ para: string; relation: Relation } | null>(null)
   const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!userId) return
@@ -40,12 +44,19 @@ export function FriendButton({ otroId }: { otroId: string }) {
   async function onClick() {
     if (!userId) return
     setBusy(true)
+    setError(null)
     try {
       if (actual === 'ninguna') await sendRequest(userId, otroId)
       if (actual === 'recibida') {
         const solicitud = (await listIncoming(userId)).find((r) => r.de.id === otroId)
         if (solicitud) await accept(solicitud.request.id, userId)
       }
+    } catch (err) {
+      setError(
+        err instanceof ValidationError
+          ? Object.values(err.fieldErrors)[0]
+          : errorMessage(err, 'No pudimos actualizar la solicitud. Intenta de nuevo.'),
+      )
     } finally {
       setBusy(false)
     }
@@ -53,7 +64,8 @@ export function FriendButton({ otroId }: { otroId: string }) {
 
   const interactivo = actual === 'ninguna' || actual === 'recibida'
   return (
-    <Button
+    <>
+      <Button
       variant={actual === 'recibida' ? 'primary' : 'secondary'}
       className={`${styles.button} ${actual === 'amigos' ? styles.amigos : ''}`}
       disabled={actual === 'enviada' || busy}
@@ -61,6 +73,8 @@ export function FriendButton({ otroId }: { otroId: string }) {
       onClick={interactivo ? onClick : undefined}
     >
       {LABELS[actual]}
-    </Button>
+      </Button>
+      {error && <Alert>{error}</Alert>}
+    </>
   )
 }

@@ -1,5 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
+import { MSG } from '../services/validation'
 import { renderApp } from '../test/renderApp'
 
 const item = (name: string) =>
@@ -32,4 +33,16 @@ it('sin resultados', async () => {
   const { user } = await renderApp('/buscar', { session: 'demo' })
   await user.type(await screen.findByLabelText('Nombre de usuario'), 'zzz')
   expect(await screen.findByText('No encontramos a nadie con ese usuario')).toBeInTheDocument()
+})
+
+it('sin espacio al agregar un amigo, avisa', async () => {
+  const { user } = await renderApp('/buscar', { session: 'demo' })
+  await user.type(await screen.findByLabelText('Nombre de usuario'), 'isabella')
+  const boton = await within(await waitFor(() => item('Isabella Rojas'))).findByRole('button', { name: 'Agregar amigo' })
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    throw new DOMException('full', 'QuotaExceededError')
+  })
+  await user.click(boton)
+  expect(await within(item('Isabella Rojas')).findByRole('alert')).toHaveTextContent(MSG.espacioGeneral)
+  vi.restoreAllMocks()
 })

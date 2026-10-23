@@ -6,6 +6,7 @@ import { Button } from '../components/Button'
 import { TextField } from '../components/Field'
 import { useAuth } from '../context/useAuth'
 import { AuthError } from '../services/errors'
+import { errorMessage } from '../utils/errorMessage'
 import styles from './AuthPages.module.css'
 
 export function LoginPage() {
@@ -23,7 +24,7 @@ export function LoginPage() {
       await action()
       navigate('/', { replace: true })
     } catch (e) {
-      setError(e instanceof AuthError ? e.message : 'No pudimos iniciar sesión. Intenta de nuevo.')
+      setError(e instanceof AuthError ? e.message : errorMessage(e, 'No pudimos iniciar sesión. Intenta de nuevo.'))
       setBusy(false)
     }
   }

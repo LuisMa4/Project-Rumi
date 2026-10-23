@@ -49,7 +49,12 @@
   background: var(--naranja);
 }
 
-/* Dos sliders superpuestos: solo los "pulgares" reciben el puntero. */
+/* Dos sliders superpuestos: solo los "pulgares" reciben el puntero.
+   Si "desde" llega al tope, su pulgar queda encima para poder bajarlo. */
+.track input[data-arriba] {
+  z-index: 2;
+}
+
 .track input {
   position: absolute;
   inset: 0;

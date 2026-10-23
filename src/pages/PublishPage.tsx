@@ -11,11 +11,11 @@ import { TypePicker } from '../components/TypePicker'
 import { useAuth } from '../context/useAuth'
 import { useFocusFirstInvalid } from '../hooks/useFocusFirstInvalid'
 import { coordsForCity, DEFAULT_COORDS } from '../services/cities'
-import { StorageFullError, ValidationError } from '../services/errors'
+import { ValidationError } from '../services/errors'
 import { create } from '../services/postsService'
-import { MSG } from '../services/validation'
 import type { LatLng, LugarCategoria, PostType } from '../types'
 import { buildAutoHashtags, hashtagKey, LUGAR_CATEGORIAS, SUGGESTED_HASHTAGS } from '../utils/hashtags'
+import { errorMessage } from '../utils/errorMessage'
 import { TYPE_INFO } from '../utils/postTypes'
 import styles from './PublishPage.module.css'
 
@@ -136,10 +136,8 @@ export function PublishPage() {
       if (err instanceof ValidationError) {
         setErrors(err.fieldErrors)
         if (err.fieldErrors.enlace || err.fieldErrors.fotos) setAdvanced(true)
-      } else if (err instanceof StorageFullError) {
-        setError(err.kind === 'fotos' ? MSG.espacioFotos : MSG.espacioGeneral)
       } else {
-        setError('No pudimos publicar. Intenta de nuevo.')
+        setError(errorMessage(err, 'No pudimos publicar. Intenta de nuevo.'))
       }
     }
   }
@@ -153,7 +151,6 @@ export function PublishPage() {
     <div className={styles.page}>
       <h1>Nueva publicación</h1>
       <form ref={formRef} className={styles.form} onSubmit={onSubmit} noValidate aria-label="Nueva publicación">
-        {error && <Alert>{error}</Alert>}
 
         <TypePicker
           value={tipo}
@@ -171,6 +168,7 @@ export function PublishPage() {
               aria-label="¿Qué tipo de lugar?"
               aria-invalid={errors.categoria ? true : undefined}
               aria-describedby={errors.categoria ? 'categoria-error' : undefined}
+              tabIndex={-1}
               className={styles.section}
             >
               <span className={styles.label}>¿Qué tipo de lugar?</span>
@@ -302,6 +300,8 @@ export function PublishPage() {
           )}
         </div>
 
+        {/* Junto al botón: en el celular, arriba del formulario quedaría fuera de la vista. */}
+        {error && <Alert>{error}</Alert>}
         <div className={styles.footer}>
           <Button variant="ghost" onClick={cancelar} disabled={busy}>
             Cancelar

@@ -36,12 +36,15 @@ export default function LeafletMap({
   zoom,
   marker,
   onPick,
+  onTileError,
   height,
 }: {
   center: LatLng
   zoom: number
   marker?: LatLng
   onPick?: (p: LatLng) => void
+  /** Se llama cuando una tesela no carga (por ejemplo, sin internet). */
+  onTileError?: () => void
   height: number
 }) {
   return (
@@ -55,6 +58,7 @@ export default function LeafletMap({
       <TileLayer
         attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        eventHandlers={onTileError ? { tileerror: onTileError } : undefined}
       />
       <Recenter center={center} />
       {marker && <Marker position={[marker.lat, marker.lng]} icon={pin} />}

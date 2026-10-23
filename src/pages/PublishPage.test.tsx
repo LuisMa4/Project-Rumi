@@ -112,3 +112,24 @@ it('valida publicación vacía y lleva el foco al primer error', async () => {
   expect(await screen.findByLabelText('Descripción')).toHaveAccessibleDescription(MSG.postVacio)
   await waitFor(() => expect(screen.getByLabelText('Descripción')).toHaveFocus())
 })
+
+it('el aviso general queda junto al botón de publicar', async () => {
+  compress.mockResolvedValue('data:' + 'a'.repeat(PHOTO_BUDGET_BYTES))
+  const { user } = await renderApp('/publicar', { session: 'demo' })
+  await user.click(await screen.findByRole('radio', { name: 'Viaje' }))
+  await user.type(screen.getByLabelText('Descripción'), 'Escapada')
+  await user.type(screen.getByLabelText('Destino'), 'Sintra')
+  await user.click(screen.getByRole('button', { name: 'Opciones avanzadas' }))
+  await user.upload(screen.getByLabelText('Agregar fotos'), foto())
+  await screen.findByRole('button', { name: 'Quitar foto 1' })
+  await user.click(screen.getByRole('button', { name: 'Publicar' }))
+  const alerta = await screen.findByRole('alert')
+  expect(alerta.nextElementSibling).toContainElement(screen.getByRole('button', { name: 'Publicar' }))
+})
+
+it('si falta el tipo de lugar, el foco va a ese grupo', async () => {
+  const { user } = await renderApp('/publicar', { session: 'demo' })
+  await user.click(await screen.findByRole('radio', { name: 'Lugar recomendado' }))
+  await user.click(screen.getByRole('button', { name: 'Publicar' }))
+  await waitFor(() => expect(screen.getByRole('radiogroup', { name: '¿Qué tipo de lugar?' })).toHaveFocus())
+})

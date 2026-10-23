@@ -1,5 +1,5 @@
 import { screen, waitFor, within } from '@testing-library/react'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
 import { setConversations } from '../services/db'
 import { MSG } from '../services/validation'
 import { renderApp } from '../test/renderApp'
@@ -70,4 +70,15 @@ it('abrir el chat marca como leído y el anillo desaparece del inicio', async ()
   await screen.findByRole('heading', { name: 'Valeria Ríos' })
   await user.click(screen.getAllByRole('link', { name: 'Inicio' })[0])
   expect(await screen.findByRole('button', { name: 'Valeria Ríos' })).toBeInTheDocument()
+})
+
+it('sin espacio al enviar, dice que no hay espacio', async () => {
+  const { user } = await renderApp('/mensajes/c-01', { session: 'demo' })
+  await user.type(await screen.findByLabelText('Mensaje'), 'Hola')
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    throw new DOMException('full', 'QuotaExceededError')
+  })
+  await user.click(screen.getByRole('button', { name: 'Enviar' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent(MSG.espacioGeneral)
+  vi.restoreAllMocks()
 })

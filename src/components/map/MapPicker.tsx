@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import type { LatLng } from '../../types'
 import { Button } from '../Button'
 import { MapBoundary } from './MapBoundary'
@@ -18,14 +18,25 @@ export function MapPicker({
   center: LatLng
   height?: number
 }) {
+  const [sinTeselas, setSinTeselas] = useState(false)
   return (
     <div className={styles.wrap}>
       <p className={styles.hint}>Toca el mapa para poner el pin.</p>
-      <MapBoundary height={height}>
-        <Suspense fallback={<div className={styles.placeholder} style={{ height }}>Cargando mapa…</div>}>
-          <LeafletMap center={value ?? center} zoom={13} marker={value} onPick={onChange} height={height} />
-        </Suspense>
-      </MapBoundary>
+      <div className={styles.frame}>
+        <MapBoundary height={height}>
+          <Suspense fallback={<div className={styles.placeholder} style={{ height }}>Cargando mapa…</div>}>
+            <LeafletMap
+              center={value ?? center}
+              zoom={13}
+              marker={value}
+              onPick={onChange}
+              height={height}
+              onTileError={() => setSinTeselas(true)}
+            />
+          </Suspense>
+        </MapBoundary>
+        {sinTeselas && <p className={styles.offline}>No pudimos cargar el mapa</p>}
+      </div>
       {value && (
         <Button variant="ghost" className={styles.remove} onClick={() => onChange(undefined)}>
           Quitar ubicación

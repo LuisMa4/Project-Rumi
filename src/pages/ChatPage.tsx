@@ -11,6 +11,7 @@ import { getConversation, getMessages, markRead, send, subscribe } from '../serv
 import { ValidationError } from '../services/errors'
 import type { Message, PublicUser } from '../types'
 import { formatMessageTime } from '../utils/format'
+import { errorMessage } from '../utils/errorMessage'
 import styles from './ChatPage.module.css'
 
 type State =
@@ -61,7 +62,8 @@ export function ChatPage() {
     // Baja la lista (no la página) al último mensaje y lo marca como leído.
     const list = listRef.current
     if (list) list.scrollTop = list.scrollHeight
-    if (listo && userId) markRead(id, userId)
+    // Si no se puede guardar la lectura (sin espacio), el chat sigue funcionando.
+    if (listo && userId) markRead(id, userId).catch(() => {})
   }, [count, listo, id, userId])
 
   if (state.status === 'notfound') return <NotFound />
@@ -76,7 +78,7 @@ export function ChatPage() {
       setError(undefined)
     } catch (err) {
       if (err instanceof ValidationError) setError(err.fieldErrors.texto)
-      else setSendError('No pudimos enviar el mensaje. Intenta de nuevo.')
+      else setSendError(errorMessage(err, 'No pudimos enviar el mensaje. Intenta de nuevo.'))
     }
   }
 

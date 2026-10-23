@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react'
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { Alert } from '../components/Alert'
 import { Button } from '../components/Button'
 import { SelectField, TextField } from '../components/Field'
 import { PhotoPicker } from '../components/PhotoPicker'
@@ -17,6 +18,7 @@ import {
 } from '../services/usersService'
 import { MSG } from '../services/validation'
 import type { Verificacion } from '../types'
+import { errorMessage } from '../utils/errorMessage'
 import styles from './VerifyPage.module.css'
 
 type Paso = keyof Verificacion
@@ -49,23 +51,31 @@ function DniStep({ userId, onDone, onSkip }: StepProps) {
   // La foto solo vive en esta pantalla: nunca se guarda.
   const [foto, setFoto] = useState<string>()
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
+    setError(null)
     const errs = validateDni({ numero })
     if (!foto) errs.foto = MSG.fotoDocumento
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
     setBusy(true)
-    await verifyDni(userId, { numero })
-    setFoto(undefined)
-    await onDone()
+    try {
+      await verifyDni(userId, { numero })
+      setFoto(undefined)
+      await onDone()
+    } catch (err) {
+      setBusy(false)
+      setError(errorMessage(err, 'No pudimos verificar tu documento. Intenta de nuevo.'))
+    }
   }
 
   return (
     <form className={styles.step} onSubmit={onSubmit} noValidate>
       <h2>DNI</h2>
+      {error && <Alert>{error}</Alert>}
       <p className={styles.muted}>Usamos tu documento solo para confirmar que eres tú. No guardamos la foto ni el número completo.</p>
       <TextField
         label="Número de DNI o pasaporte"
@@ -107,6 +117,7 @@ function CodeStep({
   const [codigo, setCodigo] = useState<string | null>(null)
   const [ingresado, setIngresado] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
   function enviar() {
@@ -126,13 +137,14 @@ function CodeStep({
     } catch (err) {
       setBusy(false)
       if (err instanceof ValidationError) setErrors(err.fieldErrors)
-      else throw err
+      else setError(errorMessage(err, 'No pudimos verificar. Intenta de nuevo.'))
     }
   }
 
   return (
     <form className={styles.step} onSubmit={onSubmit} noValidate>
       <h2>{titulo}</h2>
+      {error && <Alert>{error}</Alert>}
       <p className={styles.muted}>{intro}</p>
       {campos(errors)}
       <Button variant="secondary" className={styles.send} onClick={enviar}>

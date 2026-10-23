@@ -6,6 +6,7 @@ import type { PublicUser } from '../types'
 import { Alert } from './Alert'
 import { Button } from './Button'
 import { TextAreaField, TextField } from './Field'
+import { errorMessage } from '../utils/errorMessage'
 import styles from './ProfileForm.module.css'
 
 export function ProfileForm({
@@ -52,7 +53,7 @@ export function ProfileForm({
       onSaved()
     } catch (err) {
       if (err instanceof ValidationError) setErrors(err.fieldErrors)
-      else setError('No pudimos guardar los cambios. Intenta de nuevo.')
+      else setError(errorMessage(err, 'No pudimos guardar los cambios. Intenta de nuevo.'))
       setBusy(false)
     }
   }

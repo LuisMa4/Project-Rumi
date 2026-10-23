@@ -26,6 +26,7 @@ export function PriceRangeFilter({
         <input
           type="range"
           aria-label="Precio desde"
+          data-arriba={desde >= hasta || desde >= max - 25 ? true : undefined}
           min={0}
           max={max}
           step={25}

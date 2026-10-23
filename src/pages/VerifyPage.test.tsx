@@ -71,3 +71,19 @@ it('verifica el celular con el código', async () => {
   await user.click(screen.getByRole('button', { name: 'Verificar' }))
   expect(await screen.findByRole('heading', { name: 'Universidad' })).toBeInTheDocument()
 })
+
+it('sin espacio en el DNI avisa y no deja la pantalla trabada', async () => {
+  const { user } = await renderApp('/verificar', { session: 'u-08' })
+  await user.type(await screen.findByLabelText('Número de DNI o pasaporte'), '45678912')
+  await user.upload(
+    screen.getByLabelText('Foto del documento (frente)'),
+    new File(['x'], 'dni.jpg', { type: 'image/jpeg' }),
+  )
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    throw new DOMException('full', 'QuotaExceededError')
+  })
+  await user.click(screen.getByRole('button', { name: 'Verificar' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent(MSG.espacioGeneral)
+  expect(screen.getByRole('button', { name: 'Omitir este paso' })).toBeEnabled()
+  vi.restoreAllMocks()
+})

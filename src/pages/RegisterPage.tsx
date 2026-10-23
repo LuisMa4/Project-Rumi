@@ -8,6 +8,7 @@ import { useAuth } from '../context/useAuth'
 import { useFocusFirstInvalid } from '../hooks/useFocusFirstInvalid'
 import { ValidationError } from '../services/errors'
 import type { RegisterInput } from '../types'
+import { errorMessage } from '../utils/errorMessage'
 import styles from './AuthPages.module.css'
 
 const EMPTY: RegisterInput = {
@@ -43,7 +44,7 @@ export function RegisterPage() {
       navigate('/', { replace: true })
     } catch (err) {
       if (err instanceof ValidationError) setErrors(err.fieldErrors)
-      else setError('No pudimos crear tu cuenta. Intenta de nuevo.')
+      else setError(errorMessage(err, 'No pudimos crear tu cuenta. Intenta de nuevo.'))
       setBusy(false)
     }
   }
