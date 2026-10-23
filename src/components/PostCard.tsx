@@ -1,5 +1,5 @@
 import { CalendarDays, House, Link2, MapPin, Users, Wallet } from 'lucide-react'
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useStartChat } from '../hooks/useStartChat'
 import { POST_TYPE_LABELS, type PostWithAuthor, type PublicUser } from '../types'
@@ -12,13 +12,9 @@ import { MapView } from './map/MapView'
 import { PhotoViewer } from './PhotoViewer'
 import styles from './PostCard.module.css'
 
-/** A partir de este largo, el texto se recorta en la tarjeta plegada. */
-const LARGO_RECORTE = 180
-
-/** "universidad → ciudad" si la persona completó su perfil; si no, su @usuario. */
+/** "universidad → ciudad" si la persona tiene las dos; si no, su @usuario (igual que en el chat). */
 function subtitulo(autor: PublicUser): string {
   if (autor.universidad && autor.ciudadDestino) return `${autor.universidad} → ${autor.ciudadDestino}`
-  if (autor.ciudadDestino) return `→ ${autor.ciudadDestino}`
   return `@${autor.usuario}`
 }
 
@@ -42,12 +38,26 @@ export function PostCard({
   const { startChat, error } = useStartChat()
   const [expanded, setExpanded] = useState(false)
   const [foto, setFoto] = useState<number | null>(null)
+  const [recortado, setRecortado] = useState(false)
+  const textRef = useRef<HTMLParagraphElement>(null)
   const { autor } = post
   const fechas = formatDateRange(post.fechaDesde, post.fechaHasta)
   const precio = formatPriceRange(post.precioMin, post.precioMax, post.moneda)
   const propio = autor.id === currentUserId
-  const recortado = post.texto.length > LARGO_RECORTE
   const hayMas = recortado || !!fechas || !!post.enlace || !!post.ubicacion
+
+  // Plegado, el texto se corta en 4 líneas: se mide si de verdad se desborda (no su largo),
+  // y otra vez si cambia el ancho de la tarjeta.
+  useLayoutEffect(() => {
+    const el = textRef.current
+    if (!el || expanded) return
+    const medir = () => setRecortado(el.scrollHeight - el.clientHeight > 1)
+    medir()
+    if (typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(medir)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [post.texto, expanded])
 
   return (
     <article className={styles.card}>
@@ -71,7 +81,9 @@ export function PostCard({
         </p>
       )}
 
-      <p className={`${styles.text} ${!expanded && recortado ? styles.clamped : ''}`}>{post.texto}</p>
+      <p ref={textRef} className={`${styles.text} ${expanded ? '' : styles.clamped}`}>
+        {post.texto}
+      </p>
 
       {post.fotos.length > 0 && (
         <ul className={styles.photos}>

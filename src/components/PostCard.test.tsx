@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { beforeEach, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { AuthProvider } from '../context/AuthContext'
 import { loginDemo, register } from '../services/authService'
 import { resetDemo } from '../services/seed'
@@ -15,6 +15,10 @@ vi.mock('./map/LeafletMap', () => ({ default: () => <div data-testid="leaflet" /
 beforeEach(async () => {
   await resetDemo()
   await loginDemo()
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 async function post(over: Partial<Post>, autorId = 'u-02'): Promise<PostWithAuthor> {
@@ -84,6 +88,26 @@ it('autor sin destino muestra @usuario', async () => {
   await loginDemo()
   show(await post({}, ana.id))
   expect(screen.getByText('@ana.perez')).toBeInTheDocument()
+})
+
+it('autor con destino pero sin universidad muestra @usuario, como el chat', async () => {
+  show(await post({}, 'u-demo'))
+  expect(screen.getByText('@alex.romero')).toBeInTheDocument()
+  expect(screen.queryByText('→ Madrid')).toBeNull()
+})
+
+it('un texto largo que entra en 4 líneas no muestra Ver más', async () => {
+  // jsdom no maqueta: scrollHeight y clientHeight valen 0, como un texto que entra justo.
+  show(await post({ texto: 'Palabra '.repeat(40) }))
+  expect(screen.queryByRole('button', { name: 'Ver más' })).toBeNull()
+})
+
+it('un texto corto que se desborda muestra Ver más', async () => {
+  vi.spyOn(Element.prototype, 'scrollHeight', 'get').mockReturnValue(200)
+  vi.spyOn(Element.prototype, 'clientHeight', 'get').mockReturnValue(96)
+  show(await post({ texto: 'Uno\nDos\nTres\nCuatro\nCinco' }))
+  await userEvent.click(screen.getByRole('button', { name: 'Ver más' }))
+  expect(screen.getByRole('button', { name: 'Ver menos' })).toHaveAttribute('aria-expanded', 'true')
 })
 
 it('el visor de fotos navega y cierra con Escape', async () => {
