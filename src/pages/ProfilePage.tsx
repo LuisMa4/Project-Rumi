@@ -17,14 +17,15 @@ import { StorageFullError } from '../services/errors'
 import { resetDemo } from '../services/seed'
 import { getById, setAvatar, setPortada } from '../services/usersService'
 import { MSG } from '../services/validation'
-import type { PostWithAuthor, PublicUser } from '../types'
+import type { PostWithAuthor, PublicUser, Verificacion } from '../types'
 import { formatDateRange } from '../utils/format'
 import styles from './ProfilePage.module.css'
 
+/** `dato`: lo que ves de cada verificación en tu perfil, siempre enmascarado. */
 const VERIFICACIONES = [
-  { key: 'dni', label: 'DNI' },
-  { key: 'celular', label: 'Celular' },
-  { key: 'universidad', label: 'Universidad' },
+  { key: 'dni', label: 'DNI', dato: (v: Verificacion) => v.dni && `•••${v.dni.ultimos}` },
+  { key: 'celular', label: 'Celular', dato: (v: Verificacion) => v.celular?.enmascarado },
+  { key: 'universidad', label: 'Universidad', dato: (v: Verificacion) => v.universidad?.correoEnmascarado },
 ] as const
 
 /** "Perú → Madrid, España" (lo que haya). */
@@ -126,10 +127,11 @@ export function ProfilePage() {
           <p className={styles.muted}>@{profile.usuario}</p>
           {profile.universidad && <p>{profile.universidad}</p>}
           <ul className={styles.badges} aria-label="Verificación">
-            {VERIFICACIONES.filter(({ key }) => propio || profile.verificacion[key]).map(({ key, label }) =>
+            {VERIFICACIONES.filter(({ key }) => propio || profile.verificacion[key]).map(({ key, label, dato }) =>
               profile.verificacion[key] ? (
                 <li key={key} className={styles.badgeOk}>
                   ✓ {label}
+                  {propio && <span className={styles.badgeDato}> {dato(profile.verificacion)}</span>}
                 </li>
               ) : (
                 <li key={key} className={styles.badgeNo}>
@@ -231,7 +233,8 @@ export function ProfilePage() {
         {posts.length === 0 ? (
           <EmptyState
             title={propio ? 'Todavía no publicaste nada' : 'Sin publicaciones por ahora'}
-            text={propio ? 'Cuenta qué estás buscando desde el inicio.' : undefined}
+            text={propio ? 'Cuenta qué estás buscando y aparecerá aquí.' : undefined}
+            action={propio ? <Link to="/publicar">Crear una publicación</Link> : undefined}
           />
         ) : (
           posts.map((post) => <PostCard key={post.id} post={post} currentUserId={user.id} showActions={false} />)

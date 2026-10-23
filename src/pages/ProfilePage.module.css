@@ -60,6 +60,10 @@
   color: var(--tinta-suave);
 }
 
+.badgeDato {
+  font-weight: 500;
+}
+
 .addDestino {
   padding: 0;
   border: 0;

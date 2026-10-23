@@ -145,6 +145,28 @@ it('insignias, usuario y botón de verificación; sin presupuesto', async () => 
   expect(screen.queryByText(/Presupuesto/)).toBeNull()
 })
 
+it('en tu perfil, las insignias muestran tus datos enmascarados', async () => {
+  await renderApp('/perfil', { session: 'u-01' })
+  const insignias = await screen.findByRole('list', { name: 'Verificación' })
+  expect(insignias).toHaveTextContent('✓ DNI •••731')
+  expect(insignias).toHaveTextContent('✓ Celular +51 ••• ••• 908')
+  expect(insignias).toHaveTextContent('✓ Universidad v•••@pucp.edu.pe')
+})
+
+it('en el perfil de otro no se ven sus datos enmascarados', async () => {
+  await renderApp('/perfil/u-01', { session: 'demo' })
+  const insignias = await screen.findByRole('list', { name: 'Verificación' })
+  expect(within(insignias).getAllByRole('listitem')).toHaveLength(3)
+  expect(insignias).not.toHaveTextContent('•••')
+})
+
+it('sin publicaciones, tu perfil lleva a la página para publicar', async () => {
+  await renderApp('/perfil', { session: 'demo' })
+  expect(await screen.findByText('Todavía no publicaste nada')).toBeInTheDocument()
+  expect(screen.queryByText(/desde el inicio/)).toBeNull()
+  expect(screen.getByRole('link', { name: 'Crear una publicación' })).toHaveAttribute('href', '/publicar')
+})
+
 it('perfil de otro: botón de amistad y solo las insignias verificadas', async () => {
   await renderApp('/perfil/u-07', { session: 'demo' })
   expect(await screen.findByRole('button', { name: 'Agregar amigo' })).toBeInTheDocument()
