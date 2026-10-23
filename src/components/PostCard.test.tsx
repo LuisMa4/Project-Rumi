@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
@@ -19,6 +19,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 async function post(over: Partial<Post>, autorId = 'u-02'): Promise<PostWithAuthor> {
@@ -108,6 +109,26 @@ it('un texto corto que se desborda muestra Ver más', async () => {
   show(await post({ texto: 'Uno\nDos\nTres\nCuatro\nCinco' }))
   await userEvent.click(screen.getByRole('button', { name: 'Ver más' }))
   expect(screen.getByRole('button', { name: 'Ver menos' })).toHaveAttribute('aria-expanded', 'true')
+})
+
+it('si la tarjeta se angosta y el texto pasa a desbordarse, aparece Ver más', async () => {
+  let cambioDeTamano = () => {}
+  vi.stubGlobal(
+    'ResizeObserver',
+    class {
+      constructor(cb: () => void) {
+        cambioDeTamano = cb
+      }
+      observe() {}
+      disconnect() {}
+    },
+  )
+  const alto = vi.spyOn(Element.prototype, 'scrollHeight', 'get').mockReturnValue(0)
+  show(await post({ texto: 'Un texto que entra a lo ancho pero no en el celular' }))
+  expect(screen.queryByRole('button', { name: 'Ver más' })).toBeNull()
+  alto.mockReturnValue(200)
+  act(() => cambioDeTamano())
+  expect(screen.getByRole('button', { name: 'Ver más' })).toBeInTheDocument()
 })
 
 it('el visor de fotos navega y cierra con Escape', async () => {
