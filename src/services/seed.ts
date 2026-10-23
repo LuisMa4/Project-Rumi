@@ -5,7 +5,7 @@ import { hashPassword } from './crypto'
 import { setConversations, setFriendRequests, setMessages, setPosts, setSession, setUsers } from './db'
 import { clearAll, read, write } from './storage'
 
-export const SEED_VERSION = '3'
+export const SEED_VERSION = '4'
 export const DEMO_USER_ID = 'u-demo'
 export const DEMO_EMAIL = 'demo@rumi.app'
 export const DEMO_PASSWORD = 'rumidemo123'
@@ -286,6 +286,7 @@ const POSTS: SeedPost[] = [
     fechaDesde: '2027-01-01',
     fechaHasta: '2027-06-30',
     precioMin: 600,
+    precioMax: 600,
     moneda: 'EUR',
     hashtags: ['OfrezcoCuarto', 'Madrid', 'Chamberí', 'GastosIncluidos'],
     ubicacion: { lat: 40.434, lng: -3.703 },

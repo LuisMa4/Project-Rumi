@@ -3,6 +3,7 @@ import { nuevo } from '../test/fixtures'
 import { register } from './authService'
 import { getConversations, getFriendRequests, getPosts, getSession, getUsers } from './db'
 import { ensureSeeded, resetDemo } from './seed'
+import { write } from './storage'
 
 beforeEach(async () => {
   await resetDemo()
@@ -65,6 +66,17 @@ it('v3: alquileres con rango y ubicación; lugares sin fechas', () => {
   })
   expect(ps.filter((p) => p.tipo === 'lugar').every((p) => !p.fechaDesde && p.categoria && p.nombreLugar)).toBe(true)
   expect(ps.every((p) => p.hashtags.length > 0 && Array.isArray(p.fotos))).toBe(true)
+})
+
+it('v4: Chamberí tiene precio fijo de 600 EUR', () => {
+  expect(getPosts().find((p) => p.zona === 'Chamberí')).toMatchObject({ precioMin: 600, precioMax: 600, moneda: 'EUR' })
+})
+
+it('v4: los navegadores con datos de la v3 se reinician solos', async () => {
+  await register(nuevo())
+  write('version', '3')
+  await ensureSeeded()
+  expect(getUsers()).toHaveLength(9)
 })
 
 it('v3: la conversación con Valeria queda sin leer para la cuenta demo', () => {
