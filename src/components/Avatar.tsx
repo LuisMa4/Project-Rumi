@@ -10,10 +10,10 @@ function initials(nombre: string): string {
 }
 
 /** El color sale del id, así cada persona conserva el suyo. */
-function tone(id: string): 'celeste' | 'naranja' {
+function tone(id: string): 'lavanda' | 'naranja' {
   let hash = 0
   for (const ch of id) hash = (hash * 31 + ch.charCodeAt(0)) | 0
-  return Math.abs(hash) % 2 === 0 ? 'celeste' : 'naranja'
+  return Math.abs(hash) % 2 === 0 ? 'lavanda' : 'naranja'
 }
 
 export function Avatar({ id, nombre, size = 40, src }: { id: string; nombre: string; size?: number; src?: string }) {

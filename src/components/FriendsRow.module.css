@@ -46,12 +46,12 @@
 }
 
 .ring > * {
-  border: 3px solid var(--celeste-suave);
+  border: 3px solid var(--crema);
 }
 
-/* Anillo naranja-celeste: tiene mensajes sin leer. */
+/* Anillo naranja-lavanda: tiene mensajes sin leer. */
 .unread {
-  background: conic-gradient(var(--naranja), var(--celeste), var(--naranja));
+  background: conic-gradient(var(--naranja), var(--lavanda), var(--naranja));
 }
 
 .add {
@@ -64,10 +64,10 @@
   justify-content: center;
   width: 56px;
   height: 56px;
-  border: 2px dashed var(--celeste) !important;
+  border: 2px dashed var(--azul) !important;
   border-radius: 50%;
   background: var(--blanco);
-  color: var(--celeste-tinta);
+  color: var(--azul-oscuro);
 }
 
 .name {

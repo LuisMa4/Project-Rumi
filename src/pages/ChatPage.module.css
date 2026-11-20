@@ -96,14 +96,14 @@
 
 .mine .bubble {
   border-radius: 18px 18px 4px 18px;
-  background: var(--naranja);
+  background: var(--naranja-oscuro);
   color: var(--blanco);
 }
 
 .theirs .bubble {
   border-radius: 18px 18px 18px 4px;
-  background: var(--celeste);
-  color: var(--celeste-tinta);
+  background: var(--azul);
+  color: var(--azul-oscuro);
 }
 
 .time {

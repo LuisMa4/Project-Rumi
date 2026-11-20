@@ -1,12 +1,12 @@
 import styles from './Logo.module.css'
 
-/** Logo provisional: "rumi" con el punto de la i en celeste. */
-export function Logo({ size = 'md', dot = 'celeste' }: { size?: 'sm' | 'md' | 'lg'; dot?: 'celeste' | 'blanco' }) {
+/** Logo provisional: "rumi" con el punto de la i en azul (naranja sobre un panel de color). */
+export function Logo({ size = 'md', sobreColor = false }: { size?: 'sm' | 'md' | 'lg'; sobreColor?: boolean }) {
   return (
-    <span role="img" aria-label="Rumi" className={`${styles.logo} ${styles[size]}`}>
+    <span role="img" aria-label="Rumi" className={`${styles.logo} ${styles[size]} ${sobreColor ? styles.sobreColor : ''}`}>
       rum
       <span className={styles.i}>
-        ı<span className={`${styles.dot} ${dot === 'blanco' ? styles.dotBlanco : ''}`} />
+        ı<span className={styles.dot} />
       </span>
     </span>
   )

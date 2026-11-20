@@ -8,9 +8,9 @@
   letter-spacing: 0.02em;
 }
 
-.celeste {
-  background: var(--celeste);
-  color: var(--celeste-tinta);
+.lavanda {
+  background: var(--lavanda-suave);
+  color: var(--lavanda-oscuro);
 }
 
 .naranja {

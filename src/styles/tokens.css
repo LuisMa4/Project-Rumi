@@ -1,31 +1,39 @@
 /*
- * Identidad visual de Rumi.
- * Colores de origen: Pantone 16-1448 TCX Burnt Orange y 14-4514 TCX Atomizer
- * (Documentos/Colores.jpeg). Ningún componente debe usar un hex fuera de este archivo.
+ * Identidad visual de Rumi: paleta "6 p. m." (docs/rumi.pdf, pág. 2).
+ * Origen: azul #8299C2, naranja #E99A59, crema #F3EBDD y lavanda #B5A9D0.
+ * Los tonos -oscuro pasan 4.5:1 sobre blanco y crema (texto y botones);
+ * los -suave son fondos de chips y etiquetas. Ningún componente debe usar un hex fuera de este archivo.
  */
 :root {
-  --naranja: #c86734;
-  --naranja-oscuro: #a9532a;
-  --naranja-suave: #fbede4;
-  --celeste: #9ad4e8;
-  --celeste-suave: #eaf6fa;
-  --celeste-tinta: #174559;
+  --azul: #8299c2;
+  --azul-oscuro: #4c699c;
+  --azul-suave: #e7ebf3;
+  --naranja: #e99a59;
+  --naranja-oscuro: #a05415;
+  --naranja-suave: #fbecdf;
+  /* Hover de botones naranja-oscuro. */
+  --naranja-hondo: #7f420f;
+  --crema: #f3ebdd;
+  --lavanda: #b5a9d0;
+  --lavanda-oscuro: #725ca6;
+  --lavanda-suave: #ebe8f2;
   --blanco: #ffffff;
-  --tinta: #1f2a33;
-  --tinta-suave: #5b6b76;
-  --borde: #e3ecf0;
-  /* Borde de campos de formulario: 3.3:1 sobre blanco (WCAG 1.4.11 pide 3:1). */
-  --borde-campo: #7f8f99;
+  /* Azul noche: la hora en que "ya está llegando la noche". */
+  --tinta: #1f2a44;
+  --tinta-suave: #55607a;
+  --borde: #e6dccb;
+  /* Borde de campos de formulario: 3:1 sobre blanco y crema (WCAG 1.4.11). */
+  --borde-campo: #6e7a8c;
   /* Insignias de verificación. */
   --verde-suave: #e3f4ea;
   --verde-tinta: #1e6b3d;
   --error: #b42318;
   /* Fondo del visor de fotos: --tinta al 88 %. */
-  --fondo-visor: rgb(31 42 51 / 0.88);
+  --fondo-visor: rgb(31 42 68 / 0.88);
 
   --radio-tarjeta: 16px;
   --radio-pildora: 999px;
-  --sombra-suave: 0 1px 2px rgb(31 42 51 / 0.06), 0 4px 16px rgb(31 42 51 / 0.05);
+  --sombra-suave: 0 1px 2px rgb(31 42 68 / 0.06), 0 4px 16px rgb(31 42 68 / 0.05);
 
   --fuente-titulos: 'Bricolage Grotesque', system-ui, sans-serif;
   --fuente-texto: 'DM Sans', system-ui, sans-serif;

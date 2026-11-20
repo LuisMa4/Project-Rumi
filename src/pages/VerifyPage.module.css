@@ -100,8 +100,8 @@
 .demo {
   padding: 10px 12px;
   border-radius: 12px;
-  background: var(--celeste-suave);
-  color: var(--celeste-tinta);
+  background: var(--azul-suave);
+  color: var(--azul-oscuro);
   font-size: 0.9rem;
 }
 

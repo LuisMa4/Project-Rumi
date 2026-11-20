@@ -8,8 +8,8 @@
   align-items: flex-start;
   gap: 12px;
   padding: 32px 20px 56px;
-  background: var(--celeste);
-  color: var(--celeste-tinta);
+  background: var(--azul);
+  color: var(--tinta);
 }
 
 .tagline {
@@ -87,7 +87,7 @@
 
   .destinos li {
     padding: 6px 14px;
-    border: 1px solid var(--celeste-tinta);
+    border: 1px solid var(--tinta);
     border-radius: var(--radio-pildora);
     font-size: 0.9rem;
   }

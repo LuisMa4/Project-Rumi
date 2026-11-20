@@ -16,7 +16,7 @@
   padding: 8px 12px;
   border-radius: 10px;
   background: var(--blanco);
-  color: var(--celeste-tinta);
+  color: var(--azul-oscuro);
   font-size: 0.9rem;
   text-align: center;
   box-shadow: var(--sombra-suave);
@@ -33,8 +33,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: var(--celeste-suave);
-  color: var(--celeste-tinta);
+  background: var(--azul-suave);
+  color: var(--azul-oscuro);
   font-size: 0.9rem;
 }
 

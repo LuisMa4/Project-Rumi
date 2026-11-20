@@ -20,12 +20,12 @@
 }
 
 .primary {
-  background: var(--naranja);
+  background: var(--naranja-oscuro);
   color: var(--blanco);
 }
 
 .primary:hover:not(:disabled) {
-  background: var(--naranja-oscuro);
+  background: var(--naranja-hondo);
 }
 
 .secondary {
@@ -44,6 +44,6 @@
 }
 
 .ghost:hover:not(:disabled) {
-  background: var(--celeste-suave);
+  background: var(--azul-suave);
   color: var(--tinta);
 }

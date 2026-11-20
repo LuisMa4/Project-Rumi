@@ -69,7 +69,7 @@ export function PostCard({
             <span className={styles.route}>{subtitulo(autor)}</span>
           </span>
         </Link>
-        <span className={`${styles.tag} ${post.tipo === 'busco-roomie' ? styles.tagRoomie : ''}`}>
+        <span className={styles.tag} data-tipo={post.tipo}>
           {POST_TYPE_LABELS[post.tipo]}
         </span>
       </header>

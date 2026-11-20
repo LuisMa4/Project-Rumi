@@ -52,15 +52,25 @@
   flex-shrink: 0;
   padding: 4px 10px;
   border-radius: var(--radio-pildora);
-  background: var(--celeste-suave);
-  color: var(--celeste-tinta);
+  background: var(--azul-suave);
+  color: var(--azul-oscuro);
   font-size: 0.8rem;
   font-weight: 700;
 }
 
-.tagRoomie {
+.tag[data-tipo='busco-roomie'] {
+  background: var(--lavanda-suave);
+  color: var(--lavanda-oscuro);
+}
+
+.tag[data-tipo='ofrezco-cuarto'] {
   background: var(--naranja-suave);
   color: var(--naranja-oscuro);
+}
+
+.tag[data-tipo='viaje'] {
+  background: var(--crema);
+  color: var(--azul-oscuro);
 }
 
 .text {
@@ -83,8 +93,8 @@
   gap: 6px;
   padding: 4px 10px;
   border-radius: var(--radio-pildora);
-  background: var(--celeste-suave);
-  color: var(--celeste-tinta);
+  background: var(--azul-suave);
+  color: var(--azul-oscuro);
   font-size: 0.85rem;
 }
 
@@ -149,7 +159,7 @@
   border: 0;
   border-radius: 10px;
   overflow: hidden;
-  background: var(--celeste-suave);
+  background: var(--azul-suave);
   cursor: zoom-in;
 }
 

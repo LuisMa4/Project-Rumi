@@ -5,7 +5,7 @@
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.04em;
-  color: var(--naranja);
+  color: var(--naranja-oscuro);
   user-select: none;
 }
 
@@ -32,11 +32,15 @@
   width: 0.24em;
   height: 0.24em;
   border-radius: 50%;
-  background: var(--celeste);
+  background: var(--azul);
   transform: translateX(-50%);
 }
 
-/* Sobre fondo celeste, el punto va en blanco para que se vea. */
-.dotBlanco {
-  background: var(--blanco);
+/* Sobre un panel de color: letras crema y punto naranja. */
+.sobreColor {
+  color: var(--crema);
+}
+
+.sobreColor .dot {
+  background: var(--naranja);
 }

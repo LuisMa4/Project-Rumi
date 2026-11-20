@@ -21,13 +21,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--naranja);
+  background: var(--naranja-oscuro);
   color: var(--blanco);
   text-decoration: none;
 }
 
 .publish:hover {
-  background: var(--naranja-oscuro);
+  background: var(--naranja-hondo);
 }
 
 /* Celular: barra inferior con el botón de publicar al centro. */
@@ -101,7 +101,7 @@
   }
 
   .item:hover {
-    background: var(--celeste-suave);
+    background: var(--azul-suave);
     color: var(--tinta);
   }
 

@@ -5,7 +5,7 @@
 }
 
 .amigos {
-  border-color: var(--celeste);
-  color: var(--celeste-tinta);
+  border-color: var(--azul);
+  color: var(--azul-oscuro);
   cursor: default;
 }

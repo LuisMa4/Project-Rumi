@@ -27,7 +27,26 @@ function contrast(a: string, b: string): number {
 // WCAG 1.4.11: los bordes de los campos y el indicador de foco necesitan 3:1.
 it('el borde de los campos contrasta al menos 3:1 con los fondos', () => {
   expect(contrast(token('borde-campo'), token('blanco'))).toBeGreaterThanOrEqual(3)
-  expect(contrast(token('borde-campo'), token('celeste-suave'))).toBeGreaterThanOrEqual(3)
+  expect(contrast(token('borde-campo'), token('crema'))).toBeGreaterThanOrEqual(3)
+})
+
+it('usa la paleta 6 p. m. tal cual', () => {
+  expect(token('azul').toLowerCase()).toBe('#8299c2')
+  expect(token('naranja').toLowerCase()).toBe('#e99a59')
+  expect(token('crema').toLowerCase()).toBe('#f3ebdd')
+  expect(token('lavanda').toLowerCase()).toBe('#b5a9d0')
+})
+
+it.each(['naranja-oscuro', 'azul-oscuro', 'lavanda-oscuro', 'tinta', 'tinta-suave'])(
+  '--%s se lee (4.5:1) sobre blanco y sobre crema',
+  (name) => {
+    expect(contrast(token(name), token('blanco'))).toBeGreaterThanOrEqual(4.5)
+    expect(contrast(token(name), token('crema'))).toBeGreaterThanOrEqual(4.5)
+  },
+)
+
+it('ya no quedan tokens celeste', () => {
+  expect(tokens).not.toMatch(/--celeste/)
 })
 
 it('los estilos solo usan colores de tokens.css', () => {
@@ -41,5 +60,5 @@ it('los estilos solo usan colores de tokens.css', () => {
 
 it('el anillo de foco contrasta al menos 3:1 con los fondos', () => {
   expect(contrast(token('naranja-oscuro'), token('blanco'))).toBeGreaterThanOrEqual(3)
-  expect(contrast(token('naranja-oscuro'), token('celeste-suave'))).toBeGreaterThanOrEqual(3)
+  expect(contrast(token('naranja-oscuro'), token('crema'))).toBeGreaterThanOrEqual(3)
 })

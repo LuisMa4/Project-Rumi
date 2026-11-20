@@ -51,16 +51,16 @@
 
 .suggestion {
   padding: 4px 10px;
-  border: 1px dashed var(--celeste);
+  border: 1px dashed var(--azul);
   border-radius: var(--radio-pildora);
   background: var(--blanco);
-  color: var(--celeste-tinta);
+  color: var(--azul-oscuro);
   font-size: 0.85rem;
   cursor: pointer;
 }
 
 .suggestion[aria-pressed='true'] {
   border-style: solid;
-  background: var(--celeste-suave);
+  background: var(--azul-suave);
   font-weight: 700;
 }

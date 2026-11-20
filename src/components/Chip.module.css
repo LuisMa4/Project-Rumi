@@ -11,12 +11,12 @@
 }
 
 .chip:hover {
-  border-color: var(--celeste);
+  border-color: var(--azul);
 }
 
 .chip[aria-pressed='true'] {
-  background: var(--naranja);
-  border-color: var(--naranja);
+  background: var(--naranja-oscuro);
+  border-color: var(--naranja-oscuro);
   color: var(--blanco);
   font-weight: 700;
 }
