@@ -213,3 +213,27 @@ it('un país de origen desconocido se muestra sin bandera', async () => {
   expect(await screen.findByText(/Narnia/)).toBeInTheDocument()
   expect(document.querySelector('[data-pais]')).toBeNull()
 })
+
+it('se ve como la página de datos de un pasaporte', async () => {
+  await renderApp('/perfil', { session: 'demo' })
+  const pasaporte = await screen.findByRole('region', { name: 'Pasaporte Rumi' })
+  const dato = (etiqueta: string) => within(pasaporte).getByText(etiqueta).nextElementSibling
+  expect(dato('Nombre')).toHaveTextContent('Alex Romero')
+  expect(dato('Usuario')).toHaveTextContent('@alex.romero')
+  expect(dato('Pronombres')).toHaveTextContent('él')
+  expect(dato('Nacionalidad')).toHaveTextContent('Perú')
+  expect(dato('Nacionalidad')!.querySelector('[data-pais="PE"]')).not.toBeNull()
+  expect(dato('Idiomas')).toHaveTextContent('Español, Inglés')
+  expect(dato('Destino')).toHaveTextContent('Madrid, España')
+  const zona = pasaporte.querySelector('[data-mrz]')!
+  expect(zona).toHaveAttribute('aria-hidden', 'true')
+  expect(zona).toHaveTextContent('P<RUMIROMERO<<ALEX')
+})
+
+it('el pasaporte de otra persona también muestra sus datos nuevos', async () => {
+  await renderApp('/perfil/u-02', { session: 'demo' })
+  const pasaporte = await screen.findByRole('region', { name: 'Pasaporte Rumi' })
+  expect(within(pasaporte).getByText('Chile')).toBeInTheDocument()
+  expect(within(pasaporte).getByText('Español, Inglés, Portugués')).toBeInTheDocument()
+  expect(pasaporte.querySelector('[data-pais="CL"]')).not.toBeNull()
+})

@@ -1,4 +1,4 @@
-import { AtSign, CalendarDays, Languages, MapPin } from 'lucide-react'
+import { AtSign } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Alert } from '../components/Alert'
@@ -21,6 +21,7 @@ import { getById, setAvatar, setPortada } from '../services/usersService'
 import { MSG } from '../services/validation'
 import type { PostWithAuthor, PublicUser, Verificacion } from '../types'
 import { formatDateRange } from '../utils/format'
+import { mrz } from '../utils/mrz'
 import styles from './ProfilePage.module.css'
 
 /** `dato`: lo que ves de cada verificación en tu perfil, siempre enmascarado. */
@@ -30,10 +31,9 @@ const VERIFICACIONES = [
   { key: 'universidad', label: 'Universidad', dato: (v: Verificacion) => v.universidad?.correoEnmascarado },
 ] as const
 
-/** "Perú → Madrid, España" (lo que haya). */
+/** "Madrid, España" (lo que haya). */
 function destino(p: PublicUser): string {
-  const llegada = [p.ciudadDestino, p.paisDestino].filter(Boolean).join(', ')
-  return [p.paisOrigen, llegada].filter(Boolean).join(' → ')
+  return [p.ciudadDestino, p.paisDestino].filter(Boolean).join(', ')
 }
 
 type Loaded =
@@ -118,17 +118,80 @@ export function ProfilePage() {
             />
           )}
         </div>
-        <div className={styles.identity}>
-          <span className={styles.avatar}>
-            <Avatar id={profile.id} nombre={profile.nombre} size={88} src={profile.avatarUrl} />
-          </span>
+        <section className={styles.pasaporte} aria-label="Pasaporte Rumi">
+          <header className={styles.pasaporteHead}>
+            <span className={styles.pasaporteTitulo}>Rumi · Pasaporte</span>
+            <span className={styles.pasaporteSub} aria-hidden="true">
+              Passport · Passeport
+            </span>
+          </header>
+          <div className={styles.pasaporteCuerpo}>
+            <div className={styles.foto}>
+              <Avatar id={profile.id} nombre={profile.nombre} size={96} src={profile.avatarUrl} />
+            </div>
+            <dl className={styles.datos}>
+              <div>
+                <dt>Nombre</dt>
+                <dd>
+                  <h1 className={styles.name}>{profile.nombre}</h1>
+                </dd>
+              </div>
+              <div>
+                <dt>Usuario</dt>
+                <dd>@{profile.usuario}</dd>
+              </div>
+              {profile.pronombres && (
+                <div>
+                  <dt>Pronombres</dt>
+                  <dd>{profile.pronombres}</dd>
+                </div>
+              )}
+              {profile.paisOrigen && (
+                <div>
+                  <dt>Nacionalidad</dt>
+                  <dd className={styles.pais}>
+                    <Flag pais={profile.paisOrigen} />
+                    <span>{profile.paisOrigen}</span>
+                  </dd>
+                </div>
+              )}
+              {profile.idiomas && profile.idiomas.length > 0 && (
+                <div>
+                  <dt>Idiomas</dt>
+                  <dd>{profile.idiomas.join(', ')}</dd>
+                </div>
+              )}
+              {(profile.ciudadDestino || propio) && (
+                <div>
+                  <dt>Destino</dt>
+                  <dd>
+                    {profile.ciudadDestino ? (
+                      destino(profile)
+                    ) : (
+                      <button type="button" className={styles.addDestino} onClick={() => setEditing(true)}>
+                        Agrega tu destino
+                      </button>
+                    )}
+                  </dd>
+                </div>
+              )}
+              {profile.fechaLlegada && (
+                <div>
+                  <dt>Fechas</dt>
+                  <dd>{formatDateRange(profile.fechaLlegada, profile.fechaSalida)}</dd>
+                </div>
+              )}
+              {profile.universidad && (
+                <div>
+                  <dt>Universidad</dt>
+                  <dd>{profile.universidad}</dd>
+                </div>
+              )}
+            </dl>
+          </div>
           {propio && (
             <PhotoPicker label="Cambiar foto de perfil" mode="avatar" onPicked={(f) => cambiarFoto(setAvatar, f)} />
           )}
-          <h1 className={styles.name}>{profile.nombre}</h1>
-          <p className={styles.muted}>@{profile.usuario}</p>
-          {profile.pronombres && <p className={styles.muted}>{profile.pronombres}</p>}
-          {profile.universidad && <p>{profile.universidad}</p>}
           <ul className={styles.badges} aria-label="Verificación">
             {VERIFICACIONES.filter(({ key }) => propio || profile.verificacion[key]).map(({ key, label, dato }) =>
               profile.verificacion[key] ? (
@@ -143,42 +206,19 @@ export function ProfilePage() {
               ),
             )}
           </ul>
+          <div className={styles.mrz} data-mrz aria-hidden="true">
+            {mrz(profile).map((linea) => (
+              <span key={linea}>{linea}</span>
+            ))}
+          </div>
           {photoError && <Alert>{photoError}</Alert>}
-        </div>
+        </section>
 
         {editing ? (
           <ProfileForm user={profile} onSaved={onSaved} onCancel={() => setEditing(false)} />
         ) : (
           <div className={styles.details}>
             <ul className={styles.facts}>
-              {profile.ciudadDestino ? (
-                <li>
-                  <MapPin size={16} aria-hidden="true" />
-                  {profile.paisOrigen && <Flag pais={profile.paisOrigen} />}
-                  {destino(profile)}
-                </li>
-              ) : (
-                propio && (
-                  <li>
-                    <MapPin size={16} aria-hidden="true" />
-                    <button type="button" className={styles.addDestino} onClick={() => setEditing(true)}>
-                      Agrega tu destino
-                    </button>
-                  </li>
-                )
-              )}
-              {profile.fechaLlegada && (
-                <li>
-                  <CalendarDays size={16} aria-hidden="true" />
-                  {formatDateRange(profile.fechaLlegada, profile.fechaSalida)}
-                </li>
-              )}
-              {profile.idiomas && profile.idiomas.length > 0 && (
-                <li>
-                  <Languages size={16} aria-hidden="true" />
-                  <span>{profile.idiomas.join(', ')}</span>
-                </li>
-              )}
               {profile.instagram && (
                 <li>
                   <AtSign size={16} aria-hidden="true" />

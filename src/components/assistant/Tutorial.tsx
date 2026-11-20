@@ -26,13 +26,17 @@ const PASOS: Paso[] = [
   },
 ]
 
-type Caja = { top: number; left: number; width: number; height: number }
+type Caja = { top: number; left: number; width: number; height: number; borderRadius: string }
 
 /** El primer elemento visible con ese data-tutorial (la navegación cambia entre celular y escritorio). */
 function medir(destino: string): Caja | null {
   for (const el of document.querySelectorAll<HTMLElement>(`[data-tutorial="${destino}"]`)) {
     const r = el.getBoundingClientRect()
-    if (r.width > 0 && r.height > 0) return { top: r.top - 6, left: r.left - 6, width: r.width + 12, height: r.height + 12 }
+    if (r.width > 0 && r.height > 0) {
+      // Un destino redondo (como el botón del asistente) tiene un foco redondo.
+      const redondo = getComputedStyle(el).borderRadius === '50%'
+      return { top: r.top - 6, left: r.left - 6, width: r.width + 12, height: r.height + 12, borderRadius: redondo ? '50%' : '14px' }
+    }
   }
   return null
 }

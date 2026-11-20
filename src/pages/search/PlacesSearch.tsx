@@ -14,7 +14,7 @@ import styles from '../SearchPage.module.css'
 
 /** Texto del pin: el precio del cuarto o el tipo de lugar. */
 function etiqueta(p: PostWithAuthor): string {
-  if (p.tipo === 'ofrezco-cuarto') return formatPriceRange(p.precioMin, p.precioMax, p.moneda) || 'Cuarto'
+  if (p.tipo === 'ofrezco-cuarto') return formatPriceRange(p.precioMin, p.precioMax, p.moneda).replace(/ al mes$/, '') || 'Cuarto'
   return (p.categoria && LUGAR_CATEGORIAS[p.categoria]?.label) || 'Lugar'
 }
 
