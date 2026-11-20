@@ -71,3 +71,35 @@
   box-shadow: var(--sombra-suave);
   transform: rotate(-45deg);
 }
+
+/* Pines tipo píldora (MapMulti): precio del cuarto o tipo de lugar. */
+.pillIcon {
+  background: none;
+  border: 0;
+}
+
+.pillIcon span {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 2px solid var(--blanco);
+  border-radius: var(--radio-pildora);
+  background: var(--blanco);
+  color: var(--tinta);
+  font: 700 0.8rem/1.2 var(--fuente-texto);
+  white-space: nowrap;
+  box-shadow: var(--sombra-postal);
+  transform: translate(-50%, -100%);
+}
+
+.pillActive span {
+  background: var(--naranja-oscuro);
+  color: var(--blanco);
+}
+
+.empty {
+  padding: 16px;
+  border: 1px dashed var(--azul);
+  border-radius: var(--radio-tarjeta);
+  color: var(--tinta-suave);
+  text-align: center;
+}

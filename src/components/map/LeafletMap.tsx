@@ -4,6 +4,7 @@ import L from 'leaflet'
 import { useEffect } from 'react'
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import type { LatLng } from '../../types'
+import type { MapMarker } from './MapMulti'
 import styles from './Map.module.css'
 
 // Pin dibujado con CSS: las imágenes del paquete no cargan bien con base './'.
@@ -13,6 +14,33 @@ const pin = L.divIcon({
   iconSize: [28, 28],
   iconAnchor: [14, 28],
 })
+
+const escapar = (s: string) =>
+  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+
+/** Pin tipo píldora con el precio o el tipo de lugar; el activo, resaltado. */
+const pildora = (m: MapMarker) =>
+  L.divIcon({
+    className: `${styles.pillIcon} ${m.active ? styles.pillActive : ''}`,
+    html: `<span>${escapar(m.label)}</span>`,
+    iconSize: undefined,
+    iconAnchor: [0, 0],
+  })
+
+/** Con varios pines, encuadra el mapa para que se vean todos. */
+function FitBounds({ markers }: { markers: MapMarker[] }) {
+  const map = useMap()
+  const clave = markers.map((m) => `${m.position.lat},${m.position.lng}`).join('|')
+  useEffect(() => {
+    if (markers.length < 2) return
+    map.fitBounds(
+      markers.map((m) => [m.position.lat, m.position.lng] as [number, number]),
+      { padding: [36, 36], maxZoom: 15 },
+    )
+    // Solo cuando cambian las posiciones, no al resaltar uno.
+  }, [map, clave])
+  return null
+}
 
 function Recenter({ center }: { center: LatLng }) {
   const map = useMap()
@@ -35,6 +63,8 @@ export default function LeafletMap({
   center,
   zoom,
   marker,
+  markers,
+  onMarkerClick,
   onPick,
   onTileError,
   height,
@@ -42,6 +72,8 @@ export default function LeafletMap({
   center: LatLng
   zoom: number
   marker?: LatLng
+  markers?: MapMarker[]
+  onMarkerClick?: (id: string) => void
   onPick?: (p: LatLng) => void
   /** Se llama cuando una tesela no carga (por ejemplo, sin internet). */
   onTileError?: () => void
@@ -60,8 +92,18 @@ export default function LeafletMap({
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         eventHandlers={onTileError ? { tileerror: onTileError } : undefined}
       />
-      <Recenter center={center} />
+      {markers && markers.length > 1 ? <FitBounds markers={markers} /> : <Recenter center={center} />}
       {marker && <Marker position={[marker.lat, marker.lng]} icon={pin} />}
+      {markers?.map((m) => (
+        <Marker
+          key={m.id}
+          position={[m.position.lat, m.position.lng]}
+          icon={pildora(m)}
+          zIndexOffset={m.active ? 1000 : 0}
+          title={m.label}
+          eventHandlers={onMarkerClick ? { click: () => onMarkerClick(m.id) } : undefined}
+        />
+      ))}
       {onPick && <ClickToPick onPick={onPick} />}
     </MapContainer>
   )
