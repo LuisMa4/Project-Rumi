@@ -2,7 +2,7 @@
 
 Rumi es una red para estudiantes universitarios que se van de intercambio: encuentra con quién compartir piso en tu ciudad destino, mira alquileres, conversa con otros estudiantes y descubre lugares recomendados.
 
-Este repositorio contiene el **Release 01 (MVP)**: solo el front end, con datos simulados en el navegador.
+Este repositorio contiene la **versión 0.2**: el front end con datos simulados en el navegador, más un pequeño servidor en Cloudflare para el asistente de IA (Gemini).
 
 **Demo en línea:** https://luisma4.github.io/Project-Rumi/ (ver [Publicación](#publicación-en-github-pages))
 
@@ -17,6 +17,16 @@ Este repositorio contiene el **Release 01 (MVP)**: solo el front end, con datos 
 | HU-05 Chat entre usuarios | `/mensajes` y `/mensajes/:id`, con mensajes sin leer |
 | HU-06 Publicaciones | `/publicar`: tipos guiados, hashtags, fotos, enlace del anuncio y ubicación en el mapa |
 | HU-07 Búsqueda personalizada | `/buscar` por nombre de usuario, con solicitudes de amistad (y la campana en `/solicitudes`) |
+
+### Novedades de la versión 0.2
+
+- **Paleta "6 p. m."**: azul `#8299C2`, naranja `#E99A59`, crema `#F3EBDD` y lavanda `#B5A9D0` (ver `docs/rumi.pdf`).
+- **Bienvenida con postales** al crear la cuenta (`/bienvenida`), con opción de omitir.
+- **Inicio** sin encabezado, arrancando en "Lugar recomendado", con **reacciones propias de cada tipo** y la lista de quién reaccionó.
+- **Asistente Rumi** (botón abajo a la derecha): tutorial la primera vez y respuestas reales con Gemini, que sugiere publicaciones.
+- **Buscar** con pestañas Personas y Lugares; Lugares muestra un **mapa con los cuartos y lugares** de la ciudad.
+- **Perfil tipo pasaporte** con pronombres, bandera del país de origen e idiomas.
+- `/publicacion/:id` para ver una publicación sola.
 
 La app se ve como una aplicación en el celular (barra de navegación inferior) y como una web en la laptop (menú lateral).
 
@@ -41,6 +51,8 @@ Otros comandos:
 | `npm run lint` | Revisa el código con oxlint |
 | `npm run build` | Genera la versión de producción en `dist/` |
 | `npm run preview` | Sirve la versión de producción localmente |
+| `npm run worker:dev` | Corre el servidor del asistente en local |
+| `npm run worker:deploy` | Publica el servidor del asistente en Cloudflare |
 
 ## Cuenta demo
 
@@ -62,6 +74,32 @@ Otras cosas de la demo:
 - **Fotos:** se recortan y comprimen en el navegador. Entre todas (perfil, portadas y publicaciones) pueden ocupar hasta 3 MB; si se pasa, la app avisa y no guarda la foto.
 - **Mapa:** usa OpenStreetMap y necesita internet. Sin conexión se ve el aviso y el enlace "Abrir en Google Maps".
 
+## Asistente IA (Cloudflare Worker + Gemini)
+
+La página está en GitHub Pages, donde todo es público, así que **la clave de Gemini no puede estar en el repo ni en la página**. Vive como *secret* de un Worker de Cloudflare (`worker/`), que es lo único que habla con Google:
+
+```
+App (GitHub Pages) ──POST /chat──▶ Worker (Cloudflare) ──▶ Gemini 2.5 Flash
+```
+
+- El Worker solo acepta pedidos de `https://luisma4.github.io` y de `localhost`, limita el tamaño y deja **10 consultas por minuto por IP**.
+- A Gemini se mandan las preguntas y las publicaciones **sin nombres ni usuarios** de nadie. Gemini solo puede sugerir publicaciones que existen.
+- La app encuentra el Worker con `VITE_AI_URL` en `.env` (es una dirección pública, no un secreto). Si está vacía, el asistente dice que no está configurado.
+
+Publicar o actualizar el Worker (una vez iniciada la sesión con `npx wrangler login`):
+
+```bash
+npm run worker:deploy
+```
+
+Cargar o cambiar la clave de Gemini (te la pide en la terminal; nunca la escribas en un archivo):
+
+```bash
+npx wrangler secret put GEMINI_API_KEY --config worker/wrangler.toml
+```
+
+Recomendado: en Google AI Studio, poner un tope de gasto si la clave tiene facturación activada.
+
 ## Estructura
 
 ```
@@ -74,7 +112,8 @@ src/
   components/        Piezas reutilizables (PostCard, FriendsRow, HashtagEditor, map/…)
   pages/             Una página por pantalla
   hooks/             useStartChat, useIncomingRequests, useFocusFirstInvalid
-  utils/             Formatos, hashtags, compresión de imágenes, máscaras, búsqueda sin tildes
+  utils/             Formatos, hashtags, países, reacciones, MRZ del pasaporte, compresión de imágenes
+worker/              Servidor del asistente (Cloudflare Worker): valida, arma el prompt y llama a Gemini
 docs/superpowers/    Diseño (spec) y plan de implementación
 Documentos/          Información general del proyecto y paleta de colores
 ```
