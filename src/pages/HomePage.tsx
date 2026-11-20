@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Chip } from '../components/Chip'
 import { EmptyState } from '../components/EmptyState'
 import { FriendsRow } from '../components/FriendsRow'
@@ -13,7 +14,13 @@ const FILTROS = Object.entries(POST_TYPE_LABELS) as [PostType, string][]
 
 export function HomePage() {
   const { user } = useAuth()
-  const [tipo, setTipo] = useState<PostType | null>(null)
+  const location = useLocation()
+  // Arranca en lugares recomendados (equipo, versión 0.2), salvo que se llegue
+  // desde Publicar: entonces en el tipo recién publicado.
+  const desdePublicar = (location.state as { tipo?: PostType } | null)?.tipo
+  const [tipo, setTipo] = useState<PostType | null>(
+    desdePublicar && desdePublicar in POST_TYPE_LABELS ? desdePublicar : 'lugar',
+  )
   const [posts, setPosts] = useState<PostWithAuthor[] | null>(null)
   const [maxPrecio, setMaxPrecio] = useState<number | null>(null)
   const [rango, setRango] = useState<[number, number] | null>(null)
@@ -51,14 +58,10 @@ export function HomePage() {
   }
 
   if (!user) return null
-  const nombre = user.nombre.split(' ')[0]
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <h1>Inicio</h1>
-        <p className={styles.greeting}>Hola, {nombre}. Esto es lo nuevo entre estudiantes de intercambio.</p>
-      </header>
+      <h1 className="sr-only">Inicio</h1>
 
       <FriendsRow />
 

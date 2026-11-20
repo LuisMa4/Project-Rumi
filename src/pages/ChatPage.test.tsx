@@ -53,7 +53,9 @@ it('id inválido muestra no encontrado', async () => {
 
 it('desde una publicación abre el chat', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
-  const post = (await screen.findAllByRole('article')).find((a) => within(a).queryByText('Valeria Ríos'))!
+  await user.click(await screen.findByRole('button', { name: 'Busco roomie' }))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(3))
+  const post = screen.getAllByRole('article').find((a) => within(a).queryByText('Valeria Ríos'))!
   await user.click(within(post).getByRole('button', { name: 'Enviar mensaje' }))
   expect(await screen.findByRole('heading', { name: 'Valeria Ríos' })).toBeInTheDocument()
 })

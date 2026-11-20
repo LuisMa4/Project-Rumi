@@ -137,7 +137,7 @@ export function PublishPage() {
     setBusy(true)
     setError(null)
     try {
-      await create(user.id, {
+      const publicado = await create(user.id, {
         tipo,
         texto: form.texto,
         ciudad: form.ciudad,
@@ -155,7 +155,8 @@ export function PublishPage() {
         ubicacion,
         hashtags: tags,
       })
-      navigate('/')
+      // El inicio abre en el tipo recién publicado, para que la publicación se vea arriba.
+      navigate('/', { state: { tipo: publicado.tipo } })
     } catch (err) {
       setBusy(false)
       if (err instanceof ValidationError) {

@@ -3,12 +3,19 @@ import { expect, it } from 'vitest'
 import { getUsers, setUsers } from '../services/db'
 import { renderApp } from '../test/renderApp'
 
-it('muestra las 12 publicaciones y filtra', async () => {
+it('arranca en Lugar recomendado y Todo muestra las 12 publicaciones', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
-  expect(await screen.findAllByRole('article')).toHaveLength(12)
-  await user.click(screen.getByRole('button', { name: 'Lugar recomendado' }))
-  expect(screen.getByRole('button', { name: 'Lugar recomendado' })).toHaveAttribute('aria-pressed', 'true')
+  expect(await screen.findByRole('button', { name: 'Lugar recomendado' })).toHaveAttribute('aria-pressed', 'true')
   await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(3))
+  await user.click(screen.getByRole('button', { name: 'Todo' }))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(12))
+})
+
+it('sin título visible ni saludo, pero con encabezado para lectores de pantalla', async () => {
+  await renderApp('/', { session: 'demo' })
+  const h1 = await screen.findByRole('heading', { level: 1, name: 'Inicio' })
+  expect(h1).toHaveClass('sr-only')
+  expect(screen.queryByText(/Hola, Alex/)).toBeNull()
 })
 
 it('muestra la fila de amigos con el anillo de no leídos y sin cuadro para publicar', async () => {
@@ -39,7 +46,9 @@ it('sin amigos invita a agregar', async () => {
 
 it('un error inesperado al abrir el chat se muestra en la publicación', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
-  const post = (await screen.findAllByRole('article')).find((a) => within(a).queryByText('Valeria Ríos'))!
+  await user.click(await screen.findByRole('button', { name: 'Todo' }))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(12))
+  const post = screen.getAllByRole('article').find((a) => within(a).queryByText('Valeria Ríos'))!
   setUsers(getUsers().filter((u) => u.id !== 'u-01'))
   await user.click(within(post).getByRole('button', { name: 'Enviar mensaje' }))
   expect(await within(post).findByRole('alert')).toHaveTextContent('No pudimos abrir la conversación. Intenta de nuevo.')
