@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, expect, it, vi } from 'vitest'
 import { AiRateLimitError, AiUnavailableError } from '../../services/aiService'
 import { list } from '../../services/postsService'
@@ -93,4 +93,18 @@ it('el botón no aparece dentro de un chat', async () => {
   await renderApp('/mensajes/c-01', { session: 'demo' })
   await screen.findByRole('link', { name: 'Volver' })
   expect(screen.queryByRole('button', { name: 'Asistente Rumi' })).toBeNull()
+})
+
+it('después de muchas preguntas sigue mandando como mucho 20 mensajes, empezando por uno de la persona', async () => {
+  ai.ask.mockImplementation(async () => ({ texto: 'Respuesta', posts: [] }))
+  const { user, panel } = await abrir()
+  for (let n = 1; n <= 11; n++) {
+    await user.type(within(panel).getByLabelText('Escribe tu pregunta'), `Pregunta ${n}{Enter}`)
+    await within(panel).findByText(`Pregunta ${n}`)
+    await waitFor(() => expect(ai.ask).toHaveBeenCalledTimes(n))
+  }
+  const ultimo = ai.ask.mock.calls[10][0] as { rol: string; texto: string }[]
+  expect(ultimo.length).toBeLessThanOrEqual(20)
+  expect(ultimo[0].rol).toBe('usuario')
+  expect(ultimo.at(-1)).toEqual({ rol: 'usuario', texto: 'Pregunta 11' })
 })

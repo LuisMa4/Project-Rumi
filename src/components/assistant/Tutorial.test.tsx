@@ -62,3 +62,14 @@ it('se puede repetir desde el perfil', async () => {
   await user.click(await screen.findByRole('link', { name: 'Ver tutorial' }))
   expect(await screen.findByRole('dialog', { name: 'Tutorial' })).toBeInTheDocument()
 })
+
+it('Tab no saca el foco del tutorial', async () => {
+  const { user } = await renderApp('/', { session: 'demo', onboarding: true })
+  const tutorial = await screen.findByRole('dialog', { name: 'Tutorial' })
+  await user.tab()
+  expect(tutorial.contains(document.activeElement)).toBe(true)
+  await user.tab()
+  expect(tutorial.contains(document.activeElement)).toBe(true)
+  await user.tab({ shift: true })
+  expect(tutorial.contains(document.activeElement)).toBe(true)
+})

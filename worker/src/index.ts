@@ -128,6 +128,8 @@ async function preguntarAGemini(pedido: Pedido, apiKey: string): Promise<{ texto
     generationConfig: {
       temperature: 0.6,
       maxOutputTokens: 1024,
+      // En 2.5 Flash el "pensamiento" gasta los tokens de salida y puede cortar el JSON.
+      thinkingConfig: { thinkingBudget: 0 },
       responseMimeType: 'application/json',
       responseSchema: {
         type: 'OBJECT',

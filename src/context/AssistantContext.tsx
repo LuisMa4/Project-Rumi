@@ -5,6 +5,19 @@ import { AiRateLimitError, ask, type AiMensaje } from '../services/aiService'
 import { useAuth } from './useAuth'
 import { AssistantContext, type AssistantValue } from './useAssistant'
 
+/** El Worker acepta hasta 20 mensajes y el primero debe ser de la persona. */
+const MAX_HISTORIAL = 20
+
+/** Lo que se manda al asistente: sin avisos de error, los últimos 20 y empezando por la persona. */
+function recortarHistorial(items: AssistantItem[]): AiMensaje[] {
+  const ultimos = items
+    .filter((i) => !i.error)
+    .map(({ rol, texto }) => ({ rol, texto }))
+    .slice(-MAX_HISTORIAL)
+  const desde = ultimos.findIndex((m) => m.rol === 'usuario')
+  return desde === -1 ? ultimos : ultimos.slice(desde)
+}
+
 /**
  * Estado del asistente: si el panel está abierto y la conversación.
  * La conversación dura mientras la app está abierta (se pierde al recargar).
@@ -29,10 +42,7 @@ export function AssistantProvider({ children, mostrarBoton }: { children: ReactN
       const conPregunta: AssistantItem[] = [...itemsRef.current, { rol: 'usuario', texto: limpio }]
       poner(conPregunta)
       setCargando(true)
-      // Al asistente va el historial sin los avisos de error.
-      const historial: AiMensaje[] = conPregunta
-        .filter((i) => !i.error)
-        .map(({ rol, texto }) => ({ rol, texto }))
+      const historial = recortarHistorial(conPregunta)
       try {
         const r = await ask(historial, user)
         poner([...itemsRef.current, { rol: 'asistente', texto: r.texto, posts: r.posts }])

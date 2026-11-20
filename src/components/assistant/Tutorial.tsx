@@ -63,8 +63,18 @@ export function Tutorial({ onDone }: { onDone: (terminado: boolean) => void }) {
     botonRef.current?.focus()
   }, [i])
 
+  const burbujaRef = useRef<HTMLDivElement>(null)
+
   const onKey = useEffectEvent((e: KeyboardEvent) => {
     if (e.key === 'Escape') onDone(false)
+    if (e.key === 'Tab' && burbujaRef.current) {
+      // Es modal: el foco da la vuelta entre los botones de la burbuja.
+      e.preventDefault()
+      const botones = [...burbujaRef.current.querySelectorAll<HTMLElement>('button')]
+      const actual = botones.indexOf(document.activeElement as HTMLElement)
+      const paso = e.shiftKey ? -1 : 1
+      botones[actual === -1 ? 0 : (actual + paso + botones.length) % botones.length].focus()
+    }
   })
 
   useEffect(() => {
@@ -89,6 +99,7 @@ export function Tutorial({ onDone }: { onDone: (terminado: boolean) => void }) {
         <div className={styles.fondo} aria-hidden="true" />
       )}
       <div
+        ref={burbujaRef}
         role="dialog"
         aria-modal="true"
         aria-label="Tutorial"

@@ -20,8 +20,9 @@
   text-decoration: none;
 }
 
+/* Abajo: barra inferior + lugar para el botón del asistente (56 px a 16 px de la barra) + aire. */
 .main {
-  padding: 20px 16px calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 32px);
+  padding: 20px 16px calc(var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 96px);
 }
 
 .column {

@@ -119,6 +119,8 @@ describe('Gemini', () => {
     const enviado = JSON.parse(init.body as string)
     expect(enviado.generationConfig.responseMimeType).toBe('application/json')
     expect(Object.keys(enviado.generationConfig.responseSchema.properties)).toEqual(['texto', 'postIds'])
+    // En 2.5 Flash el "pensamiento" gasta los tokens de salida y corta el JSON: se apaga.
+    expect(enviado.generationConfig.thinkingConfig).toEqual({ thinkingBudget: 0 })
     expect(enviado.contents.at(-1).role).toBe('user')
     expect(JSON.stringify(enviado)).toContain('p-01')
   })

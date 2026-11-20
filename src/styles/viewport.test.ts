@@ -33,3 +33,9 @@ it('cada alto en dvh tiene justo antes un respaldo en vh', () => {
   }
   expect(sinRespaldo).toEqual([])
 })
+
+it('en el celular, el final de la página deja lugar para el botón del asistente', () => {
+  const main = readFileSync('src/components/AppLayout.module.css', 'utf8').match(/\.main\s*\{([^}]*)\}/)![1]
+  // Barra inferior + botón de 56 px a 16 px de ella + aire.
+  expect(declaraciones(main).find((d) => d.prop === 'padding')?.valor).toContain('var(--alto-barra-inferior) + env(safe-area-inset-bottom) + 96px')
+})
