@@ -1,60 +1,54 @@
-import { useEffect, useState } from 'react'
-import { EmptyState } from '../components/EmptyState'
-import { TextField } from '../components/Field'
-import { UserCard } from '../components/UserCard'
-import { useAuth } from '../context/useAuth'
-import { searchByUsername } from '../services/usersService'
-import type { PublicUser } from '../types'
+import { useRef, useState, type KeyboardEvent } from 'react'
+import { PeopleSearch } from './search/PeopleSearch'
+import { PlacesSearch } from './search/PlacesSearch'
 import styles from './SearchPage.module.css'
 
-/** Buscar personas por nombre de usuario. */
+const PESTANAS = [
+  { id: 'personas', label: 'Personas' },
+  { id: 'lugares', label: 'Lugares' },
+] as const
+
+type Pestana = (typeof PESTANAS)[number]['id']
+
+/** Buscar personas por usuario, o cuartos y lugares de una ciudad en el mapa. */
 export function SearchPage() {
-  const { user } = useAuth()
-  const userId = user?.id
-  const [texto, setTexto] = useState('')
-  const [resultado, setResultado] = useState<{ texto: string; people: PublicUser[] } | null>(null)
+  const [pestana, setPestana] = useState<Pestana>('personas')
+  const tabsRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    if (!userId) return
-    let cancelled = false
-    searchByUsername(texto, userId).then((people) => {
-      if (!cancelled) setResultado({ texto, people })
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [texto, userId])
-
-  const vacio = texto.trim().replace(/^@+/, '') === ''
-  const people = resultado?.texto === texto ? resultado.people : null
+  // Teclado de pestañas (WAI-ARIA): las flechas cambian y mueven el foco, dando la vuelta.
+  function onKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    const paso = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
+    if (!paso) return
+    e.preventDefault()
+    const i = PESTANAS.findIndex((p) => p.id === pestana)
+    const siguiente = PESTANAS[(i + paso + PESTANAS.length) % PESTANAS.length].id
+    setPestana(siguiente)
+    tabsRef.current?.querySelector<HTMLElement>(`#tab-${siguiente}`)?.focus()
+  }
 
   return (
     <div className={styles.page}>
       <h1>Buscar</h1>
-      <div className={styles.filters}>
-        <TextField
-          label="Nombre de usuario"
-          placeholder="@valeria"
-          autoComplete="off"
-          autoCapitalize="none"
-          value={texto}
-          onChange={(e) => setTexto(e.target.value)}
-        />
+      <div ref={tabsRef} role="tablist" aria-label="Qué buscar" className={styles.tabs} onKeyDown={onKeyDown}>
+        {PESTANAS.map((p) => (
+          <button
+            key={p.id}
+            id={`tab-${p.id}`}
+            type="button"
+            role="tab"
+            aria-selected={pestana === p.id}
+            aria-controls={`panel-${p.id}`}
+            tabIndex={pestana === p.id ? 0 : -1}
+            className={styles.tab}
+            onClick={() => setPestana(p.id)}
+          >
+            {p.label}
+          </button>
+        ))}
       </div>
-
-      {vacio ? (
-        <p className={styles.count}>Escribe un nombre de usuario para buscar</p>
-      ) : people === null ? (
-        <p className={styles.count}>Cargando…</p>
-      ) : people.length === 0 ? (
-        <EmptyState title="No encontramos a nadie con ese usuario" text="Revisa cómo se escribe o prueba con una parte." />
-      ) : (
-        <ul aria-label="Resultados" className={styles.results}>
-          {people.map((p) => (
-            <UserCard key={p.id} user={p} />
-          ))}
-        </ul>
-      )}
+      <div role="tabpanel" id={`panel-${pestana}`} aria-labelledby={`tab-${pestana}`} className={styles.panel}>
+        {pestana === 'personas' ? <PeopleSearch /> : <PlacesSearch />}
+      </div>
     </div>
   )
 }

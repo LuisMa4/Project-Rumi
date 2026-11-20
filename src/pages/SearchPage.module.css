@@ -28,3 +28,64 @@
   padding: 0;
   list-style: none;
 }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radio-pildora);
+  background: var(--azul-suave);
+}
+
+.tab {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: transparent;
+  color: var(--azul-oscuro);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tab[aria-selected='true'] {
+  background: var(--blanco);
+  color: var(--tinta);
+  box-shadow: var(--sombra-suave);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.askAi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--naranja);
+  border-radius: var(--radio-pildora);
+  background: var(--naranja-suave);
+  color: var(--naranja-oscuro);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.askAi:hover {
+  background: var(--blanco);
+}
+
+.place {
+  border-radius: calc(var(--radio-tarjeta) + 4px);
+  scroll-margin: 80px;
+}
+
+.place[aria-current='true'] {
+  outline: 3px solid var(--naranja);
+  outline-offset: 2px;
+}

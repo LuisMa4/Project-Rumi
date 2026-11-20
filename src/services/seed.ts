@@ -5,7 +5,7 @@ import { hashPassword } from './crypto'
 import { setConversations, setFriendRequests, setMessages, setPosts, setReactions, setSession, setUsers } from './db'
 import { clearAll, read, write } from './storage'
 
-export const SEED_VERSION = '7'
+export const SEED_VERSION = '8'
 export const DEMO_USER_ID = 'u-demo'
 export const DEMO_EMAIL = 'demo@rumi.app'
 export const DEMO_PASSWORD = 'rumidemo123'
@@ -345,6 +345,46 @@ const POSTS: SeedPost[] = [
       '¿Alguien para ir a Toledo un domingo? Son 30 minutos en tren desde Atocha y la catedral tiene descuento con carné de estudiante.',
     hashtags: ['Viaje', 'Toledo', 'FinDeSemana'],
     horas: 118,
+  },
+  // Versión 0.2: más pines en Madrid para el mapa de Buscar.
+  {
+    autorId: 'u-05',
+    tipo: 'lugar',
+    ciudad: 'Madrid',
+    zona: 'Retiro',
+    categoria: 'zona',
+    nombreLugar: 'Parque del Retiro',
+    texto: 'Los domingos se arma picnic de estudiantes de intercambio junto al estanque. Lleven algo para compartir.',
+    hashtags: ['LugarRecomendado', 'Madrid', 'Retiro', 'Picnic'],
+    ubicacion: { lat: 40.4153, lng: -3.6845 },
+    horas: 60,
+  },
+  {
+    autorId: 'u-01',
+    tipo: 'lugar',
+    ciudad: 'Madrid',
+    zona: 'Malasaña',
+    categoria: 'cafe',
+    nombreLugar: 'Café de la Plaza del Dos de Mayo',
+    texto: 'Café tranquilo con wifi y enchufes. Ideal para estudiar en la tarde, sobre todo entre semana.',
+    hashtags: ['LugarRecomendado', 'Madrid', 'Malasaña', 'Café'],
+    ubicacion: { lat: 40.4268, lng: -3.7034 },
+    horas: 66,
+  },
+  {
+    autorId: 'u-04',
+    tipo: 'ofrezco-cuarto',
+    ciudad: 'Madrid',
+    zona: 'Argüelles',
+    texto: 'Dejo mi habitación en Argüelles de febrero a junio. Piso de tres, cerca del metro y a 15 minutos de la Complutense.',
+    fechaDesde: '2027-02-01',
+    fechaHasta: '2027-06-30',
+    precioMin: 420,
+    precioMax: 420,
+    moneda: 'EUR',
+    hashtags: ['OfrezcoCuarto', 'Madrid', 'Argüelles'],
+    ubicacion: { lat: 40.4302, lng: -3.7155 },
+    horas: 72,
   },
 ]
 

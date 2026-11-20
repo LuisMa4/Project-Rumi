@@ -116,7 +116,7 @@ it('restablece la demo', async () => {
   await user.click(await screen.findByRole('button', { name: 'Restablecer datos de demo' }))
   expect(await screen.findByRole('heading', { name: 'Inicio' })).toBeInTheDocument()
   await user.click(await screen.findByRole('button', { name: 'Todo' }))
-  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(12))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(15))
 })
 
 it('sube foto de perfil y portada', async () => {

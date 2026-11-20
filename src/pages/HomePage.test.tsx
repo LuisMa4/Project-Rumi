@@ -3,12 +3,12 @@ import { expect, it } from 'vitest'
 import { getUsers, setUsers } from '../services/db'
 import { renderApp } from '../test/renderApp'
 
-it('arranca en Lugar recomendado y Todo muestra las 12 publicaciones', async () => {
+it('arranca en Lugar recomendado y Todo muestra las 15 publicaciones', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
   expect(await screen.findByRole('button', { name: 'Lugar recomendado' })).toHaveAttribute('aria-pressed', 'true')
-  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(3))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(5))
   await user.click(screen.getByRole('button', { name: 'Todo' }))
-  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(12))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(15))
 })
 
 it('sin título visible ni saludo, pero con encabezado para lectores de pantalla', async () => {
@@ -47,7 +47,7 @@ it('sin amigos invita a agregar', async () => {
 it('un error inesperado al abrir el chat se muestra en la publicación', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
   await user.click(await screen.findByRole('button', { name: 'Todo' }))
-  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(12))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(15))
   const post = screen.getAllByRole('article').find((a) => within(a).queryByText('Valeria Ríos'))!
   setUsers(getUsers().filter((u) => u.id !== 'u-01'))
   await user.click(within(post).getByRole('button', { name: 'Enviar mensaje' }))
@@ -58,7 +58,7 @@ it('un error inesperado al abrir el chat se muestra en la publicación', async (
 it('muestra precio y zona en los alquileres', async () => {
   const { user } = await renderApp('/', { session: 'demo' })
   await user.click(await screen.findByRole('button', { name: 'Ofrezco cuarto' }))
-  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(3))
+  await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(4))
   expect(screen.getByText('Moncloa')).toBeInTheDocument()
 })
 

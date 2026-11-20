@@ -30,14 +30,12 @@ const pildora = (m: MapMarker) =>
 /** Con varios pines, encuadra el mapa para que se vean todos. */
 function FitBounds({ markers }: { markers: MapMarker[] }) {
   const map = useMap()
+  // Se encuadra solo cuando cambian las posiciones, no al resaltar un pin.
   const clave = markers.map((m) => `${m.position.lat},${m.position.lng}`).join('|')
   useEffect(() => {
-    if (markers.length < 2) return
-    map.fitBounds(
-      markers.map((m) => [m.position.lat, m.position.lng] as [number, number]),
-      { padding: [36, 36], maxZoom: 15 },
-    )
-    // Solo cuando cambian las posiciones, no al resaltar uno.
+    const puntos = clave.split('|').map((par) => par.split(',').map(Number) as [number, number])
+    if (puntos.length < 2) return
+    map.fitBounds(puntos, { padding: [36, 36], maxZoom: 15 })
   }, [map, clave])
   return null
 }

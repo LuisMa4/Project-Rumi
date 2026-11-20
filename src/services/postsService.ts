@@ -5,6 +5,7 @@ import { NotFoundError, ValidationError } from './errors'
 import { assertPhotoBudget } from './photoBudget'
 import { newId } from './storage'
 import { MSG } from './validation'
+import { normalizeText } from '../utils/text'
 
 const MAX_FOTOS = 4
 
@@ -34,6 +35,17 @@ export async function getById(id: string): Promise<PostWithAuthor> {
   const [post] = withAuthors(getPosts().filter((p) => p.id === id))
   if (!post) throw new NotFoundError('No encontramos esta publicación')
   return post
+}
+
+/** Cuartos y lugares recomendados de una ciudad (sin importar tildes, mayúsculas ni espacios). */
+export async function listByCity(ciudad: string): Promise<PostWithAuthor[]> {
+  const buscada = normalizeText(ciudad)
+  if (!buscada) return []
+  return withAuthors(
+    getPosts().filter(
+      (p) => (p.tipo === 'ofrezco-cuarto' || p.tipo === 'lugar') && normalizeText(p.ciudad) === buscada,
+    ),
+  )
 }
 
 export async function listByAuthor(autorId: string): Promise<PostWithAuthor[]> {

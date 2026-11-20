@@ -12,7 +12,7 @@ beforeEach(async () => {
 describe('list', () => {
   it('lista de más reciente a más antigua con autor', async () => {
     const ps = await list()
-    expect(ps).toHaveLength(12)
+    expect(ps).toHaveLength(15)
     expect([...ps].sort((a, b) => b.creadoEn.localeCompare(a.creadoEn))).toEqual(ps)
     expect(ps[0].autor.nombre).toBeTruthy()
     expect(ps[0].autor).not.toHaveProperty('passwordHash')
@@ -20,7 +20,7 @@ describe('list', () => {
 
   it('filtra por tipo', async () => {
     const ps = await list({ tipo: 'lugar' })
-    expect(ps).toHaveLength(3)
+    expect(ps).toHaveLength(5)
     expect(ps.every((p) => p.tipo === 'lugar')).toBe(true)
   })
 
@@ -134,16 +134,27 @@ describe('campos nuevos', () => {
     await expect(
       create('u-demo', { ...base, tipo: 'viaje', fotos: ['data:' + 'a'.repeat(PHOTO_BUDGET_BYTES)] }),
     ).rejects.toBeInstanceOf(StorageFullError)
-    expect(await list()).toHaveLength(12)
+    expect(await list()).toHaveLength(15)
   })
 })
 
 it('searchRentals por cruce de rangos y maxRentalPrice', async () => {
-  expect((await searchRentals({})).length).toBe(3)
+  expect((await searchRentals({})).length).toBe(4)
   expect((await searchRentals({ precioDesde: 480, precioHasta: 530 })).map((p) => p.zona).sort()).toEqual([
     'Gràcia',
     'Moncloa',
   ])
   expect(await searchRentals({ precioDesde: 610 })).toEqual([])
   expect(await maxRentalPrice()).toBe(600)
+})
+
+describe('listByCity', () => {
+  it('trae solo cuartos y lugares de esa ciudad, sin importar tildes, mayúsculas ni espacios', async () => {
+    const { listByCity } = await import('./postsService')
+    const madrid = await listByCity(' madrid ')
+    expect(madrid.map((p) => p.id).sort()).toEqual(['p-02', 'p-05', 'p-09', 'p-13', 'p-14', 'p-15'])
+    expect((await listByCity('ciudad de mexico')).map((p) => p.id)).toEqual(['p-11'])
+    expect(await listByCity('Narnia')).toEqual([])
+    expect(await listByCity('  ')).toEqual([])
+  })
 })

@@ -27,7 +27,7 @@ it('manda la conversación y las publicaciones al Worker y devuelve las sugerida
   expect(url).toBe('https://rumi-ia.example.workers.dev/chat')
   const body = JSON.parse(init.body as string)
   expect(body.mensajes).toEqual([{ rol: 'usuario', texto: 'Busco cuarto' }])
-  expect(body.publicaciones).toHaveLength(12)
+  expect(body.publicaciones).toHaveLength(15)
   expect(body.publicaciones[0]).toHaveProperty('conUbicacion')
   expect(body.usuario).toEqual({ ciudadDestino: 'Madrid', paisDestino: 'España' })
   expect(r.texto).toBe('Mira este')

@@ -9,7 +9,6 @@ const item = (name: string) =>
 it('pide escribir un usuario', async () => {
   await renderApp('/buscar', { session: 'demo' })
   expect(await screen.findByText('Escribe un nombre de usuario para buscar')).toBeInTheDocument()
-  expect(screen.queryByRole('tab')).toBeNull()
 })
 
 it('encuentra y muestra el botón según la relación', async () => {

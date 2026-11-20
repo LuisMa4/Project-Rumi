@@ -9,9 +9,9 @@ beforeEach(async () => {
   await resetDemo()
 })
 
-it('carga 9 usuarios, 12 publicaciones y 2 conversaciones', () => {
+it('carga 9 usuarios, 15 publicaciones y 2 conversaciones', () => {
   expect(getUsers()).toHaveLength(9)
-  expect(getPosts()).toHaveLength(12)
+  expect(getPosts()).toHaveLength(15)
   expect(getConversations()).toHaveLength(2)
 })
 
@@ -28,10 +28,11 @@ it('resetDemo vuelve al estado inicial', async () => {
   expect(getSession()).toBeNull()
 })
 
-it('las publicaciones de ejemplo tienen 3 de cada tipo y ninguna de la cuenta demo', () => {
+it('las publicaciones de ejemplo cubren todos los tipos y ninguna es de la cuenta demo', () => {
   const posts = getPosts()
-  for (const tipo of ['busco-roomie', 'ofrezco-cuarto', 'lugar', 'viaje']) {
-    expect(posts.filter((p) => p.tipo === tipo)).toHaveLength(3)
+  const cuantas = { 'busco-roomie': 3, 'ofrezco-cuarto': 4, lugar: 5, viaje: 3 }
+  for (const [tipo, n] of Object.entries(cuantas)) {
+    expect(posts.filter((p) => p.tipo === tipo), tipo).toHaveLength(n)
   }
   expect(posts.some((p) => p.autorId === 'u-demo')).toBe(false)
 })
@@ -101,4 +102,9 @@ it('cada reacción de la demo es válida para el tipo de su publicación', async
     expect(post, r.id).toBeDefined()
     expect(REACTIONS_BY_POST_TYPE[post!.tipo].map((d) => d.tipo), r.id).toContain(r.tipo)
   }
+})
+
+it('Madrid tiene al menos 6 cuartos y lugares con ubicación (para el mapa de Buscar)', () => {
+  const conPin = getPosts().filter((p) => p.ciudad === 'Madrid' && p.ubicacion)
+  expect(conPin.length).toBeGreaterThanOrEqual(6)
 })
