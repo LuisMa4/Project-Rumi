@@ -33,6 +33,9 @@
 
   --radio-tarjeta: 16px;
   --radio-pildora: 999px;
+  /* Postales de la bienvenida: sombra larga, como papel sobre la mesa. */
+  --sombra-postal: 0 1px 2px rgb(31 42 68 / 0.06), 0 18px 40px rgb(31 42 68 / 0.25);
+  --sombra-trazo: rgb(31 42 68 / 0.25);
   --sombra-suave: 0 1px 2px rgb(31 42 68 / 0.06), 0 4px 16px rgb(31 42 68 / 0.05);
 
   --fuente-titulos: 'Bricolage Grotesque', system-ui, sans-serif;

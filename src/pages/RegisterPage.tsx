@@ -41,7 +41,7 @@ export function RegisterPage() {
     setError(null)
     try {
       await register(form)
-      navigate('/', { replace: true })
+      navigate('/bienvenida', { replace: true })
     } catch (err) {
       if (err instanceof ValidationError) setErrors(err.fieldErrors)
       else setError(errorMessage(err, 'No pudimos crear tu cuenta. Intenta de nuevo.'))

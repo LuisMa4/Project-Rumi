@@ -209,3 +209,10 @@
   gap: 4px;
   max-width: 42ch;
 }
+
+.ayuda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-weight: 700;
+}

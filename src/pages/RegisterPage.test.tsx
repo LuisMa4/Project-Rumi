@@ -27,7 +27,7 @@ it('registra con los 5 campos y entra', async () => {
   await user.type(screen.getByLabelText('Confirmar contraseña'), 'clave-segura-1')
   expect(screen.queryByLabelText('Ciudad destino')).toBeNull()
   await user.click(screen.getByRole('button', { name: 'Crear cuenta' }))
-  expect(await screen.findByRole('heading', { name: 'Inicio' })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Bienvenido a Rumi' })).toBeInTheDocument()
   expect(await getCurrentUser()).toMatchObject({ nombre: 'Ana Pérez', usuario: 'ana.perez' })
 })
 

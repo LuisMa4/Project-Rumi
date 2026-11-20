@@ -12,6 +12,7 @@ import { RegisterPage } from './pages/RegisterPage'
 import { RequestsPage } from './pages/RequestsPage'
 import { SearchPage } from './pages/SearchPage'
 import { VerifyPage } from './pages/VerifyPage'
+import { WelcomePage } from './pages/WelcomePage'
 
 export function AppRoutes() {
   return (
@@ -21,6 +22,7 @@ export function AppRoutes() {
         <Route path="/registro" element={<RegisterPage />} />
       </Route>
       <Route element={<ProtectedRoute />}>
+        <Route path="/bienvenida" element={<WelcomePage />} />
         <Route element={<AppLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/buscar" element={<SearchPage />} />

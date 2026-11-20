@@ -1,0 +1,225 @@
+/* Fondo dividido en diagonal, como el boceto: naranja arriba, azul abajo. */
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 16px;
+  background: linear-gradient(160deg, var(--naranja) 0 48%, var(--azul) 48% 100%);
+  color: var(--tinta);
+  overflow: hidden;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.skip {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--crema);
+  color: var(--tinta);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.stage {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+/* La postal: papel crema con borde blanco, apenas girada, como dejada sobre la mesa. */
+.postal {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 380px);
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--blanco);
+  box-shadow: var(--sombra-postal);
+  transform: rotate(-2deg);
+  animation: dejar 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes dejar {
+  from {
+    opacity: 0;
+    transform: translate(40px, -24px) rotate(6deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-2deg);
+  }
+}
+
+.postal[data-quieto] {
+  animation: aparecer 300ms ease-out;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .postal {
+    animation: aparecer 300ms ease-out;
+  }
+}
+
+.foto {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 210px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* Cielos de las 6 p. m.: todavía queda luz, pero ya está llegando la noche. */
+.foto[data-cielo='tarde'] {
+  background: linear-gradient(180deg, var(--azul) 0%, var(--lavanda) 55%, var(--naranja) 100%);
+}
+
+.foto[data-cielo='atardecer'] {
+  background: linear-gradient(180deg, var(--lavanda) 0%, var(--naranja) 70%, var(--crema) 100%);
+}
+
+.foto[data-cielo='noche'] {
+  background: linear-gradient(180deg, var(--tinta) 0%, var(--azul-oscuro) 50%, var(--lavanda) 100%);
+}
+
+.motivo {
+  color: var(--crema);
+  filter: drop-shadow(0 2px 0 var(--sombra-trazo));
+}
+
+/* Sello con borde perforado. */
+.sello {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 8px 6px;
+  background: var(--crema);
+  color: var(--naranja-oscuro);
+  font-family: var(--fuente-titulos);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transform: rotate(4deg);
+  mask: radial-gradient(circle 3px at 3px 3px, transparent 98%, black) -3px -3px / 7px 7px;
+}
+
+.matasellos {
+  position: absolute;
+  top: 26px;
+  right: 54px;
+  width: 110px;
+  fill: none;
+  stroke: var(--tinta);
+  stroke-width: 2;
+  opacity: 0.45;
+  transform: rotate(-12deg);
+}
+
+.dorso {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 8px 8px;
+}
+
+.titulo {
+  font-size: 1.6rem;
+}
+
+.texto {
+  color: var(--tinta-suave);
+}
+
+/* Renglones de la dirección, como en el dorso de una postal. */
+.lineas {
+  height: 26px;
+  margin-top: 4px;
+  background: repeating-linear-gradient(180deg, transparent 0 12px, var(--borde) 12px 13px);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(100%, 380px);
+  margin: 0 auto;
+}
+
+.round {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--crema);
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.round:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.start {
+  min-height: 48px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--naranja-oscuro);
+  color: var(--blanco);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.start:hover {
+  background: var(--naranja-hondo);
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--crema);
+  opacity: 0.6;
+}
+
+.dot[data-activo] {
+  width: 22px;
+  border-radius: var(--radio-pildora);
+  opacity: 1;
+}

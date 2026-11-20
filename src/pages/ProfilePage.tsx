@@ -251,6 +251,12 @@ export function ProfilePage() {
       </section>
 
       {propio && (
+        <nav className={styles.ayuda} aria-label="Ayuda">
+          <Link to="/bienvenida">Ver bienvenida</Link>
+        </nav>
+      )}
+
+      {propio && (
         <section className={styles.reset}>
           <div>
             <h2>Datos de demo</h2>

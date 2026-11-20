@@ -5,7 +5,7 @@ import { hashPassword } from './crypto'
 import { setConversations, setFriendRequests, setMessages, setPosts, setReactions, setSession, setUsers } from './db'
 import { clearAll, read, write } from './storage'
 
-export const SEED_VERSION = '6'
+export const SEED_VERSION = '7'
 export const DEMO_USER_ID = 'u-demo'
 export const DEMO_EMAIL = 'demo@rumi.app'
 export const DEMO_PASSWORD = 'rumidemo123'
@@ -471,6 +471,8 @@ async function loadSeed(): Promise<void> {
       creadoEn: hoursAgo(now, horas),
     })),
   )
+  // La demo arranca sin la bienvenida (para presentar directo) pero con el tutorial pendiente.
+  write('onboarding', { [DEMO_USER_ID]: { bienvenida: true, tutorial: false } })
   setSession(null)
   write('version', SEED_VERSION)
 }

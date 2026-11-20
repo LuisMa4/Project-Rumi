@@ -1,3 +1,4 @@
+import { getOnboarding } from '../services/onboardingService'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 
@@ -12,5 +13,7 @@ export function ProtectedRoute() {
 export function PublicOnlyRoute() {
   const { user, loading } = useAuth()
   if (loading) return null
-  return user ? <Navigate to="/" replace /> : <Outlet />
+  if (!user) return <Outlet />
+  // Recién creada la cuenta (o quien nunca la vio): primero la bienvenida.
+  return <Navigate to={getOnboarding(user.id).bienvenida ? '/' : '/bienvenida'} replace />
 }

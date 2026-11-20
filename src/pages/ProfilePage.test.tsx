@@ -184,6 +184,7 @@ it('cuenta nueva sin destino muestra "Agrega tu destino"', async () => {
   await user.type(screen.getByLabelText('Contraseña'), 'clave-segura-1')
   await user.type(screen.getByLabelText('Confirmar contraseña'), 'clave-segura-1')
   await user.click(screen.getByRole('button', { name: 'Crear cuenta' }))
+  await user.click(await screen.findByRole('button', { name: 'Omitir' }))
   await screen.findByRole('heading', { name: 'Inicio' })
   await user.click(screen.getAllByRole('link', { name: 'Perfil' })[0])
   await user.click(await screen.findByRole('button', { name: 'Agrega tu destino' }))
