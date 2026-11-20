@@ -5,7 +5,7 @@ import { hashPassword } from './crypto'
 import { setConversations, setFriendRequests, setMessages, setPosts, setSession, setUsers } from './db'
 import { clearAll, read, write } from './storage'
 
-export const SEED_VERSION = '4'
+export const SEED_VERSION = '5'
 export const DEMO_USER_ID = 'u-demo'
 export const DEMO_EMAIL = 'demo@rumi.app'
 export const DEMO_PASSWORD = 'rumidemo123'
@@ -32,6 +32,8 @@ const USERS: SeedUser[] = [
     nombre: 'Alex Romero',
     usuario: 'alex.romero',
     email: DEMO_EMAIL,
+    pronombres: 'él',
+    idiomas: ['Español', 'Inglés'],
     paisOrigen: 'Perú',
     ciudadDestino: 'Madrid',
     paisDestino: 'España',
@@ -48,6 +50,8 @@ const USERS: SeedUser[] = [
     usuario: 'valeria.rios',
     email: 'valeria.rios@mail.com',
     universidad: 'PUCP',
+    pronombres: 'ella',
+    idiomas: ['Español', 'Inglés'],
     paisOrigen: 'Perú',
     ciudadDestino: 'Madrid',
     paisDestino: 'España',
@@ -64,6 +68,8 @@ const USERS: SeedUser[] = [
     usuario: 'mateo.fernandez',
     email: 'mateo.fernandez@mail.com',
     universidad: 'Universidad de Chile',
+    pronombres: 'él',
+    idiomas: ['Español', 'Inglés', 'Portugués'],
     paisOrigen: 'Chile',
     ciudadDestino: 'Madrid',
     paisDestino: 'España',
@@ -79,6 +85,8 @@ const USERS: SeedUser[] = [
     usuario: 'lucia.gomez',
     email: 'lucia.gomez@mail.com',
     universidad: 'UNAM',
+    pronombres: 'ella',
+    idiomas: ['Español', 'Francés'],
     paisOrigen: 'México',
     ciudadDestino: 'Madrid',
     paisDestino: 'España',
@@ -94,6 +102,8 @@ const USERS: SeedUser[] = [
     usuario: 'diego.paredes',
     email: 'diego.paredes@mail.com',
     universidad: 'UPC',
+    pronombres: 'él',
+    idiomas: ['Español', 'Inglés'],
     paisOrigen: 'Perú',
     ciudadDestino: 'Barcelona',
     paisDestino: 'España',
@@ -109,6 +119,8 @@ const USERS: SeedUser[] = [
     usuario: 'sofia.castro',
     email: 'sofia.castro@mail.com',
     universidad: 'Universidad de los Andes',
+    pronombres: 'ella/elle',
+    idiomas: ['Español', 'Inglés', 'Italiano'],
     paisOrigen: 'Colombia',
     ciudadDestino: 'Buenos Aires',
     paisDestino: 'Argentina',
@@ -124,6 +136,8 @@ const USERS: SeedUser[] = [
     usuario: 'andres.molina',
     email: 'andres.molina@mail.com',
     universidad: 'Tec de Monterrey',
+    pronombres: 'él',
+    idiomas: ['Español', 'Inglés'],
     paisOrigen: 'México',
     ciudadDestino: 'Lisboa',
     paisDestino: 'Portugal',
@@ -139,6 +153,8 @@ const USERS: SeedUser[] = [
     usuario: 'isabella.rojas',
     email: 'isabella.rojas@mail.com',
     universidad: 'UBA',
+    pronombres: 'ella',
+    idiomas: ['Español', 'Inglés'],
     paisOrigen: 'Argentina',
     ciudadDestino: 'Ciudad de México',
     paisDestino: 'México',
@@ -153,6 +169,8 @@ const USERS: SeedUser[] = [
     nombre: 'Joaquín Herrera',
     usuario: 'joaquin.herrera',
     email: 'joaquin.herrera@mail.com',
+    pronombres: 'él',
+    idiomas: ['Español', 'Inglés', 'Francés'],
     paisOrigen: 'Perú',
     ciudadDestino: 'Montreal',
     paisDestino: 'Canadá',

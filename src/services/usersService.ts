@@ -18,6 +18,8 @@ function cleanChanges(changes: ProfileChanges): ProfileChanges {
     if (clean[key] !== undefined) clean[key] = clean[key].trim()
   }
   if (clean.intereses) clean.intereses = clean.intereses.map((i) => i.trim()).filter(Boolean)
+  if (clean.idiomas) clean.idiomas = clean.idiomas.map((i) => i.trim()).filter(Boolean)
+  if (clean.pronombres !== undefined) clean.pronombres = clean.pronombres.trim()
   if (clean.instagram !== undefined) clean.instagram = clean.instagram.trim().replace(/^@+/, '')
   return clean
 }
@@ -37,7 +39,7 @@ export async function update(id: string, changes: ProfileChanges): Promise<Publi
 
   const updated: User = { ...current, ...clean }
   // Un campo opcional vacío se borra en vez de guardarse como ''.
-  for (const key of ['instagram', 'paisOrigen', 'ciudadDestino', 'paisDestino', 'fechaLlegada', 'fechaSalida'] as const) {
+  for (const key of ['instagram', 'pronombres', 'paisOrigen', 'ciudadDestino', 'paisDestino', 'fechaLlegada', 'fechaSalida'] as const) {
     if (!updated[key]) delete updated[key]
   }
   setUsers(users.map((u) => (u.id === id ? updated : u)))

@@ -1,0 +1,13 @@
+.flag {
+  display: inline-flex;
+  width: 1.4em;
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--borde);
+  vertical-align: -0.15em;
+}
+
+.flag svg {
+  width: 100%;
+  height: auto;
+}

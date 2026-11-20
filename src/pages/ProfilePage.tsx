@@ -1,10 +1,11 @@
-import { AtSign, CalendarDays, MapPin } from 'lucide-react'
+import { AtSign, CalendarDays, Languages, MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Alert } from '../components/Alert'
 import { Avatar } from '../components/Avatar'
 import { Button } from '../components/Button'
 import { EmptyState } from '../components/EmptyState'
+import { Flag } from '../components/Flag'
 import { FriendButton } from '../components/FriendButton'
 import { NotFound } from '../components/NotFound'
 import { PhotoPicker } from '../components/PhotoPicker'
@@ -125,6 +126,7 @@ export function ProfilePage() {
           )}
           <h1 className={styles.name}>{profile.nombre}</h1>
           <p className={styles.muted}>@{profile.usuario}</p>
+          {profile.pronombres && <p className={styles.muted}>{profile.pronombres}</p>}
           {profile.universidad && <p>{profile.universidad}</p>}
           <ul className={styles.badges} aria-label="Verificación">
             {VERIFICACIONES.filter(({ key }) => propio || profile.verificacion[key]).map(({ key, label, dato }) =>
@@ -151,6 +153,7 @@ export function ProfilePage() {
               {profile.ciudadDestino ? (
                 <li>
                   <MapPin size={16} aria-hidden="true" />
+                  {profile.paisOrigen && <Flag pais={profile.paisOrigen} />}
                   {destino(profile)}
                 </li>
               ) : (
@@ -167,6 +170,12 @@ export function ProfilePage() {
                 <li>
                   <CalendarDays size={16} aria-hidden="true" />
                   {formatDateRange(profile.fechaLlegada, profile.fechaSalida)}
+                </li>
+              )}
+              {profile.idiomas && profile.idiomas.length > 0 && (
+                <li>
+                  <Languages size={16} aria-hidden="true" />
+                  <span>{profile.idiomas.join(', ')}</span>
                 </li>
               )}
               {profile.instagram && (

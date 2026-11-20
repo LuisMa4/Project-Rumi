@@ -63,6 +63,33 @@ describe('update', () => {
   })
 
 
+  it('guarda pronombres e idiomas limpios', async () => {
+    const u = await update('u-demo', { pronombres: ' él ', idiomas: [' Español ', '', 'Inglés'] })
+    expect(u.pronombres).toBe('él')
+    expect(u.idiomas).toEqual(['Español', 'Inglés'])
+  })
+
+  it('valida pronombres e idiomas', async () => {
+    await expect(update('u-demo', { pronombres: 'x'.repeat(31) })).rejects.toMatchObject({
+      fieldErrors: { pronombres: MSG.pronombres },
+    })
+    await expect(update('u-demo', { idiomas: Array.from({ length: 9 }, (_, i) => `Idioma ${i}`) })).rejects.toMatchObject({
+      fieldErrors: { idiomas: MSG.idiomasMax },
+    })
+    await expect(update('u-demo', { idiomas: ['y'.repeat(31)] })).rejects.toMatchObject({
+      fieldErrors: { idiomas: MSG.idioma },
+    })
+  })
+
+  it('guarda un país de origen que no está en la lista tal cual', async () => {
+    expect((await update('u-demo', { paisOrigen: 'Narnia' })).paisOrigen).toBe('Narnia')
+  })
+
+  it('pronombres vacíos se borran', async () => {
+    await update('u-demo', { pronombres: 'ella' })
+    expect((await update('u-demo', { pronombres: '' })).pronombres).toBeUndefined()
+  })
+
   it('falla con un id inexistente', async () => {
     await expect(update('nope', { bio: 'x' })).rejects.toBeInstanceOf(NotFoundError)
   })

@@ -188,3 +188,26 @@ it('cuenta nueva sin destino muestra "Agrega tu destino"', async () => {
   await user.click(await screen.findByRole('button', { name: 'Agrega tu destino' }))
   expect(screen.getByLabelText('Ciudad destino')).toBeInTheDocument()
 })
+
+it('edita pronombres e idiomas y muestra la bandera del país de origen', async () => {
+  const { user } = await renderApp('/perfil', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Editar perfil' }))
+  await user.clear(screen.getByLabelText('Pronombres'))
+  await user.type(screen.getByLabelText('Pronombres'), 'él/elle')
+  await user.clear(screen.getByLabelText('Idiomas'))
+  await user.type(screen.getByLabelText('Idiomas'), 'Español, Portugués')
+  await user.click(screen.getByRole('button', { name: 'Guardar' }))
+  expect(await screen.findByText('él/elle')).toBeInTheDocument()
+  expect(screen.getByText('Español, Portugués')).toBeInTheDocument()
+  expect(document.querySelector('[data-pais="PE"]')).not.toBeNull()
+})
+
+it('un país de origen desconocido se muestra sin bandera', async () => {
+  const { user } = await renderApp('/perfil', { session: 'demo' })
+  await user.click(await screen.findByRole('button', { name: 'Editar perfil' }))
+  await user.clear(screen.getByLabelText('País de origen'))
+  await user.type(screen.getByLabelText('País de origen'), 'Narnia')
+  await user.click(screen.getByRole('button', { name: 'Guardar' }))
+  expect(await screen.findByText(/Narnia/)).toBeInTheDocument()
+  expect(document.querySelector('[data-pais]')).toBeNull()
+})

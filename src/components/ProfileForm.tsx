@@ -6,8 +6,11 @@ import type { PublicUser } from '../types'
 import { Alert } from './Alert'
 import { Button } from './Button'
 import { TextAreaField, TextField } from './Field'
+import { COUNTRIES } from '../utils/countries'
 import { errorMessage } from '../utils/errorMessage'
 import styles from './ProfileForm.module.css'
+
+const PRONOMBRES = ['él', 'ella', 'elle', 'él/elle', 'ella/elle']
 
 export function ProfileForm({
   user,
@@ -20,6 +23,8 @@ export function ProfileForm({
 }) {
   const [form, setForm] = useState({
     nombre: user.nombre,
+    pronombres: user.pronombres ?? '',
+    idiomas: (user.idiomas ?? []).join(', '),
     paisOrigen: user.paisOrigen ?? '',
     ciudadDestino: user.ciudadDestino ?? '',
     paisDestino: user.paisDestino ?? '',
@@ -49,6 +54,7 @@ export function ProfileForm({
       await update(user.id, {
         ...form,
         intereses: form.intereses.split(','),
+        idiomas: form.idiomas.split(','),
       })
       onSaved()
     } catch (err) {
@@ -62,7 +68,21 @@ export function ProfileForm({
     <form ref={formRef} className={styles.form} onSubmit={onSubmit} noValidate aria-label="Editar perfil">
       {error && <Alert>{error}</Alert>}
       <TextField label="Nombre completo" autoComplete="name" {...field('nombre')} />
-      <TextField label="País de origen" {...field('paisOrigen')} />
+      <div className={styles.row}>
+        <TextField label="Pronombres" placeholder="él, ella, elle…" list="rumi-pronombres" autoComplete="off" {...field('pronombres')} />
+        <TextField label="País de origen" list="rumi-paises" autoComplete="off" {...field('paisOrigen')} />
+      </div>
+      <datalist id="rumi-pronombres">
+        {PRONOMBRES.map((p) => (
+          <option key={p} value={p} />
+        ))}
+      </datalist>
+      <datalist id="rumi-paises">
+        {COUNTRIES.map((c) => (
+          <option key={c.code} value={c.nombre} />
+        ))}
+      </datalist>
+      <TextField label="Idiomas" hint="Sepáralos con comas. Hasta 8." placeholder="Español, Inglés" {...field('idiomas')} />
       <div className={styles.row}>
         <TextField label="Ciudad destino" {...field('ciudadDestino')} />
         <TextField label="País destino" {...field('paisDestino')} />

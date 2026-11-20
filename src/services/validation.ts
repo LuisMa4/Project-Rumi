@@ -8,6 +8,9 @@ export const MSG = {
   fechas: 'La fecha de salida debe ser posterior a la de llegada',
   fechasPost: 'La fecha "Hasta" no puede ser anterior a "Desde"',
   bio: 'La biografía puede tener hasta 300 caracteres',
+  pronombres: 'Los pronombres pueden tener hasta 30 caracteres',
+  idiomasMax: 'Puedes poner hasta 8 idiomas',
+  idioma: 'Cada idioma puede tener hasta 30 caracteres',
   postVacio: 'Escribe algo para publicar',
   postLargo: 'La publicación puede tener hasta 500 caracteres',
   precio: 'El precio debe ser mayor que 0',
@@ -68,6 +71,13 @@ export function validateProfileFields(f: ProfileFields): Record<string, string> 
   }
   if (f.bio !== undefined && f.bio.length > 300) {
     errors.bio = MSG.bio
+  }
+  if (f.pronombres !== undefined && f.pronombres.length > 30) {
+    errors.pronombres = MSG.pronombres
+  }
+  if (f.idiomas !== undefined) {
+    if (f.idiomas.length > 8) errors.idiomas = MSG.idiomasMax
+    else if (f.idiomas.some((i) => i.length > 30)) errors.idiomas = MSG.idioma
   }
   if (f.fechaLlegada && f.fechaSalida && !errors.fechaSalida && f.fechaSalida <= f.fechaLlegada) {
     errors.fechaSalida = MSG.fechas

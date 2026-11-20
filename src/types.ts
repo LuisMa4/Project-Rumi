@@ -32,6 +32,10 @@ export interface User {
   /** Solo la pone la verificación de universidad. */
   universidad?: string
   paisOrigen?: string
+  /** Texto libre corto, por ejemplo 'él' o 'ella/elle'. */
+  pronombres?: string
+  /** Idiomas que habla, máximo 8. */
+  idiomas?: string[]
   ciudadDestino?: string
   paisDestino?: string
   /** ISO 'YYYY-MM-DD'; van las dos fechas o ninguna. */
@@ -122,6 +126,8 @@ export type ProfileChanges = Partial<
     User,
     | 'nombre'
     | 'paisOrigen'
+    | 'pronombres'
+    | 'idiomas'
     | 'ciudadDestino'
     | 'paisDestino'
     | 'fechaLlegada'
