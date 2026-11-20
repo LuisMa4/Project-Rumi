@@ -1,0 +1,107 @@
+.capa {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+
+/* Recorte iluminado: la sombra enorme oscurece todo menos el destino. */
+.foco {
+  position: fixed;
+  border-radius: 14px;
+  box-shadow: 0 0 0 200vmax var(--fondo-visor);
+  transition:
+    top 250ms ease,
+    left 250ms ease,
+    width 250ms ease,
+    height 250ms ease;
+  pointer-events: none;
+}
+
+.fondo {
+  position: fixed;
+  inset: 0;
+  background: var(--fondo-visor);
+}
+
+.burbuja {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: var(--radio-tarjeta);
+  background: var(--crema);
+  box-shadow: var(--sombra-postal);
+}
+
+.burbuja[data-centrada] {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.cabeza {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--naranja);
+  color: var(--tinta);
+}
+
+.titulo {
+  flex: 1;
+  font-size: 1.1rem;
+}
+
+.cuenta {
+  color: var(--tinta-suave);
+  font-size: 0.8rem;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.saltar,
+.siguiente {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.saltar {
+  background: transparent;
+  color: var(--tinta-suave);
+}
+
+.siguiente {
+  background: var(--naranja-oscuro);
+  color: var(--blanco);
+}
+
+.siguiente:hover {
+  background: var(--naranja-hondo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foco {
+    transition: none;
+  }
+}

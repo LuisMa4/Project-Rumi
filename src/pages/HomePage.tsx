@@ -65,7 +65,7 @@ export function HomePage() {
 
       <FriendsRow />
 
-      <div className={styles.filters} role="group" aria-label="Filtrar publicaciones">
+      <div className={styles.filters} role="group" aria-label="Filtrar publicaciones" data-tutorial="filtros">
         <Chip selected={tipo === null} onClick={() => elegirTipo(null)}>
           Todo
         </Chip>

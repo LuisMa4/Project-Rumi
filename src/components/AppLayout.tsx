@@ -1,6 +1,7 @@
-import { Link, Outlet, useMatch } from 'react-router-dom'
+import { Link, Outlet, useLocation, useMatch } from 'react-router-dom'
 import { AssistantProvider } from '../context/AssistantContext'
 import { AppNav } from './AppNav'
+import { TutorialGate } from './assistant/TutorialGate'
 import { Logo } from './Logo'
 import { NotificationsBell } from './NotificationsBell'
 import styles from './AppLayout.module.css'
@@ -8,6 +9,8 @@ import styles from './AppLayout.module.css'
 export function AppLayout() {
   // El chat ocupa toda la altura: sin scroll de página, la caja para escribir queda fija.
   const enChat = useMatch('/mensajes/:id') !== null
+  const enInicio = useMatch('/') !== null
+  const location = useLocation()
   return (
     // En el chat no hay botón del asistente: taparía la caja para escribir.
     <AssistantProvider mostrarBoton={!enChat}>
@@ -25,6 +28,8 @@ export function AppLayout() {
           </div>
         </main>
       </div>
+      {/* La clave: al volver al inicio (por ejemplo desde "Ver tutorial") se vuelve a mirar si toca. */}
+      {enInicio && <TutorialGate key={location.key} />}
     </AssistantProvider>
   )
 }

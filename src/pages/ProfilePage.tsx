@@ -15,6 +15,7 @@ import { useAuth } from '../context/useAuth'
 import { useStartChat } from '../hooks/useStartChat'
 import { listByAuthor } from '../services/postsService'
 import { StorageFullError } from '../services/errors'
+import { resetSeen } from '../services/onboardingService'
 import { resetDemo } from '../services/seed'
 import { getById, setAvatar, setPortada } from '../services/usersService'
 import { MSG } from '../services/validation'
@@ -253,6 +254,9 @@ export function ProfilePage() {
       {propio && (
         <nav className={styles.ayuda} aria-label="Ayuda">
           <Link to="/bienvenida">Ver bienvenida</Link>
+          <Link to="/" onClick={() => resetSeen(user.id, 'tutorial')}>
+            Ver tutorial
+          </Link>
         </nav>
       )}
 

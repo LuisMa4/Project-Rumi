@@ -4,16 +4,16 @@ import { Logo } from './Logo'
 import { NotificationsBell } from './NotificationsBell'
 import styles from './AppNav.module.css'
 
-const ITEMS: { to: string; label: string; icon: LucideIcon; end?: boolean }[] = [
+const ITEMS: { to: string; label: string; icon: LucideIcon; end?: boolean; tutorial?: string }[] = [
   { to: '/', label: 'Inicio', icon: House, end: true },
-  { to: '/buscar', label: 'Buscar', icon: Search },
-  { to: '/mensajes', label: 'Mensajes', icon: MessageCircle },
-  { to: '/perfil', label: 'Perfil', icon: User, end: true },
+  { to: '/buscar', label: 'Buscar', icon: Search, tutorial: 'buscar' },
+  { to: '/mensajes', label: 'Mensajes', icon: MessageCircle, tutorial: 'mensajes' },
+  { to: '/perfil', label: 'Perfil', icon: User, end: true, tutorial: 'perfil' },
 ]
 
-function Item({ to, label, icon: Icon, end }: (typeof ITEMS)[number]) {
+function Item({ to, label, icon: Icon, end, tutorial }: (typeof ITEMS)[number]) {
   return (
-    <NavLink to={to} end={end} className={styles.item}>
+    <NavLink to={to} end={end} className={styles.item} data-tutorial={tutorial}>
       <Icon size={22} strokeWidth={2} aria-hidden="true" />
       <span>{label}</span>
     </NavLink>
@@ -32,7 +32,7 @@ export function AppNav() {
       </div>
       <Item {...ITEMS[0]} />
       <Item {...ITEMS[1]} />
-      <Link to="/publicar" className={styles.publish} aria-label="Publicar">
+      <Link to="/publicar" className={styles.publish} aria-label="Publicar" data-tutorial="publicar">
         <Plus size={24} strokeWidth={2.5} aria-hidden="true" />
         <span className={styles.publishText}>Publicar</span>
       </Link>
