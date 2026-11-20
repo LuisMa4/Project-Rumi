@@ -30,6 +30,12 @@ export async function list(filter: { tipo?: PostType } = {}): Promise<PostWithAu
   return withAuthors(getPosts().filter((p) => !filter.tipo || p.tipo === filter.tipo))
 }
 
+export async function getById(id: string): Promise<PostWithAuthor> {
+  const [post] = withAuthors(getPosts().filter((p) => p.id === id))
+  if (!post) throw new NotFoundError('No encontramos esta publicación')
+  return post
+}
+
 export async function listByAuthor(autorId: string): Promise<PostWithAuthor[]> {
   return withAuthors(getPosts().filter((p) => p.autorId === autorId))
 }

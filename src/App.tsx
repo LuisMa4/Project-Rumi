@@ -6,6 +6,7 @@ import { ChatPage } from './pages/ChatPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { MessagesPage } from './pages/MessagesPage'
+import { PostPage } from './pages/PostPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { PublishPage } from './pages/PublishPage'
 import { RegisterPage } from './pages/RegisterPage'
@@ -32,6 +33,7 @@ export function AppRoutes() {
           <Route path="/perfil/:id" element={<ProfilePage />} />
           <Route path="/solicitudes" element={<RequestsPage />} />
           <Route path="/publicar" element={<PublishPage />} />
+          <Route path="/publicacion/:id" element={<PostPage />} />
           <Route path="/verificar" element={<VerifyPage />} />
         </Route>
       </Route>
