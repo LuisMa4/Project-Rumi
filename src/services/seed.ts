@@ -1,11 +1,11 @@
 // Datos de ejemplo de la demo. Los ids, usuarios, nombres y fechas son fijos
 // porque las pruebas dependen de ellos.
-import type { Conversation, FriendRequest, Message, Post, User, Verificacion } from '../types'
+import type { Conversation, FriendRequest, Message, Post, Reaction, ReactionTipo, User, Verificacion } from '../types'
 import { hashPassword } from './crypto'
-import { setConversations, setFriendRequests, setMessages, setPosts, setSession, setUsers } from './db'
+import { setConversations, setFriendRequests, setMessages, setPosts, setReactions, setSession, setUsers } from './db'
 import { clearAll, read, write } from './storage'
 
-export const SEED_VERSION = '5'
+export const SEED_VERSION = '6'
 export const DEMO_USER_ID = 'u-demo'
 export const DEMO_EMAIL = 'demo@rumi.app'
 export const DEMO_PASSWORD = 'rumidemo123'
@@ -393,6 +393,22 @@ function buildVerificacion(u: SeedUser, cuando: string): Verificacion {
   return v
 }
 
+/** [publicación, usuario, reacción, hace cuántas horas]. Deben ser reacciones válidas para el tipo. */
+const REACTIONS: [string, string, ReactionTipo, number][] = [
+  ['p-05', 'u-01', 'like', 20],
+  ['p-05', 'u-02', 'me-encanta', 18],
+  ['p-05', 'u-05', 'recomendar', 10],
+  ['p-06', 'u-03', 'like', 30],
+  ['p-06', 'u-06', 'like', 12],
+  ['p-11', 'u-07', 'me-encanta', 8],
+  ['p-02', 'u-01', 'buen-lugar', 5],
+  ['p-02', 'u-04', 'lo-conozco', 4],
+  ['p-09', 'u-03', 'recomendado', 9],
+  ['p-01', 'u-04', 'recomendar', 6],
+  ['p-03', 'u-05', 'me-interesa', 7],
+  ['p-08', 'u-02', 'me-interesa', 3],
+]
+
 async function loadSeed(): Promise<void> {
   const now = Date.now()
   const passwordHash = await hashPassword(DEMO_PASSWORD)
@@ -446,6 +462,15 @@ async function loadSeed(): Promise<void> {
   setConversations(conversations)
   setMessages(messages)
   setFriendRequests(friendRequests)
+  setReactions(
+    REACTIONS.map(([postId, userId, tipo, horas], i): Reaction => ({
+      id: `r-${String(i + 1).padStart(2, '0')}`,
+      postId,
+      userId,
+      tipo,
+      creadoEn: hoursAgo(now, horas),
+    })),
+  )
   setSession(null)
   write('version', SEED_VERSION)
 }

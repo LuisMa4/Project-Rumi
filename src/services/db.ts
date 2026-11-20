@@ -1,6 +1,6 @@
 // Colecciones tipadas sobre storage.ts. Cuando haya backend, estas funciones
 // son las que se reemplazan por llamadas a la API.
-import type { Conversation, FriendRequest, Message, Post, PublicUser, User } from '../types'
+import type { Conversation, FriendRequest, Message, Post, PublicUser, Reaction, User } from '../types'
 import { read, write } from './storage'
 
 /** Si lo guardado no es una lista (datos dañados o de otra versión), se trata como vacío. */
@@ -24,6 +24,9 @@ export const setMessages = (messages: Message[]): void => write('messages', mess
 
 export const getFriendRequests = (): FriendRequest[] => readList<FriendRequest>('friendRequests')
 export const setFriendRequests = (requests: FriendRequest[]): void => write('friendRequests', requests)
+
+export const getReactions = (): Reaction[] => readList<Reaction>('reactions')
+export const setReactions = (reactions: Reaction[]): void => write('reactions', reactions)
 
 export function getSession(): string | null {
   const value = read<unknown>('session', null)

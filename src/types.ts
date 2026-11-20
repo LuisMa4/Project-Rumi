@@ -84,6 +84,24 @@ export interface Post {
   creadoEn: string
 }
 
+export type ReactionTipo =
+  | 'recomendar'
+  | 'buen-lugar'
+  | 'lo-conozco'
+  | 'recomendado'
+  | 'like'
+  | 'me-encanta'
+  | 'me-interesa'
+
+/** Una persona puede dejar varias reacciones distintas en una publicación, cada una una vez. */
+export interface Reaction {
+  id: string
+  postId: string
+  userId: string
+  tipo: ReactionTipo
+  creadoEn: string
+}
+
 export type FriendRequestEstado = 'pendiente' | 'aceptada' | 'rechazada'
 
 export interface FriendRequest {

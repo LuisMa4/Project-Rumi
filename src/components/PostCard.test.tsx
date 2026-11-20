@@ -146,3 +146,9 @@ it('no ofrece mensaje en publicaciones propias', async () => {
   show(await post({}, 'u-demo'))
   expect(screen.queryByRole('button', { name: 'Enviar mensaje' })).toBeNull()
 })
+
+it('la tarjeta muestra las reacciones de su tipo', async () => {
+  show(await post({ id: 'p-05', tipo: 'lugar' }))
+  const grupo = await screen.findByRole('group', { name: 'Reacciones' })
+  expect(within(grupo).getByRole('button', { name: /^Me encanta/ })).toBeInTheDocument()
+})

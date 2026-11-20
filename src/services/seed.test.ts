@@ -83,3 +83,22 @@ it('v3: la conversación con Valeria queda sin leer para la cuenta demo', () => 
   const c01 = getConversations().find((c) => c.id === 'c-01')!
   expect(c01.leidoHasta['u-demo'] < c01.actualizadoEn).toBe(true)
 })
+
+it('la demo trae reacciones de varios estudiantes', async () => {
+  await resetDemo()
+  const { getReactions } = await import('./db')
+  const reactions = getReactions()
+  expect(new Set(reactions.map((r) => r.userId)).size).toBeGreaterThanOrEqual(4)
+  expect(new Set(reactions.map((r) => r.postId)).size).toBeGreaterThanOrEqual(5)
+})
+
+it('cada reacción de la demo es válida para el tipo de su publicación', async () => {
+  const { getReactions } = await import('./db')
+  const { REACTIONS_BY_POST_TYPE } = await import('../utils/reactions')
+  const posts = new Map(getPosts().map((p) => [p.id, p]))
+  for (const r of getReactions()) {
+    const post = posts.get(r.postId)
+    expect(post, r.id).toBeDefined()
+    expect(REACTIONS_BY_POST_TYPE[post!.tipo].map((d) => d.tipo), r.id).toContain(r.tipo)
+  }
+})

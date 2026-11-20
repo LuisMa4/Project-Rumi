@@ -10,6 +10,7 @@ import { Avatar } from './Avatar'
 import { Button } from './Button'
 import { MapView } from './map/MapView'
 import { PhotoViewer } from './PhotoViewer'
+import { ReactionBar } from './ReactionBar'
 import styles from './PostCard.module.css'
 
 /** "universidad → ciudad" si la persona tiene las dos; si no, su @usuario (igual que en el chat). */
@@ -152,6 +153,8 @@ export function PostCard({
           {post.ubicacion && <MapView lat={post.ubicacion.lat} lng={post.ubicacion.lng} />}
         </div>
       )}
+
+      <ReactionBar postId={post.id} postTipo={post.tipo} currentUserId={currentUserId} />
 
       {error && <Alert>{error}</Alert>}
 

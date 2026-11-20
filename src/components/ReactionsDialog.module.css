@@ -1,0 +1,100 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--fondo-visor);
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 80vh;
+  max-height: 80dvh;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: var(--radio-tarjeta) var(--radio-tarjeta) 0 0;
+  background: var(--blanco);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.head h2 {
+  font-size: 1.2rem;
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--crema);
+  cursor: pointer;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fuente-texto);
+  font-size: 0.95rem;
+}
+
+.people {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.person:hover .name {
+  text-decoration: underline;
+}
+
+.name {
+  font-weight: 700;
+}
+
+.muted {
+  color: var(--tinta-suave);
+  font-weight: 400;
+}
+
+@media (min-width: 768px) {
+  .overlay {
+    align-items: center;
+  }
+
+  .dialog {
+    border-radius: var(--radio-tarjeta);
+  }
+}

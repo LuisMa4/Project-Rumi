@@ -1,0 +1,62 @@
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-pildora);
+  background: var(--blanco);
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.reaction:hover:not(:disabled) {
+  border-color: var(--azul);
+}
+
+.reaction[aria-pressed='true'] {
+  border-color: var(--naranja-suave);
+  background: var(--naranja-suave);
+  color: var(--naranja-oscuro);
+  font-weight: 700;
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+}
+
+.who {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--azul-oscuro);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* En pantallas muy angostas quedan solo el ícono y el número (el nombre sigue en aria-label). */
+@media (max-width: 380px) {
+  .reaction .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+}
