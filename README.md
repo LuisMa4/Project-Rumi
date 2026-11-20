@@ -84,7 +84,7 @@ App (GitHub Pages) ──POST /chat──▶ Worker (Cloudflare) ──▶ Gemin
 
 - El Worker solo acepta pedidos de `https://luisma4.github.io` y de `localhost`, limita el tamaño y deja **10 consultas por minuto por IP**.
 - A Gemini se mandan las preguntas y las publicaciones **sin nombres ni usuarios** de nadie. Gemini solo puede sugerir publicaciones que existen.
-- La app encuentra el Worker con `VITE_AI_URL` en `.env` (es una dirección pública, no un secreto). Si está vacía, el asistente dice que no está configurado.
+- La app encuentra el Worker con `VITE_AI_URL` en `.env`: `https://rumi-ia.rumiapp.workers.dev/chat` (es una dirección pública, no un secreto; tiene que terminar en `/chat`). Si está vacía, el asistente dice que no está configurado.
 
 Publicar o actualizar el Worker (una vez iniciada la sesión con `npx wrangler login`):
 
