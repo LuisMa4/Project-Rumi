@@ -13,5 +13,6 @@ configure({ asyncUtilTimeout: 3000 })
 
 afterEach(() => {
   cleanup()
-  localStorage.clear()
+  // Las pruebas del Worker corren en Node, sin localStorage.
+  globalThis.localStorage?.clear()
 })

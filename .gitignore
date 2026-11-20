@@ -31,3 +31,7 @@ coverage
 
 # Configuración local de Claude Code
 .claude/
+
+# Worker de Cloudflare: secretos locales y caché de Wrangler (la clave nunca va al repo)
+.dev.vars
+.wrangler/
